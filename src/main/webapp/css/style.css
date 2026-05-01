@@ -1,0 +1,11 @@
+@charset "UTF-8";
+
+:root {
+  --panna-carta: #F8F4EA; /* Sfondo principale */
+  --antracite-scuro: #2A2A2A; /* Testi principali */
+  --marrone-cuoio: #6F4E37; /* Supporto principale */
+  --verde-ottanio: #2C5551; /* CTA e accenti */
+  --rosso-ruggine: #A93F35; /* Alert/Errori */
+  --beige-scuro: #D2C8B4; /* Bordi e separatori */
+  --grigio-taupe: #7A756D; /* Testo secondario */
+}
