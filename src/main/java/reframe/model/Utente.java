@@ -11,6 +11,11 @@ public class Utente
 	    private String bio;
 	    private String token;
 
+	    // Costruttore vuoto
+	    
+	    public Utente() {
+	    }
+	    
 	    // Costruttore
 	    
 	    public Utente(String username, String email, String password, String telefono, String nome, String cognome, String bio, String token) {
