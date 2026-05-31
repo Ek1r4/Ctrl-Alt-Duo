@@ -4,7 +4,26 @@ import java.sql.*;
 import reframe.model.Utente;
 
 public class UtenteDAO
-{	
+{
+	// Metodo per confronto di email
+	public boolean VerificaEmail(String email)
+	{
+		String query = "SELECT * FROM Utente WHERE Email = ?";
+		
+		try(Connection conn = ConnessioneDB.getConnection(); PreparedStatement ps = conn.prepareStatement(query);)
+		{
+			ps.setString(1, email);
+			
+			try( ResultSet rs = ps.executeQuery() )
+			{
+				if(rs.next()) return true;
+			}
+			
+		}	catch (SQLException e) { /* Errore in console */	e.printStackTrace(); }
+		
+		return false;
+	}
+	
 	// Metodo per verificare le credenziali dell'utente nella fase di login
 	public Utente VerificaCredenziali(String email, String password)
 	{
@@ -41,7 +60,35 @@ public class UtenteDAO
 				
 		}	catch (SQLException e) { /* Errore in console */	e.printStackTrace(); }
 
-        return utenteTrovato;
+        return utenteTrovato;		
+	}
+	
+	/* Metodo per l'inserimento di dati nel DB nella fase di registrazione
+		TRUE = inserimento avvenuto con successo
+		FALSE = errore
+	*/
+	public boolean doSave(Utente nuovoUtente)
+	{
+		String query = "INSERT INTO Utente (Username, Email, Password, Nome, Cognome, Token) VALUES (?, ?, ?, ?, ?, ?)";
+		
+		try( Connection conn = ConnessioneDB.getConnection(); PreparedStatement ps = conn.prepareStatement(query); )
+		{
+			if(!VerificaEmail(nuovoUtente.getEmail()))
+			{
+			ps.setString(1, nuovoUtente.getUsername());
+	        ps.setString(2, nuovoUtente.getEmail());
+	        ps.setString(3, nuovoUtente.getPassword());
+	        ps.setString(4, nuovoUtente.getNome());
+	        ps.setString(5, nuovoUtente.getCognome());
+	        ps.setString(6, nuovoUtente.getToken());
+	        
+	        int row = ps.executeUpdate();
+	        return row > 0;
+			}
 			
+		}	catch(SQLException e) { /* Errore nella console */	e.printStackTrace();
+			return false;
+		}
+		return false;
 	}
 }
