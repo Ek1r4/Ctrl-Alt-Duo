@@ -1,7 +1,7 @@
-package reframe.dao;
+package reframe.model.dao;
 
+import reframe.model.beans.*;
 import java.sql.*;
-import reframe.model.Utente;
 
 public class UtenteDAO
 {

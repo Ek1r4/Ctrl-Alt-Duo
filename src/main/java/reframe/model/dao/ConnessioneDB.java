@@ -1,4 +1,4 @@
-package reframe.dao;
+package reframe.model.dao;
 
 import java.sql.*;
 

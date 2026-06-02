@@ -1,4 +1,4 @@
-package reframe.model;
+package reframe.model.beans;
 
 public class Utente 
 {
