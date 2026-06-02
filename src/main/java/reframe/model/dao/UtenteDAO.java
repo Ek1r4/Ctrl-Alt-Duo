@@ -72,14 +72,12 @@ public class UtenteDAO
 				    utenteTrovato.setCognome(rs.getString("Cognome"));
 				    utenteTrovato.setPassword(rs.getString("Password")); 
 				    utenteTrovato.setToken(rs.getString("Token"));
-				    
-				    // DEBUG 
-				    
-				    System.out.println("DEBUG - Login effettuato per: " + utenteTrovato);
+
+				    System.out.println("DEBUG - Login effettuato per: " + utenteTrovato); // DEBUG 
 				}
 				else
 				{
-				    System.out.println("DEBUG - Credenziali errate o utente non trovato.");
+				    System.out.println("DEBUG - Credenziali errate o utente non trovato."); // DEBUG 
 				}
 			}
 				
@@ -148,10 +146,65 @@ public class UtenteDAO
 		return false;
 	}
 	
+	// Metodo per recuperare tutte le info di un utente specifico
+	
+	public Utente doRetrieveByKey(String Username) throws SQLException
+	{
+		String query = "SELECT * FROM Utente WHERE Username = ?";
+		
+		Connection conn = null;
+		PreparedStatement ps = null;
+		
+		Utente utenteTrovato = null;
+		
+		try
+		{
+			conn = ConnessioneDB.getConnection();
+			ps = conn.prepareStatement(query);
+			
+			ps.setString(1, Username);
+			
+			ResultSet rs = ps.executeQuery();
+			
+			if(rs.next())
+			{
+				utenteTrovato = new Utente();
+			    
+			    utenteTrovato.setUsername(rs.getString("Username"));
+			    utenteTrovato.setEmail(rs.getString("Email"));
+			    utenteTrovato.setNome(rs.getString("Nome"));
+			    utenteTrovato.setCognome(rs.getString("Cognome"));
+			    utenteTrovato.setPassword(rs.getString("Password")); 
+			    utenteTrovato.setToken(rs.getString("Token"));
+			    
+			    System.out.println("DEBUG - Login effettuato per: " + utenteTrovato); // DEBUG 
+			}
+			else
+			{
+			    System.out.println("DEBUG - Credenziali errate o utente non trovato."); // DEBUG 
+			}
+			
+			
+		} catch (SQLException e) { /* Errore in console */	e.printStackTrace(); }
+		
+		finally { // Serve per rimettere nel ConnectionPool la connessione
+	        
+	        try 
+	        {
+	            if (ps != null) ps.close(); // Chiusura del PreparedStatement
+	            
+	        } catch (SQLException e) {	e.printStackTrace();	}
+	        
+	        
+	        if (conn != null) {	ConnessioneDB.releaseConnection(conn); } // Controllo se esiste una connessione, se si viene rimessa nel ConnectionPool
+	    }
+		
+		return utenteTrovato;
+		
+	}
+
 	// Metodi ancora da fare
 	
-	public Utente doRetrieveByKey(String Username) throws SQLException;
-
 	public List<Utente> doRetrieveAll(String order) throws SQLException;
 
 	public void doUpdate(Utente utente) throws SQLException;
