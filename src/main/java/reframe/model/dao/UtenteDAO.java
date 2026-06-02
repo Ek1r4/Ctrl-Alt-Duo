@@ -149,7 +149,6 @@ public class UtenteDAO
 	}
 	
 	// Metodo per recuperare tutte le info di un utente specifico
-	
 	public Utente doRetrieveByKey(String Username) throws SQLException
 	{
 		String query = "SELECT * FROM Utente WHERE Username = ?";
@@ -207,7 +206,6 @@ public class UtenteDAO
 	}
 
 	// Metodo per recuperare tutti gli utenti secondo un certo ordine
-	
 	public List<Utente> doRetrieveAll(String order) throws SQLException
 	{
 		String query = "SELECT * FROM UTENTE";
@@ -314,7 +312,6 @@ public class UtenteDAO
  	TRUE = modifica avvenuta con successo
 	FALSE = errore
 	 */
-
 	public boolean updatePassword(String username, String nuovaPassword) throws SQLException
 	{
 		String query = "UPDATE Utente SET Password = ? WHERE Username = ?";
@@ -353,7 +350,43 @@ public class UtenteDAO
 		return false;
 	}
 	
-	// Metodi ancora da fare
-	
-	public boolean doDelete(String email) throws SQLException;
+	/* Metodo per effettuare un HARD DELETE alla tabella di un utente specifico
+		TRUE = eliminazione avvenuta con successo
+		FALSE = errore
+	 */
+	public boolean doDelete(String username) throws SQLException
+	{
+		String query = "DELETE FROM Utente WHERE Username = ?";
+		
+		Connection conn = null;
+		PreparedStatement ps = null;
+		
+		try
+		{
+			conn = ConnessioneDB.getConnection();
+			ps = conn.prepareStatement(query);
+			
+			ps.setString(1, username);
+			
+	        int row = ps.executeUpdate();
+	        return row > 0;
+			
+			
+		} catch (SQLException e) { /* Errore in console */	e.printStackTrace(); 	}
+		
+		finally { // Serve per rimettere nel ConnectionPool la connessione
+        
+			try 
+			{
+				if (ps != null) ps.close(); // Chiusura del PreparedStatement
+            
+			} catch (SQLException e) {	e.printStackTrace();	}
+        
+        
+        	if (conn != null) {	ConnessioneDB.releaseConnection(conn); } // Controllo se esiste una connessione, se si viene rimessa nel ConnectionPool
+		}
+		
+		return false;
+		
+	}
 }
