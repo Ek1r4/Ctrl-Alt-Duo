@@ -105,7 +105,7 @@ public class UtenteDAO
 	*/
 	public boolean doSave(Utente nuovoUtente) throws SQLException
 	{
-		String query = "INSERT INTO Utente (Username, Email, Password, Nome, Cognome, Token) VALUES (?, ?, ?, ?, ?, ?)";
+		String query = "INSERT INTO Utente (Username, Email, Password, Nome, Cognome, Bio, Token) VALUES (?, ?, ?, ?, ?, ?, ?)";
 		
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -122,7 +122,8 @@ public class UtenteDAO
 	        ps.setString(3, nuovoUtente.getPassword());
 	        ps.setString(4, nuovoUtente.getNome());
 	        ps.setString(5, nuovoUtente.getCognome());
-	        ps.setString(6, nuovoUtente.getToken());
+	        ps.setString(6, nuovoUtente.getBio());
+	        ps.setString(7, nuovoUtente.getToken());
 	        
 	        int row = ps.executeUpdate();
 	        return row > 0;
@@ -177,6 +178,7 @@ public class UtenteDAO
 			    utenteTrovato.setCognome(rs.getString("Cognome"));
 			    utenteTrovato.setPassword(rs.getString("Password")); 
 			    utenteTrovato.setToken(rs.getString("Token"));
+			    utenteTrovato.setBio(rs.getString("Bio"));
 			    
 			    System.out.println("DEBUG - Login effettuato per: " + utenteTrovato); // DEBUG 
 			}
@@ -263,9 +265,54 @@ public class UtenteDAO
 		
 	}
 	
+	/* Metodo per sovrascrivere un campo di un utente specifico 
+	 	TRUE = modifica avvenuta con successo
+		FALSE = errore
+	*/
+	public boolean doUpdate(Utente utente) throws SQLException
+	{
+		String query = "UPDATE Utente SET Email = ?, Password = ?, Nome = ?, Cognome = ?, Bio = ?, Token = ? WHERE Username = ?";
+		
+		Connection conn = null;
+		PreparedStatement ps = null;
+		
+		Utente utenteModificato = null;
+		
+		try
+		{
+			conn = ConnessioneDB.getConnection();
+			ps = conn.prepareStatement(query);
+			
+	        ps.setString(1, utenteModificato.getEmail());
+	        ps.setString(2, utenteModificato.getPassword());
+	        ps.setString(3, utenteModificato.getNome());
+	        ps.setString(4, utenteModificato.getCognome());
+	        ps.setString(5, utenteModificato.getBio());
+	        ps.setString(6, utenteModificato.getToken());
+	        ps.setString(7, utenteModificato.getUsername());
+	        
+	        int row = ps.executeUpdate();
+	        return row > 0;
+			
+		} catch (SQLException e) { /* Errore in console */	e.printStackTrace(); 
+			return false;	}
+		
+		finally { // Serve per rimettere nel ConnectionPool la connessione
+	        
+	        try 
+	        {
+	            if (ps != null) ps.close(); // Chiusura del PreparedStatement
+	            
+	        } catch (SQLException e) {	e.printStackTrace();	}
+	        
+	        
+	        if (conn != null) {	ConnessioneDB.releaseConnection(conn); } // Controllo se esiste una connessione, se si viene rimessa nel ConnectionPool
+	    }
+	}
+	
 	// Metodi ancora da fare
 
-	public void doUpdate(Utente utente) throws SQLException;
-
+	public boolean updatePassword(String email, String nuovaPassword) throws SQLException;
+	
 	public boolean doDelete(String email) throws SQLException;
 }
