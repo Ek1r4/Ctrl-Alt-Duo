@@ -7,7 +7,7 @@ import java.sql.*;
 public class UtenteDAO
 {
 	// Metodo per confronto di email
-	public boolean VerificaEmail(String email)
+	public boolean VerificaEmail(String email) throws SQLException
 	{
 		String query = "SELECT * FROM Utente WHERE Email = ?";
 		
@@ -44,7 +44,7 @@ public class UtenteDAO
 	}
 	
 	// Metodo per verificare le credenziali dell'utente nella fase di login
-	public Utente VerificaCredenziali(String email, String password)
+	public Utente doRetrieveByEmailAndPassword(String email, String password) throws SQLException
 	{
 		Utente utenteTrovato = null;
 		String query = "SELECT * FROM Utente WHERE Email = ? AND Password = ?";
@@ -104,7 +104,7 @@ public class UtenteDAO
 		TRUE = inserimento avvenuto con successo
 		FALSE = errore
 	*/
-	public boolean doSave(Utente nuovoUtente)
+	public boolean doSave(Utente nuovoUtente) throws SQLException
 	{
 		String query = "INSERT INTO Utente (Username, Email, Password, Nome, Cognome, Token) VALUES (?, ?, ?, ?, ?, ?)";
 		
@@ -147,4 +147,14 @@ public class UtenteDAO
 		
 		return false;
 	}
+	
+	// Metodi ancora da fare
+	
+	public Utente doRetrieveByKey(String Username) throws SQLException;
+
+	public List<Utente> doRetrieveAll(String order) throws SQLException;
+
+	public void doUpdate(Utente utente) throws SQLException;
+
+	public boolean doDelete(String email) throws SQLException;
 }
