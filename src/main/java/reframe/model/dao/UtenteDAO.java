@@ -310,9 +310,50 @@ public class UtenteDAO
 	    }
 	}
 	
-	// Metodi ancora da fare
+	/* Metodo per modificare la password di un utente specifico
+ 	TRUE = modifica avvenuta con successo
+	FALSE = errore
+	 */
 
-	public boolean updatePassword(String email, String nuovaPassword) throws SQLException;
+	public boolean updatePassword(String username, String nuovaPassword) throws SQLException
+	{
+		String query = "UPDATE Utente SET Password = ? WHERE Username = ?";
+		
+		Connection conn = null;
+		PreparedStatement ps = null;
+		
+		try
+		{
+			conn = ConnessioneDB.getConnection();
+			ps = conn.prepareStatement(query);
+			
+			ps.setString(1, nuovaPassword);
+			ps.setString(2, username);
+			
+			try( ResultSet rs = ps.executeQuery() )
+			{
+				if(rs.next()) return true;
+			}
+			
+			
+		} catch (SQLException e) { /* Errore in console */	e.printStackTrace(); 	}
+		
+		finally { // Serve per rimettere nel ConnectionPool la connessione
+        
+			try 
+			{
+				if (ps != null) ps.close(); // Chiusura del PreparedStatement
+            
+			} catch (SQLException e) {	e.printStackTrace();	}
+        
+        
+        	if (conn != null) {	ConnessioneDB.releaseConnection(conn); } // Controllo se esiste una connessione, se si viene rimessa nel ConnectionPool
+		}
+		
+		return false;
+	}
+	
+	// Metodi ancora da fare
 	
 	public boolean doDelete(String email) throws SQLException;
 }
