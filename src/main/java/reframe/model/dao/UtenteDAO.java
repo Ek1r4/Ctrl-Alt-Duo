@@ -1,6 +1,7 @@
 package reframe.model.dao;
 
 import reframe.model.beans.*;
+import reframe.utils.*;
 import java.sql.*;
 
 public class UtenteDAO
@@ -10,8 +11,14 @@ public class UtenteDAO
 	{
 		String query = "SELECT * FROM Utente WHERE Email = ?";
 		
-		try(Connection conn = ConnessioneDB.getConnection(); PreparedStatement ps = conn.prepareStatement(query);)
+		Connection conn = null;
+		PreparedStatement ps = null;
+		
+		try
 		{
+			conn = ConnessioneDB.getConnection(); 
+			ps = conn.prepareStatement(query);
+			
 			ps.setString(1, email);
 			
 			try( ResultSet rs = ps.executeQuery() )
@@ -20,6 +27,18 @@ public class UtenteDAO
 			}
 			
 		}	catch (SQLException e) { /* Errore in console */	e.printStackTrace(); }
+		
+		finally { // Serve per rimettere nel ConnectionPool la connessione
+	        
+	        try 
+	        {
+	            if (ps != null) ps.close(); // Chiusura del PreparedStatement
+	            
+	        } catch (SQLException e) {	e.printStackTrace();	}
+	        
+	        
+	        if (conn != null) {	ConnessioneDB.releaseConnection(conn); } // Controllo se esiste una connessione, se si viene rimessa nel ConnectionPool
+	    }
 		
 		return false;
 	}
@@ -30,8 +49,14 @@ public class UtenteDAO
 		Utente utenteTrovato = null;
 		String query = "SELECT * FROM Utente WHERE Email = ? AND Password = ?";
 		
-		try(Connection conn = ConnessioneDB.getConnection(); PreparedStatement ps = conn.prepareStatement(query);)
+		Connection conn = null;
+		PreparedStatement ps = null;
+				
+		try
 		{
+			conn = ConnessioneDB.getConnection(); 
+			ps = conn.prepareStatement(query);
+			
 			ps.setString(1,email);
 			ps.setString(1,email);
 			
@@ -59,6 +84,18 @@ public class UtenteDAO
 			}
 				
 		}	catch (SQLException e) { /* Errore in console */	e.printStackTrace(); }
+		
+		finally { // Serve per rimettere nel ConnectionPool la connessione
+	        
+	        try 
+	        {
+	            if (ps != null) ps.close(); // Chiusura del PreparedStatement
+	            
+	        } catch (SQLException e) {	e.printStackTrace();	}
+	        
+	        
+	        if (conn != null) {	ConnessioneDB.releaseConnection(conn); } // Controllo se esiste una connessione, se si viene rimessa nel ConnectionPool
+	    }
 
         return utenteTrovato;		
 	}
@@ -71,8 +108,14 @@ public class UtenteDAO
 	{
 		String query = "INSERT INTO Utente (Username, Email, Password, Nome, Cognome, Token) VALUES (?, ?, ?, ?, ?, ?)";
 		
-		try( Connection conn = ConnessioneDB.getConnection(); PreparedStatement ps = conn.prepareStatement(query); )
+		Connection conn = null;
+		PreparedStatement ps = null;
+		
+		try
 		{
+			conn = ConnessioneDB.getConnection(); 
+			ps = conn.prepareStatement(query); 
+			
 			if(!VerificaEmail(nuovoUtente.getEmail()))
 			{
 			ps.setString(1, nuovoUtente.getUsername());
@@ -89,6 +132,19 @@ public class UtenteDAO
 		}	catch(SQLException e) { /* Errore nella console */	e.printStackTrace();
 			return false;
 		}
+		
+		finally { // Serve per rimettere nel ConnectionPool la connessione
+	        
+	        try 
+	        {
+	            if (ps != null) ps.close(); // Chiusura del PreparedStatement
+	            
+	        } catch (SQLException e) {	e.printStackTrace();	}
+	        
+	        
+	        if (conn != null) {	ConnessioneDB.releaseConnection(conn); } // Controllo se esiste una connessione, se si viene rimessa nel ConnectionPool
+	    }
+		
 		return false;
 	}
 }
