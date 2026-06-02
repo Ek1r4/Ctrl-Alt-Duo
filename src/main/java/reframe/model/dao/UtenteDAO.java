@@ -59,7 +59,7 @@ public class UtenteDAO
 			ps = conn.prepareStatement(query);
 			
 			ps.setString(1,email);
-			ps.setString(1,email);
+			ps.setString(2,password);
 			
 			try( ResultSet rs = ps.executeQuery() )
 			{
@@ -208,7 +208,7 @@ public class UtenteDAO
 	// Metodo per recuperare tutti gli utenti secondo un certo ordine
 	public List<Utente> doRetrieveAll(String order) throws SQLException
 	{
-		String query = "SELECT * FROM UTENTE";
+		String query = "SELECT * FROM Utente";
 		
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -267,14 +267,12 @@ public class UtenteDAO
 	 	TRUE = modifica avvenuta con successo
 		FALSE = errore
 	*/
-	public boolean doUpdate(Utente utente) throws SQLException
+	public boolean doUpdate(Utente utenteModificato) throws SQLException
 	{
 		String query = "UPDATE Utente SET Email = ?, Password = ?, Nome = ?, Cognome = ?, Bio = ?, Token = ? WHERE Username = ?";
 		
 		Connection conn = null;
 		PreparedStatement ps = null;
-		
-		Utente utenteModificato = null;
 		
 		try
 		{
@@ -327,12 +325,9 @@ public class UtenteDAO
 			ps.setString(1, nuovaPassword);
 			ps.setString(2, username);
 			
-			try( ResultSet rs = ps.executeQuery() )
-			{
-				if(rs.next()) return true;
-			}
-			
-			
+	        int row = ps.executeUpdate();
+	        return row > 0;
+	
 		} catch (SQLException e) { /* Errore in console */	e.printStackTrace(); 	}
 		
 		finally { // Serve per rimettere nel ConnectionPool la connessione
