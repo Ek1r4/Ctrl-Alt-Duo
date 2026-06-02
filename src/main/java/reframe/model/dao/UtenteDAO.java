@@ -3,6 +3,7 @@ package reframe.model.dao;
 import reframe.model.beans.*;
 import reframe.utils.*;
 import java.sql.*;
+import java.util.*;
 
 public class UtenteDAO
 {
@@ -203,9 +204,66 @@ public class UtenteDAO
 		
 	}
 
-	// Metodi ancora da fare
+	// Metodo per recuperare tutti gli utenti secondo un certo ordine
 	
-	public List<Utente> doRetrieveAll(String order) throws SQLException;
+	public List<Utente> doRetrieveAll(String order) throws SQLException
+	{
+		String query = "SELECT * FROM UTENTE";
+		
+		Connection conn = null;
+		PreparedStatement ps = null;
+		
+		List<Utente> lista = new ArrayList<>();
+		
+		// Controllo sull'ordine passato
+		if(order != null && !order.trim().isEmpty()) // Uso trim() per eliminare un possibile SQLException da parte del DB a causa degli spazi
+		{
+			query += " ORDER BY " + order;
+		}
+		else { System.out.println("DEBUG - Nessun ordine specificato, eseguo la query base: " + query);	/* DEBUG */}
+
+		try
+		{
+			conn = ConnessioneDB.getConnection();
+			ps = conn.prepareStatement(query);
+			
+			ResultSet rs = ps.executeQuery();
+			
+			while(rs.next())
+			{
+				Utente u = new Utente();
+				
+				u.setUsername(rs.getString("Username"));
+				u.setNome(rs.getString("Nome"));
+				u.setCognome(rs.getString("Cognome"));
+				u.setEmail(rs.getString("Email"));
+				u.setPassword(rs.getString("Password"));
+				u.setTelefono(rs.getString("Telefono"));
+				u.setToken(rs.getString("Token"));
+				u.setBio(rs.getString("Bio"));
+				
+				lista.add(u);	
+			}
+			
+		} catch (SQLException e) { /* Errore in console */	e.printStackTrace(); }
+		
+		finally { // Serve per rimettere nel ConnectionPool la connessione
+	        
+	        try 
+	        {
+	            if (ps != null) ps.close(); // Chiusura del PreparedStatement
+	            
+	        } catch (SQLException e) {	e.printStackTrace();	}
+	        
+	        
+	        if (conn != null) {	ConnessioneDB.releaseConnection(conn); } // Controllo se esiste una connessione, se si viene rimessa nel ConnectionPool
+	    }
+		
+		return lista;
+		
+	}
+	
+	// Metodi ancora da fare
 
 	public void doUpdate(Utente utente) throws SQLException;
 
