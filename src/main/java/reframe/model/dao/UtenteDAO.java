@@ -71,7 +71,9 @@ public class UtenteDAO
 				    utenteTrovato.setEmail(rs.getString("Email"));
 				    utenteTrovato.setNome(rs.getString("Nome"));
 				    utenteTrovato.setCognome(rs.getString("Cognome"));
-				    utenteTrovato.setPassword(rs.getString("Password")); 
+				    utenteTrovato.setPassword(rs.getString("Password"));
+				    utenteTrovato.setTelefono(rs.getString("Telefono"));
+				    utenteTrovato.setBio(rs.getString("Bio"));
 				    utenteTrovato.setToken(rs.getString("Token"));
 
 				    System.out.println("DEBUG - Login effettuato per: " + utenteTrovato); // DEBUG 
@@ -105,7 +107,7 @@ public class UtenteDAO
 	*/
 	public boolean doSave(Utente nuovoUtente) throws SQLException
 	{
-		String query = "INSERT INTO Utente (Username, Email, Password, Nome, Cognome, Bio, Token) VALUES (?, ?, ?, ?, ?, ?, ?)";
+		String query = "INSERT INTO Utente (Username, Email, Password, Nome, Cognome, Bio, Telefono, Token) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 		
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -123,7 +125,8 @@ public class UtenteDAO
 	        ps.setString(4, nuovoUtente.getNome());
 	        ps.setString(5, nuovoUtente.getCognome());
 	        ps.setString(6, nuovoUtente.getBio());
-	        ps.setString(7, nuovoUtente.getToken());
+	        ps.setString(7, nuovoUtente.getTelefono());
+	        ps.setString(8, nuovoUtente.getToken());
 	        
 	        int row = ps.executeUpdate();
 	        return row > 0;
@@ -175,7 +178,8 @@ public class UtenteDAO
 			    utenteTrovato.setEmail(rs.getString("Email"));
 			    utenteTrovato.setNome(rs.getString("Nome"));
 			    utenteTrovato.setCognome(rs.getString("Cognome"));
-			    utenteTrovato.setPassword(rs.getString("Password")); 
+			    utenteTrovato.setPassword(rs.getString("Password"));
+			    utenteTrovato.setTelefono(rs.getString("Telefono"));
 			    utenteTrovato.setToken(rs.getString("Token"));
 			    utenteTrovato.setBio(rs.getString("Bio"));
 			    
@@ -269,7 +273,7 @@ public class UtenteDAO
 	*/
 	public boolean doUpdate(Utente utenteModificato) throws SQLException
 	{
-		String query = "UPDATE Utente SET Email = ?, Password = ?, Nome = ?, Cognome = ?, Bio = ?, Token = ? WHERE Username = ?";
+		String query = "UPDATE Utente SET Email = ?, Password = ?, Nome = ?, Cognome = ?, Bio = ?, Telefono = ?, Token = ? WHERE Username = ?";
 		
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -284,8 +288,9 @@ public class UtenteDAO
 	        ps.setString(3, utenteModificato.getNome());
 	        ps.setString(4, utenteModificato.getCognome());
 	        ps.setString(5, utenteModificato.getBio());
-	        ps.setString(6, utenteModificato.getToken());
-	        ps.setString(7, utenteModificato.getUsername());
+	        ps.setString(6, utenteModificato.getTelefono());
+	        ps.setString(7, utenteModificato.getToken());
+	        ps.setString(8, utenteModificato.getUsername());
 	        
 	        int row = ps.executeUpdate();
 	        return row > 0;
@@ -384,4 +389,77 @@ public class UtenteDAO
 		return false;
 		
 	}
+	
+/*
+	// Main per testing
+	public static void main(String[] args) {
+	    UtenteDAO dao = new UtenteDAO();
+	    System.out.println("=== INIZIO COLLAUDO COMPLETO REFRAME DAO ===");
+
+	    try {
+	        // --- 1. TEST: doSave (Registrazione nuovo utente) ---
+	        System.out.println("\n[TEST 1] Inserimento nuovo utente...");
+	        Utente nuovo = new Utente();
+	        nuovo.setUsername("cliente_test_01");
+	        nuovo.setEmail("cliente@prova.it");
+	        nuovo.setPassword("password123");
+	        nuovo.setTelefono("1234567890");
+	        nuovo.setNome("Mario");
+	        nuovo.setCognome("Rossi");
+	        nuovo.setBio("Appassionato di fotografia analogica");
+	        nuovo.setToken("User");
+	        
+	        dao.doSave(nuovo);
+	        System.out.println("-> OK: Utente salvato nel DB.");
+
+	        // --- 2. TEST: VerificaEmail (Controllo doppioni) ---
+	        System.out.println("\n[TEST 2] Controllo esistenza email...");
+	        boolean emailEsiste = dao.VerificaEmail("cliente@prova.it");
+	        boolean emailFalsa = dao.VerificaEmail("non_esisto@prova.it");
+	        System.out.println("-> OK: Email reale trovata? " + emailEsiste + " (Dovrebbe essere true)");
+	        System.out.println("-> OK: Email inventata trovata? " + emailFalsa + " (Dovrebbe essere false)");
+
+	        // --- 3. TEST: doRetrieveByKey (Recupero dati profilo) ---
+	        System.out.println("\n[TEST 3] Recupero dati tramite Username...");
+	        Utente recuperato = dao.doRetrieveByKey("cliente_test_01");
+	        System.out.println("-> OK: Trovato " + recuperato.getNome() + " " + recuperato.getCognome());
+
+	        // --- 4. TEST: doUpdate (Modifica profilo e password) ---
+	        System.out.println("\n[TEST 4] Aggiornamento dei dati...");
+	        recuperato.setNome("Mario Modificato");
+	        recuperato.setPassword("nuovaPassword456");
+	        boolean aggiornato = dao.doUpdate(recuperato);
+	        System.out.println("-> OK: Dati aggiornati? " + aggiornato);
+
+	        // --- 5. TEST: Login (doRetrieveByEmailAndPassword) ---
+	        System.out.println("\n[TEST 5] Simulazione Login con nuova password...");
+	        Utente loggato = dao.doRetrieveByEmailAndPassword("cliente@prova.it", "nuovaPassword456");
+	        if (loggato != null) {
+	            System.out.println("-> OK: Accesso consentito a " + loggato.getNome());
+	        } else {
+	            System.out.println("-> ERRORE: Credenziali non riconosciute!");
+	        }
+
+	        // --- 6. TEST: doRetrieveAll (Stampa catalogo clienti) ---
+	        System.out.println("\n[TEST 6] Recupero lista di TUTTI gli utenti...");
+	        // Passiamo un ordine vuoto per testare la query base senza crashare
+	        List<Utente> listaCompleta = dao.doRetrieveAll(""); 
+	        System.out.println("-> OK: Trovati " + listaCompleta.size() + " utenti nel database.");
+	        for (Utente u : listaCompleta) {
+	            System.out.println("   - " + u.getUsername() + " | " + u.getEmail());
+	        }
+
+	        // --- 7. TEST: doDelete (Eliminazione account) ---
+	        System.out.println("\n[TEST 7] Eliminazione utente di test...");
+	        boolean eliminato = dao.doDelete("cliente_test_01");
+	        System.out.println("-> OK: Utente cancellato definitivamente? " + eliminato);
+
+	        System.out.println("\n=== TUTTI I 7 METODI HANNO SUPERATO IL COLLAUDO! ===");
+
+	    } catch (Exception e) {
+	        System.out.println("\n[!] CRASH DURANTE IL TEST [!]");
+	        e.printStackTrace();
+	    }
+	}
+*/
 }
