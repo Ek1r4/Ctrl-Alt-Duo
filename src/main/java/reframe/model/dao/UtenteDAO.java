@@ -44,6 +44,23 @@ public class UtenteDAO
 		return false;
 	}
 	
+	// Metodo per estrarre un utente dal ResultSet
+	private Utente estraiUtente(ResultSet rs) throws SQLException 
+	{
+	    Utente utente = new Utente();
+	    
+	    utente.setUsername(rs.getString("Username"));
+	    utente.setEmail(rs.getString("Email"));
+	    utente.setPassword(rs.getString("Password"));
+	    utente.setNome(rs.getString("Nome"));
+	    utente.setCognome(rs.getString("Cognome"));
+	    utente.setBio(rs.getString("Bio"));
+	    utente.setToken(rs.getString("Token"));
+	    utente.setTelefono(rs.getString("Telefono"));
+	    
+	    return utente;
+	}
+	
 	// Metodo per verificare le credenziali dell'utente nella fase di login
 	public Utente doRetrieveByEmailAndPassword(String email, String password) throws SQLException
 	{
@@ -65,16 +82,7 @@ public class UtenteDAO
 			{
 				if(rs.next())
 				{
-					utenteTrovato = new Utente();
-				    
-				    utenteTrovato.setUsername(rs.getString("Username"));
-				    utenteTrovato.setEmail(rs.getString("Email"));
-				    utenteTrovato.setNome(rs.getString("Nome"));
-				    utenteTrovato.setCognome(rs.getString("Cognome"));
-				    utenteTrovato.setPassword(rs.getString("Password"));
-				    utenteTrovato.setTelefono(rs.getString("Telefono"));
-				    utenteTrovato.setBio(rs.getString("Bio"));
-				    utenteTrovato.setToken(rs.getString("Token"));
+					utenteTrovato = estraiUtente(rs);
 
 				    System.out.println("DEBUG - Login effettuato per: " + utenteTrovato); // DEBUG 
 				}
@@ -172,16 +180,7 @@ public class UtenteDAO
 			
 			if(rs.next())
 			{
-				utenteTrovato = new Utente();
-			    
-			    utenteTrovato.setUsername(rs.getString("Username"));
-			    utenteTrovato.setEmail(rs.getString("Email"));
-			    utenteTrovato.setNome(rs.getString("Nome"));
-			    utenteTrovato.setCognome(rs.getString("Cognome"));
-			    utenteTrovato.setPassword(rs.getString("Password"));
-			    utenteTrovato.setTelefono(rs.getString("Telefono"));
-			    utenteTrovato.setToken(rs.getString("Token"));
-			    utenteTrovato.setBio(rs.getString("Bio"));
+				utenteTrovato = estraiUtente(rs);
 			    
 			    System.out.println("DEBUG - Login effettuato per: " + utenteTrovato); // DEBUG 
 			}
@@ -235,16 +234,7 @@ public class UtenteDAO
 			
 			while(rs.next())
 			{
-				Utente u = new Utente();
-				
-				u.setUsername(rs.getString("Username"));
-				u.setNome(rs.getString("Nome"));
-				u.setCognome(rs.getString("Cognome"));
-				u.setEmail(rs.getString("Email"));
-				u.setPassword(rs.getString("Password"));
-				u.setTelefono(rs.getString("Telefono"));
-				u.setToken(rs.getString("Token"));
-				u.setBio(rs.getString("Bio"));
+				Utente u = estraiUtente(rs);
 				
 				lista.add(u);	
 			}
@@ -390,7 +380,7 @@ public class UtenteDAO
 		
 	}
 	
-/*
+
 	// Main per testing
 	public static void main(String[] args) {
 	    UtenteDAO dao = new UtenteDAO();
@@ -461,5 +451,5 @@ public class UtenteDAO
 	        e.printStackTrace();
 	    }
 	}
-*/
+
 }

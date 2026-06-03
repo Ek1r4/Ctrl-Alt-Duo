@@ -100,8 +100,11 @@ public class Utente
 	        return "Utente{" +
 	                "username='" + username + '\'' +
 	                ", email='" + email + '\'' +
+	                ", password='" + password + '\'' +
 	                ", nome='" + nome + '\'' +
 	                ", cognome='" + cognome + '\'' +
+	                ", telefono='" + telefono + '\'' +
+	                ", bio='" + bio + '\'' +
 	                ", token='" + token + '\'' +
 	                '}';
 	    }
