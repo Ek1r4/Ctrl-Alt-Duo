@@ -302,9 +302,9 @@ public class UtenteDAO
  	TRUE = modifica avvenuta con successo
 	FALSE = errore
 	 */
-	public boolean updatePassword(String username, String nuovaPassword) throws SQLException
+	public boolean updatePassword(String email, String nuovaPassword) throws SQLException
 	{
-		String query = "UPDATE Utente SET Password = ? WHERE Username = ?";
+		String query = "UPDATE Utente SET Password = ? WHERE Email = ?";
 		
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -315,7 +315,7 @@ public class UtenteDAO
 			ps = conn.prepareStatement(query);
 			
 			ps.setString(1, nuovaPassword);
-			ps.setString(2, username);
+			ps.setString(2, email);
 			
 	        int row = ps.executeUpdate();
 	        return row > 0;
@@ -377,6 +377,45 @@ public class UtenteDAO
 		
 	}
 	
+	// Metodo per ricercare per un utente tramite l'email
+	public Utente doRetrieveByEmail(String email) throws SQLException 
+	{
+	    String query = "SELECT * FROM Utente WHERE Email = ?";
+	    
+	    Connection conn = null;
+	    PreparedStatement ps = null;
+	    Utente utenteTrovato = null;
+	            
+	    try {
+	        conn = ConnessioneDB.getConnection(); 
+	        ps = conn.prepareStatement(query);
+	        
+	        ps.setString(1, email);
+	        
+	        try( ResultSet rs = ps.executeQuery() ) 
+	        {
+	            if(rs.next()) 
+	            {
+	                utenteTrovato = estraiUtente(rs);
+	            }
+	        }
+	            
+	    } catch (SQLException e) { /* Errore in console */	e.printStackTrace(); 	}
+		
+		finally { // Serve per rimettere nel ConnectionPool la connessione
+        
+			try 
+			{
+				if (ps != null) ps.close(); // Chiusura del PreparedStatement
+            
+			} catch (SQLException e) {	e.printStackTrace();	}
+        
+        
+        	if (conn != null) {	ConnessioneDB.releaseConnection(conn); } // Controllo se esiste una connessione, se si viene rimessa nel ConnectionPool
+		}
+		
+		return utenteTrovato;
+	}
 
 	// Main per testing
 	/*
@@ -387,14 +426,8 @@ public class UtenteDAO
 	    try {
 	        // --- 1. TEST: doSave (Registrazione nuovo utente) ---
 	        System.out.println("\n[TEST 1] Inserimento nuovo utente...");
-	        Utente nuovo = new Utente();
-	        nuovo.setUsername("cliente_test_01");
-	        nuovo.setEmail("cliente@prova.it");
-	        nuovo.setPassword("password123");
-	        nuovo.setTelefono("1234567890");
-	        nuovo.setNome("Mario");
-	        nuovo.setCognome("Rossi");
-	        nuovo.setBio("Appassionato di fotografia analogica");
+	        
+	        Utente nuovo = new Utente("cliente_test_01", "cliente@prova.it", "pass123", "3331234567","Mario", "Rossi", "Nessuna bio");
 	        
 	        dao.doSave(nuovo);
 	        System.out.println("-> OK: Utente salvato nel DB.");

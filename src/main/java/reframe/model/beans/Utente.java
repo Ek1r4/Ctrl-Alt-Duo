@@ -15,7 +15,7 @@ public class Utente
 	    public Utente() {
 	    }
 	    
-	    // Costruttore
+	    // Costruttore (usato per testing/debug)
 	    
 	    public Utente(String username, String email, String password, String telefono, String nome, String cognome, String bio) {
 	        this.username = username;
