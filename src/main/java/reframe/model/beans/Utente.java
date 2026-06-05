@@ -9,7 +9,6 @@ public class Utente
 	    private String nome;
 	    private String cognome;
 	    private String bio;
-	    private String token;
 
 	    // Costruttore vuoto
 	    
@@ -18,7 +17,7 @@ public class Utente
 	    
 	    // Costruttore
 	    
-	    public Utente(String username, String email, String password, String telefono, String nome, String cognome, String bio, String token) {
+	    public Utente(String username, String email, String password, String telefono, String nome, String cognome, String bio) {
 	        this.username = username;
 	        this.email = email;
 	        this.password = password;
@@ -26,7 +25,6 @@ public class Utente
 	        this.nome = nome;
 	        this.cognome = cognome;
 	        this.bio = bio;
-	        this.token = token;
 	    }
 
 	    // Getter/Setter
@@ -86,14 +84,6 @@ public class Utente
 	    public void setBio(String bio) {
 	        this.bio = bio;
 	    }
-
-	    public String getToken() {
-	        return token;
-	    }
-
-	    public void setToken(String token) {
-	        this.token = token;
-	    }
 	    
 	    @Override
 	    public String toString() {
@@ -105,7 +95,6 @@ public class Utente
 	                ", cognome='" + cognome + '\'' +
 	                ", telefono='" + telefono + '\'' +
 	                ", bio='" + bio + '\'' +
-	                ", token='" + token + '\'' +
 	                '}';
 	    }
 	}

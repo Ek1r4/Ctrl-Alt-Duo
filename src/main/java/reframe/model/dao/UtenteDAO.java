@@ -55,7 +55,6 @@ public class UtenteDAO
 	    utente.setNome(rs.getString("Nome"));
 	    utente.setCognome(rs.getString("Cognome"));
 	    utente.setBio(rs.getString("Bio"));
-	    utente.setToken(rs.getString("Token"));
 	    utente.setTelefono(rs.getString("Telefono"));
 	    
 	    return utente;
@@ -115,7 +114,7 @@ public class UtenteDAO
 	*/
 	public boolean doSave(Utente nuovoUtente) throws SQLException
 	{
-		String query = "INSERT INTO Utente (Username, Email, Password, Nome, Cognome, Bio, Telefono, Token) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+		String query = "INSERT INTO Utente (Username, Email, Password, Nome, Cognome, Bio, Telefono) VALUES (?, ?, ?, ?, ?, ?, ?)";
 		
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -134,7 +133,6 @@ public class UtenteDAO
 	        ps.setString(5, nuovoUtente.getCognome());
 	        ps.setString(6, nuovoUtente.getBio());
 	        ps.setString(7, nuovoUtente.getTelefono());
-	        ps.setString(8, nuovoUtente.getToken());
 	        
 	        int row = ps.executeUpdate();
 	        return row > 0;
@@ -263,7 +261,7 @@ public class UtenteDAO
 	*/
 	public boolean doUpdate(Utente utenteModificato) throws SQLException
 	{
-		String query = "UPDATE Utente SET Email = ?, Password = ?, Nome = ?, Cognome = ?, Bio = ?, Telefono = ?, Token = ? WHERE Username = ?";
+		String query = "UPDATE Utente SET Email = ?, Password = ?, Nome = ?, Cognome = ?, Bio = ?, Telefono = ? WHERE Username = ?";
 		
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -279,8 +277,7 @@ public class UtenteDAO
 	        ps.setString(4, utenteModificato.getCognome());
 	        ps.setString(5, utenteModificato.getBio());
 	        ps.setString(6, utenteModificato.getTelefono());
-	        ps.setString(7, utenteModificato.getToken());
-	        ps.setString(8, utenteModificato.getUsername());
+	        ps.setString(7, utenteModificato.getUsername());
 	        
 	        int row = ps.executeUpdate();
 	        return row > 0;
@@ -382,6 +379,7 @@ public class UtenteDAO
 	
 
 	// Main per testing
+	/*
 	public static void main(String[] args) {
 	    UtenteDAO dao = new UtenteDAO();
 	    System.out.println("=== INIZIO COLLAUDO COMPLETO REFRAME DAO ===");
@@ -397,7 +395,6 @@ public class UtenteDAO
 	        nuovo.setNome("Mario");
 	        nuovo.setCognome("Rossi");
 	        nuovo.setBio("Appassionato di fotografia analogica");
-	        nuovo.setToken("User");
 	        
 	        dao.doSave(nuovo);
 	        System.out.println("-> OK: Utente salvato nel DB.");
@@ -451,5 +448,6 @@ public class UtenteDAO
 	        e.printStackTrace();
 	    }
 	}
+	*/
 
 }
