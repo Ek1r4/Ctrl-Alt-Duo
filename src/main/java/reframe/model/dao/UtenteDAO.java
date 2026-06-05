@@ -60,54 +60,6 @@ public class UtenteDAO
 	    return utente;
 	}
 	
-	// Metodo per verificare le credenziali dell'utente nella fase di login
-	public Utente doRetrieveByEmailAndPassword(String email, String password) throws SQLException
-	{
-		Utente utenteTrovato = null;
-		String query = "SELECT * FROM Utente WHERE Email = ? AND Password = ?";
-		
-		Connection conn = null;
-		PreparedStatement ps = null;
-				
-		try
-		{
-			conn = ConnessioneDB.getConnection(); 
-			ps = conn.prepareStatement(query);
-			
-			ps.setString(1,email);
-			ps.setString(2,password);
-			
-			try( ResultSet rs = ps.executeQuery() )
-			{
-				if(rs.next())
-				{
-					utenteTrovato = estraiUtente(rs);
-
-				    System.out.println("DEBUG - Login effettuato per: " + utenteTrovato); // DEBUG 
-				}
-				else
-				{
-				    System.out.println("DEBUG - Credenziali errate o utente non trovato."); // DEBUG 
-				}
-			}
-				
-		}	catch (SQLException e) { /* Errore in console */	e.printStackTrace(); }
-		
-		finally { // Serve per rimettere nel ConnectionPool la connessione
-	        
-	        try 
-	        {
-	            if (ps != null) ps.close(); // Chiusura del PreparedStatement
-	            
-	        } catch (SQLException e) {	e.printStackTrace();	}
-	        
-	        
-	        if (conn != null) {	ConnessioneDB.releaseConnection(conn); } // Controllo se esiste una connessione, se si viene rimessa nel ConnectionPool
-	    }
-
-        return utenteTrovato;		
-	}
-	
 	/* Metodo per l'inserimento di dati nel DB nella fase di registrazione
 		TRUE = inserimento avvenuto con successo
 		FALSE = errore

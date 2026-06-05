@@ -12,17 +12,16 @@ import javax.servlet.http.HttpSession;
 public class LogoutServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
+    {
         
-        // 1. Recupero la sessione corrente dell'utente (se esiste)
         HttpSession session = request.getSession(false);
         
-        if (session != null) {
-            // 2. Distruggo l'armadietto e tutto il suo contenuto (utente loggato)
+        if (session != null) 
+        {
             session.invalidate();
         }
-        
-        // 3. Rispedisco l'utente alla home page
+
         response.sendRedirect(request.getContextPath() + "/jsp/index.jsp");
     }
 }
