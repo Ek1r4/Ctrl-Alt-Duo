@@ -33,6 +33,7 @@ public class RegistrazioneServlet extends HttpServlet {
     	String username = request.getParameter("username");
         String email = request.getParameter("email");
         String password = request.getParameter("password");
+        String confermaPassword = request.getParameter("confermaPassword");
         String nome = request.getParameter("nome");
         String cognome = request.getParameter("cognome");
         String telefono = request.getParameter("telefono");
@@ -41,41 +42,43 @@ public class RegistrazioneServlet extends HttpServlet {
         
         // Controlli e trim
         if (username == null || username.trim().isEmpty()) {
-            errors.add("L'username è obbligatorio.");
+            errors.add("Tutti i campi sono obbligatori.");
         } else {
             username = username.trim();
         }
         
         if (email == null || email.trim().isEmpty()) {
-            errors.add("L'email è obbligatoria.");
+            errors.add("Tutti i campi sono obbligatori.");
         } else {
             email = email.trim();
         }
         
         if (password == null || password.trim().isEmpty()) {
-            errors.add("La password è obbligatoria.");
+            errors.add("Tutti i campi sono obbligatori.");
         } else if (password.length() < 8) {
             errors.add("La password deve essere di almeno 8 caratteri.");
+        } else if (confermaPassword == null || !password.equals(confermaPassword)) {
+            errors.add("Le password inserite non coincidono. Riprova.");
         } else {
             password = password.trim();
         }
         
         if (nome == null || nome.trim().isEmpty()) {
-            errors.add("Il nome è obbligatorio.");
+            errors.add("Tutti i campi sono obbligatori.");
         } else {
             nome = nome.trim();
         }
         
         if (cognome == null || cognome.trim().isEmpty()) {
-            errors.add("Il cognome è obbligatorio.");
+            errors.add("Tutti i campi sono obbligatori.");
         } else {
             cognome = cognome.trim();
         }
 
-        if (telefono != null && !telefono.trim().isEmpty()) {
-            telefono = telefono.trim();
+        if (telefono == null && telefono.trim().isEmpty()) {
+        	errors.add("Tutti i campi sono obbligatori.");
         } else {
-            telefono = null; 
+            telefono = telefono.trim(); 
         }
         
         if (!errors.isEmpty()) {

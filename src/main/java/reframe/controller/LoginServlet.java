@@ -31,7 +31,7 @@ public class LoginServlet extends HttpServlet {
         
         // Controlli e trim
         if (emailInserita == null || emailInserita.trim().isEmpty()) {
-            errors.add("Il campo email è obbligatorio e non può contenere solo spazi.");
+            errors.add("Il campo email è obbligatorio");
         } else {	emailInserita = emailInserita.trim();	}
         
         if (passwordInserita == null || passwordInserita.trim().isEmpty()) {
@@ -62,4 +62,3 @@ public class LoginServlet extends HttpServlet {
         } catch(SQLException e) {	e.printStackTrace();	}
     }
 }
-
