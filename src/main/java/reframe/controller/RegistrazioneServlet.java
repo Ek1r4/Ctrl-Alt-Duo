@@ -24,7 +24,7 @@ public class RegistrazioneServlet extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	request.getRequestDispatcher("/jsp/registrazione.jsp").forward(request, response);
+    	request.getRequestDispatcher("/registrazione.jsp").forward(request, response);
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -83,7 +83,7 @@ public class RegistrazioneServlet extends HttpServlet {
         
         if (!errors.isEmpty()) {
             request.setAttribute("errors", errors);
-            request.getRequestDispatcher("/jsp/registrazione.jsp").forward(request, response);
+            request.getRequestDispatcher("/registrazione.jsp").forward(request, response);
             return; 
         }
 
@@ -95,7 +95,7 @@ public class RegistrazioneServlet extends HttpServlet {
             if (dao.VerificaEmail(email)) {
                 errors.add("Questa email è già registrata nel sistema.");
                 request.setAttribute("errors", errors);
-                request.getRequestDispatcher("/jsp/registrazione.jsp").forward(request, response);
+                request.getRequestDispatcher("/registrazione.jsp").forward(request, response);
                 return;
             }
             
@@ -112,13 +112,13 @@ public class RegistrazioneServlet extends HttpServlet {
 
             dao.doSave(nuovoUtente); 
 
-            response.sendRedirect(request.getContextPath() + "/jsp/login.jsp?messaggio=registrazione_completata");
+            response.sendRedirect(request.getContextPath() + "/login.jsp?messaggio=registrazione_completata");
             
         } catch (SQLException e) {
             e.printStackTrace();
             errors.add("Errore interno del server durante la registrazione. Riprova più tardi.");
             request.setAttribute("errors", errors);
-            request.getRequestDispatcher("/jsp/registrazione.jsp").forward(request, response);
+            request.getRequestDispatcher("/registrazione.jsp").forward(request, response);
         }
     }
 }

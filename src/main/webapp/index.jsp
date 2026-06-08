@@ -31,8 +31,8 @@
                     <span style="margin-right: 15px;">Benvenuto, <b><%= utenteLoggato.getNome() %></b>!</span>
                     <a href="${pageContext.request.contextPath}/LogoutServlet" style="color: #ff7675;">Esci</a>
                 <% } else { %>
-                    <a href="${pageContext.request.contextPath}/jsp/login.jsp">Accedi</a> |
-                    <a href="${pageContext.request.contextPath}/jsp/registrazione.jsp">Registrati</a>
+                    <a href="${pageContext.request.contextPath}/login.jsp">Accedi</a> |
+                    <a href="${pageContext.request.contextPath}/registrazione.jsp">Registrati</a>
                 <% } %>
             </div>
         </div>

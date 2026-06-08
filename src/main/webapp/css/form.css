@@ -1,23 +1,5 @@
-/* Palette di colori */
-:root {
-  --panna-carta: #F8F4EA; 
-  --antracite-scuro: #2A2A2A; 
-  --marrone-cuoio: #6F4E37; 
-  --verde-ottanio: #2C5551; 
-  --rosso-ruggine: #A93F35; 
-  --beige-scuro: #D2C8B4; 
-  --grigio-taupe: #7A756D; 
-}
-
-body {
-    font-family: "Helvetica Neue", Arial, sans-serif;
-    background-color: var(--panna-carta);
-    margin: 0;
-}
-
-*, *::before, *::after {
-    box-sizing: border-box;
-}
+@import url("variables.css");
+@import url("global.css");
 
 /* Centratura */
 .auth-wrapper {
@@ -142,33 +124,6 @@ fieldset.custom-input input {
 }
 /* Solo per Registrazione FINE*/
 
-/* CTA e Link*/
-.btn-cta {
-    display: block;
-    width: 100%;
-    background-color: transparent;
-    color: var(--verde-ottanio);
-    font-size: 22px;
-    font-weight: 900;
-    letter-spacing: 1px;
-    padding: 15px 0;
-    margin-top: 30px;
-    cursor: pointer;
-    border-radius: 12px;
-    
-    /* Doppio bordo */
-    border: 2px solid var(--verde-ottanio);
-    box-shadow: inset 0 0 0 3px var(--panna-carta), inset 0 0 0 5px var(--verde-ottanio);
-    transition: all 0.2s ease;
-    
-    /* Per farlo funzionare anche per link */
-    text-align: center;
-    text-decoration: none;
-}
-
-.btn-cta:hover {
-    background-color: var(--beige-scuro);
-}
 
 .form-link {
     display: inline-block;
@@ -213,7 +168,7 @@ fieldset.custom-input input {
 }
 .error-box ul { margin: 0; padding-left: 20px; }
 
-/* Footer */
+/* Footer per form*/
 .site-footer {
     text-align: center;
     font-style: italic;
@@ -222,3 +177,5 @@ fieldset.custom-input input {
     color: var(--grigio-taupe);
     letter-spacing: 0.5px;
 }
+
+/* da cambiare nomi delle classi per renderle più generali e commenti più esplicativi  !!!!!!!!!!!!!!*/

@@ -40,7 +40,7 @@ public class LoginServlet extends HttpServlet {
         
         if (!errors.isEmpty()) {
             request.setAttribute("errors", errors);
-            request.getRequestDispatcher("/jsp/login.jsp").forward(request, response);
+            request.getRequestDispatcher("/login.jsp").forward(request, response);
             return;
         }
         
@@ -56,9 +56,9 @@ public class LoginServlet extends HttpServlet {
         	if (utenteLoggato != null && utenteLoggato.getPassword().equals(passwordCriptata)) {
             HttpSession session = request.getSession();
             session.setAttribute("utente", utenteLoggato);
-            response.sendRedirect(request.getContextPath() + "/jsp/index.jsp");
+            response.sendRedirect(request.getContextPath() + "/index.jsp");
         	} 
-        	else {	response.sendRedirect(request.getContextPath() + "/jsp/login.jsp?errore=credenziali_errate");	}
+        	else {	response.sendRedirect(request.getContextPath() + "/login.jsp?errore=credenziali_errate");	}
         } catch(SQLException e) {	e.printStackTrace();	}
     }
 }
