@@ -5,6 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Home - ReFrame</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/form.css">
     <style>
         body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px; }
         .container { background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); max-width: 600px; margin: 0 auto; text-align: center; }
@@ -57,5 +58,41 @@
         </div>
 
     </div>
+
+<!-- SCRIPT PER NOTIFICA DI LOGIN CON SUCCESSO !!!!!!!!!!!!! -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // 1. Legge i parametri dall'URL
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    // 2. Se trova il successo del login, lancia la notifica
+    if (urlParams.get("success") === "login") {
+        mostraNotifica("Login effettuato con successo!", "success-banner");
+        
+        // 3. Magia: pulisce l'URL cancellando "?success=login" senza ricaricare la pagina!
+        // Così se l'utente fa F5 (aggiorna), la notifica non riappare all'infinito.
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    // Funzione Utility per disegnare il banner
+    function mostraNotifica(messaggio, classeCss) {
+        const banner = document.createElement("div");
+        banner.textContent = messaggio;
+        banner.classList.add("notification-banner", classeCss);
+        
+        // Visto che in index.jsp usiamo la classe .container invece di .film-container
+        const container = document.querySelector('.container');
+        if (container) {
+            container.insertBefore(banner, container.firstChild);
+        } else {
+            document.body.insertBefore(banner, document.body.firstChild);
+        }
+        
+        // Fa sparire il banner dopo 4 secondi
+        setTimeout(() => { banner.remove(); }, 4000);
+    }
+});
+</script>
+
 </body>
 </html>

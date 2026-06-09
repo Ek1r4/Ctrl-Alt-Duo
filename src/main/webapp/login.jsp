@@ -51,19 +51,21 @@
             }
         %>
 
-        <form action="${pageContext.request.contextPath}/LoginServlet" method="POST">
+        <form id="loginForm" action="${pageContext.request.contextPath}/LoginServlet" method="POST">
             
             <fieldset class="custom-input">
                 <legend>E-mail</legend>
-                <input type="text" name="email">
+                <input type="email" id="email" name="email">
+                <span id="emailError" class="error-text"></span>
             </fieldset>
 
             <fieldset class="custom-input">
                 <legend>Password</legend>
-                <input type="password" name="password">
+                <input type="password" id="password" name="password">
+                <span id="passwordError" class="error-text"></span>
             </fieldset>
 
-            <button type="submit" class="btn-cta">ACCEDI</button>
+            <button type="submit" id="btnSubmit" class="btn-cta">ACCEDI</button>
 
         </form>
 
@@ -73,10 +75,11 @@
     
     <footer class="site-footer">
             &copy; 2026 ReFrame
-        </footer>
+    </footer>
         
 </div>
 
+<script src="${pageContext.request.contextPath}/js/login.js"></script>
 
 </body>
 </html>
