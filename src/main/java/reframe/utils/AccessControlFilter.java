@@ -40,11 +40,11 @@ public class AccessControlFilter extends HttpFilter implements Filter {
         }
 
         if (path.contains("/common/") && !isAutenticato) {
-            httpServletResponse.sendRedirect(httpServletRequest.getContextPath() + "/jsp/login.jsp");
+            httpServletResponse.sendRedirect(httpServletRequest.getContextPath() + "/login.jsp");
             return;
         } 
         else if (path.contains("/admin/") && !isAdmin) {
-            httpServletResponse.sendRedirect(httpServletRequest.getContextPath() + "/jsp/accessoNegato.jsp");
+            httpServletResponse.sendRedirect(httpServletRequest.getContextPath() + "/accessoNegato.jsp");
             return; 
         }
 

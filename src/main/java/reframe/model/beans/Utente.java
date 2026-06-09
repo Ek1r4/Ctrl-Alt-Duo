@@ -11,12 +11,10 @@ public class Utente
 	    private String bio;
 
 	    // Costruttore vuoto
-	    
 	    public Utente() {
 	    }
 	    
-	    // Costruttore (usato per testing/debug)
-	    
+	    // Costruttore pieno
 	    public Utente(String username, String email, String password, String telefono, String nome, String cognome, String bio) {
 	        this.username = username;
 	        this.email = email;
@@ -28,7 +26,6 @@ public class Utente
 	    }
 
 	    // Getter/Setter
-
 	    public String getUsername() {
 	        return username;
 	    }
@@ -85,6 +82,7 @@ public class Utente
 	        this.bio = bio;
 	    }
 	    
+	 // Override del toString
 	    @Override
 	    public String toString() {
 	        return "Utente{" +

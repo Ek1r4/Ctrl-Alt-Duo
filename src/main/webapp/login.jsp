@@ -67,7 +67,7 @@
 
         </form>
 
-        <a href="${pageContext.request.contextPath}/jsp/registrazione.jsp" class="form-link">Non hai un account? Registrati</a>
+        <a href="${pageContext.request.contextPath}/registrazione.jsp" class="form-link">Non hai un account? Registrati</a>
 
     </div>
     

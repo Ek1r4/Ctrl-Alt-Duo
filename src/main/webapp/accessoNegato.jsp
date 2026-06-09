@@ -31,7 +31,7 @@
                 L'area richiesta è riservata agli amministratori di ReFrame.
             </p>
             
-            <a href="${pageContext.request.contextPath}/jsp/index.jsp" class="btn-cta">TORNA ALLA HOME</a>
+            <a href="${pageContext.request.contextPath}/index.jsp" class="btn-cta">TORNA ALLA HOME</a>
             
         </div>
         

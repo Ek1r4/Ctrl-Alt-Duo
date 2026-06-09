@@ -14,6 +14,10 @@
         .btn { display: inline-block; padding: 10px 20px; margin: 10px; background-color: #3498db; color: white; text-decoration: none; border-radius: 4px; font-weight: bold;}
         .btn:hover { background-color: #2980b9; }
         .test-box { margin-top: 30px; padding: 20px; background-color: #e9ecef; border-radius: 8px; border: 2px dashed #ccc;}
+        
+        /* Stile aggiuntivo per il bottone del profilo nella navbar */
+        .nav-btn-profilo { background-color: #f39c12; padding: 5px 10px; border-radius: 4px; margin-right: 15px; }
+        .nav-btn-profilo:hover { background-color: #e67e22; text-decoration: none !important; }
     </style>
 </head>
 <body>
@@ -29,6 +33,9 @@
             <div>
                 <% if (utenteLoggato != null) { %>
                     <span style="margin-right: 15px;">Benvenuto, <b><%= utenteLoggato.getNome() %></b>!</span>
+                    
+                    <a href="${pageContext.request.contextPath}/common/profilo.jsp" class="nav-btn-profilo">Mio Profilo</a>
+                    
                     <a href="${pageContext.request.contextPath}/LogoutServlet" style="color: #ff7675;">Esci</a>
                 <% } else { %>
                     <a href="${pageContext.request.contextPath}/login.jsp">Accedi</a> |

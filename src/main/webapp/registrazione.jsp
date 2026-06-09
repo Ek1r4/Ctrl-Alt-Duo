@@ -76,7 +76,7 @@
                 
 				<fieldset class="custom-input">
     				<legend>Telefono</legend>
-    				<input type="tel" name="telefono" pattern="[0-9]" title="Inserisci un numero di telefono valido" required>
+    				<input type="tel" name="telefono" pattern="[0-9]{10}" title="Inserisci un numero di telefono valido" required>
 				</fieldset>
               	</div>
               	
@@ -84,7 +84,7 @@
                 
             </form>
             
-            <a href="${pageContext.request.contextPath}/jsp/login.jsp" class="form-link">Hai già un account? Accedi qui</a>
+            <a href="${pageContext.request.contextPath}/login.jsp" class="form-link">Hai già un account? Accedi qui</a>
        
     </div>
             
