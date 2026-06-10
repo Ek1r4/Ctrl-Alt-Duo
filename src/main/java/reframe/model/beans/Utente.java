@@ -9,6 +9,7 @@ public class Utente
 	    private String nome;
 	    private String cognome;
 	    private String bio;
+	    private boolean isAdmin;
 
 	    // Costruttore vuoto
 	    public Utente() {
@@ -80,6 +81,15 @@ public class Utente
 
 	    public void setBio(String bio) {
 	        this.bio = bio;
+	    }
+	    
+	    public boolean isAdmin() {
+	        return isAdmin;
+	    }
+
+	    // 3. Aggiungi il Setter
+	    public void setAdmin(boolean isAdmin) {
+	        this.isAdmin = isAdmin;
 	    }
 	    
 	 // Override del toString

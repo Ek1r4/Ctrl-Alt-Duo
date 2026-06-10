@@ -11,6 +11,8 @@ document.addEventListener("DOMContentLoaded", function() {
     const telefono = document.getElementById("telefono");
     const password = document.getElementById("password");
     const confermaPassword = document.getElementById("confermaPassword");
+	
+	let emailGiaInUso = false; // VARIABILE PER AJAX
 
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get("success") === "registrazione") {
@@ -27,16 +29,45 @@ document.addEventListener("DOMContentLoaded", function() {
         email: () => validaRegex(email, "emailError", /^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Email non valida (es. nome@dominio.it)."),
         telefono: () => validaRegex(telefono, "telefonoError", /^[0-9]{10}$/, "Il numero deve contenere esattamente 10 cifre (senza spazi o prefissi)."),
         password: () => validaPassword(password, "passwordError"),
-        confermaPassword: () => validaConferma(password, confermaPassword, "confermaError")
+        confermaPassword: () => validaConferma(password, confermaPassword, "confermaError"),
+		email: () => {
+		            const regexOk = validaRegex(email, "emailError", /^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Email non valida (es. nome@dominio.it).");
+		            if (!regexOk) return false;
+		            
+		            // Controllo AJAX
+		            if (emailGiaInUso) {
+		                mostraErrore("emailError", "Questa email è già associata a un account!");
+		                return false;
+		            }
+		            return true;
+		        }
     };
 
     const campi = [nome, cognome, username, email, telefono, password, confermaPassword];
     campi.forEach(campo => {
         campo.addEventListener("input", controllaFormInTempoReale);
-        campo.addEventListener("blur", () => {
-            campo.value = campo.value.trim();
-            controllaFormInTempoReale();
-        });
+		campo.addEventListener("blur", async () => {
+		            campo.value = campo.value.trim();
+					
+		            if (campo === email) {
+		                const value = email.value;
+		                const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+		                if (value.match(regex)) {
+		                    try {
+		                        const response = await fetch('VerificaEmailServlet?email=' + encodeURIComponent(value));
+
+		                        const data = await response.json(); 
+		                        emailGiaInUso = data.esiste; 
+		                        
+		                    } catch (error) {
+		                        console.error('Errore AJAX:', error);
+		                    }
+		                }
+		            }
+		            
+		            controllaFormInTempoReale();
+		        });
     });
 
     // FUNZIONI DI VALIDAZIONE

@@ -53,6 +53,7 @@ public class UtenteDAO
 		utente.setCognome(rs.getString("Cognome"));
 		utente.setBio(rs.getString("Bio"));
 		utente.setTelefono(rs.getString("Telefono"));
+		utente.setAdmin(rs.getBoolean("isAdmin"));
 		
 		return utente;
 	}

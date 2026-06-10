@@ -31,12 +31,7 @@ public class AccessControlFilter extends HttpFilter implements Filter {
 
         boolean isAdmin = false;
         if (isAutenticato) {
-            String email = utenteInSessione.getEmail();
-            
-            // Credenziale del DB da verificare
-            if (email.equals("alfredo@reframe.it") || email.equals("erika@reframe.it")) {
-                isAdmin = true;
-            }
+        	isAdmin = utenteInSessione.isAdmin();
         }
 
         if (path.contains("/common/") && !isAutenticato) {
