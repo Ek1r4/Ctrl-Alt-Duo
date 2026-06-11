@@ -1,6 +1,7 @@
 @import url("variables.css");
 @import url("global.css");
 
+
 /* Centratura */
 .auth-wrapper {
     display: flex;

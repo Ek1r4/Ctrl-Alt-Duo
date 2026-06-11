@@ -9,8 +9,7 @@
     left: 0;
     width: 100%;
     height: 80px;
-    background-color: var(--panna-carta);
-    border-bottom: 2px solid var(--antracite-scuro); 
+    background-color: transparent;
     display: flex;
     justify-content: space-between;
     align-items: center;

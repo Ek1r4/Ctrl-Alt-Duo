@@ -1,95 +1,251 @@
-@charset "UTF-8";
-@import url("variables.css");
-@import url("global.css");
+/* Importazione Font (da inserire in cima al CSS o nell'HTML) */
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600&family=Oswald:wght@500&display=swap');
+
 
 /* =========================================
-   HERO SECTION (HOME PAGE)
+   HERO SECTION LAYOUT
    ========================================= */
-
 .hero-section {
     position: relative;
     width: 100%;
-    /* Altezza massiccia per permettere il lungo scroll necessario all'animazione 3D */
-    height: 400vh; 
-    background-color: var(--panna-carta);
-    /* Rimuoviamo il padding-top qui, ci pensa il body del global.css a distanziarsi dall'header */
-}
-
-/* --- Il Livello della Pellicola (old_frame.png) --- */
-.hero-frame-overlay {
-    position: sticky;
-    top: 80px; /* Parte esattamente sotto l'header (che è alto 80px) */
-    left: 0;
-    width: 100%;
-    height: calc(100vh - 80px); 
+    min-height: 100vh ; /* Regola in base allo stacco desiderato sotto l'header */
+    /* Sostituisci con il path reale della tua immagine di sfondo */
+    background-image: url('../assets/old_frame.png'); 
     background-size: cover;
-    background-position: center;
+    background-position: center center;
     background-repeat: no-repeat;
-    z-index: 5;
-    
-    /* Cruciale: permette ai clic del mouse di "attraversare" l'immagine e colpire il bottone sottostante */
-    pointer-events: none; 
-    
-    /* Fonde i neri della pellicola con il colore di sfondo Panna, aumentando l'effetto analogico */
-    mix-blend-mode: multiply; 
-    opacity: 0.9;
-}
-
-/* --- Il Livello dell'Animazione 3D --- */
-.hero-3d-background {
-    position: sticky;
-    top: 80px; 
-    width: 100%;
-    height: calc(100vh - 80px);
     display: flex;
-    justify-content: center;
     align-items: center;
     overflow: hidden;
-    z-index: 2; /* Sta SOTTO la pellicola e il testo */
-    /* Sposta in alto il canvas per bilanciare gli spazi ottici negativi */
-    transform: translateY(-10vh); 
 }
 
-#minoltaCanvas {
-    max-width: 100vw;
-    max-height: 100vh;
-    object-fit: contain;
+/* Gradiente per scurire la parte sinistra e far risaltare il testo */
+.hero-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+   background: linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 45%, rgba(0,0,0,0) 100%);
+    z-index: 1;
 }
 
-/* --- Il Livello dei Contenuti e Testi --- */
-.hero-content {
-    position: sticky;
-    top: 30vh; /* Blocca il testo ad altezza fissa mentre l'utente scrolla */
-    z-index: 10;
-    padding: 0 5vw;
+.hero-container {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 5%;
     display: flex;
-    flex-direction: column;
-    align-items: flex-start; /* Allinea i contenuti a sinistra */
-    pointer-events: none; /* Rende il contenitore inattivo al mouse... */
+    justify-content: space-between; /* Divide il testo a sx e la fotocamera a dx */
+    align-items: center;
 }
 
+.hero-content {
+    flex: 1;
+    max-width: 750px;
+    /* Leggero margine superiore per bilanciare visivamente lo spazio lasciato dall'header */
+    margin-top: 2rem; 
+    
+    
+}
+
+
+
+/* =========================================
+   TYPOGRAPHY & STYLING
+   ========================================= */
 .hero-title {
+    font-family: var(--font-titoli);
+    font-size: clamp(4rem, 6vw, 6.5rem); /* Dimensione fluida */
+    line-height: 0.95;
     color: var(--marrone-cuoio);
-    font-size: clamp(3rem, 8vw, 8rem); /* Tipografia gigantesca e responsiva */
-    line-height: 0.85;
-    margin: 0;
-    text-shadow: 2px 2px 0px var(--panna-carta); /* Crea uno "stacco" pulito dal modello 3D */
-    z-index: 10;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    letter-spacing: 2px;
+    /* Effetto estrusione 3D + Ombra per staccare dal fondo */
+    text-shadow: 
+        -1px -1px 0 #111,  
+         1px -1px 0 #111,
+        -1px  1px 0 #111,
+         1px  1px 0 #111,
+         3px  3px 0 #1a1a1a,
+         5px  5px 0 #1a1a1a,
+         8px  8px 15px rgba(0,0,0,0.8);
 }
 
 .hero-subtitle {
-    color: var(--antracite-scuro);
     font-family: var(--font-testi);
-    font-size: clamp(1rem, 1.5vw, 1.5rem);
-    max-width: 500px;
-    margin-top: 2rem;
-    font-weight: 500;
+    font-size: 1.15rem;
+    line-height: 1.5;
+    color: var(--panna-carta);
+    margin-bottom: 2.5rem;
+    font-weight: 400;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.9); /* Aiuta la lettura sui dettagli della mappa */
 }
 
-.hero-actions {
-    margin-top: 2rem;
-    width: 100%;
-    max-width: 350px;
-    /* ... ma riattiva i clic solo nell'area dove risiede la CTA! */
-    pointer-events: auto; 
+/* =========================================
+   BUTTONS
+   ========================================= */
+.hero-buttons {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
 }
+
+.btn-primary {
+    display: inline-block;
+    padding: 1rem 1.8rem;
+    font-family: var(--font-titoli);
+    font-size: 1.1rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    text-decoration: none;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.hero-buttons .btn-cta {
+    background-color: var(--verde-ottanio);
+    color: var(--panna-carta);
+    border: 2px solid var(--verde-ottanio);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+.hero-buttons .btn-cta:hover {
+    background-color: transparent;
+    color: var(--panna-carta);
+    border-color: var(--panna-carta);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.5);
+    transform: translateY(-2px);
+}
+
+
+
+
+#camera-sequence-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 10; 
+    pointer-events: none; /* Sempre fondamentale per poter cliccare il sito sotto */
+    
+    /* Centriamo perfettamente il canvas nel contenitore */
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    overflow: hidden; /* Evita scrollbar orizzontali accidentali */
+}
+
+#camera-canvas {
+    /* Forza il canvas a prendere tutto lo spazio disponibile */
+    width: 100vw;
+    height: 100vh;
+    /* LA MAGIA: Mantiene le proporzioni originali (1920x1080) 
+       zoomando e tagliando i bordi extra, proprio come background-size: cover */
+    object-fit: cover; 
+    
+    /* Assicurati che non ci siano trasformazioni precedenti che lo spostano */
+    transform: none; 
+}
+
+.scroll-container {
+    /* La pista deve essere molto più alta dello schermo. 
+       300vh significa 3 volte l'altezza del monitor. 
+       L'utente dovrà scrollare per 3 schermate prima che la pagina "riparta". */
+    height: 300vh; 
+    position: relative;
+}
+
+.story-div{
+	position: sticky; 
+    top: 0; 
+    
+    width: 100%;
+    height: 100vh; 
+    
+    /* Centriamo il contenuto per estetica */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color:var(--panna-carta);
+    color:var(--antracite-scuro);
+}
+
+/* =========================================
+   GOAL SECTION 
+   ========================================= */
+.goal-section {
+    position: sticky;
+    width: 100%;
+    min-height: 100vh; 
+    /* Cambia questo con il nome reale della tua nuova immagine */
+    background-image: url('../assets/modern_frame.png'); 
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+}
+
+/* Gradiente invertito: copre la parte destra dell'immagine per far leggere il testo */
+.goal-overlay {
+    position: absolute;
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    /* 270deg fa partire il nero da destra verso sinistra */
+    background: linear-gradient(270deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 45%, rgba(0,0,0,0) 100%);
+    z-index: 1;
+}
+
+.goal-container {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 5%;
+    display: flex;
+    /* LA MAGIA DEL LAYOUT: spinge il contenuto text-block sul lato destro dello schermo */
+    justify-content: flex-end; 
+    align-items: center;
+}
+
+.goal-content {
+    /* Impostiamo una larghezza massima rigida affinché il testo non invada la fotocamera a sinistra */
+    flex: 0 1 500px; 
+    margin-top: 2rem;
+    
+    /* Nota: Dal tuo mockup il testo è allineato a sinistra (ragged right) 
+       all'interno del suo blocco a destra. Se invece lo volessi allineato a destra 
+       a filo col bordo dello schermo, basterebbe scommentare la riga sotto: */
+     text-align: right;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
