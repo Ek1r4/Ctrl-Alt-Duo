@@ -59,10 +59,6 @@
 }
 
 h1.form-title {
-    font-size: 38px;
-    font-weight: 900;
-    letter-spacing: 2px;
-    color: var(--antracite-scuro);
     margin-top: 10px;
     margin-bottom: 40px;
 }

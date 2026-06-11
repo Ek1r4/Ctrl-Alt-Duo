@@ -8,4 +8,12 @@
   --rosso-ruggine: #A93F35; 
   --beige-scuro: #D2C8B4; 
   --grigio-taupe: #7A756D; 
+
+
+/* Tipografia */
+
+  --font-titoli: 'Archivo Black', sans-serif;
+  --font-testi: 'DM Sans', sans-serif;
+  --font-tecnico: 'Courier New', Courier, monospace;
+  
 }

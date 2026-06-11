@@ -1,1 +1,95 @@
 @charset "UTF-8";
+@import url("variables.css");
+@import url("global.css");
+
+/* =========================================
+   HERO SECTION (HOME PAGE)
+   ========================================= */
+
+.hero-section {
+    position: relative;
+    width: 100%;
+    /* Altezza massiccia per permettere il lungo scroll necessario all'animazione 3D */
+    height: 400vh; 
+    background-color: var(--panna-carta);
+    /* Rimuoviamo il padding-top qui, ci pensa il body del global.css a distanziarsi dall'header */
+}
+
+/* --- Il Livello della Pellicola (old_frame.png) --- */
+.hero-frame-overlay {
+    position: sticky;
+    top: 80px; /* Parte esattamente sotto l'header (che è alto 80px) */
+    left: 0;
+    width: 100%;
+    height: calc(100vh - 80px); 
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 5;
+    
+    /* Cruciale: permette ai clic del mouse di "attraversare" l'immagine e colpire il bottone sottostante */
+    pointer-events: none; 
+    
+    /* Fonde i neri della pellicola con il colore di sfondo Panna, aumentando l'effetto analogico */
+    mix-blend-mode: multiply; 
+    opacity: 0.9;
+}
+
+/* --- Il Livello dell'Animazione 3D --- */
+.hero-3d-background {
+    position: sticky;
+    top: 80px; 
+    width: 100%;
+    height: calc(100vh - 80px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    z-index: 2; /* Sta SOTTO la pellicola e il testo */
+    /* Sposta in alto il canvas per bilanciare gli spazi ottici negativi */
+    transform: translateY(-10vh); 
+}
+
+#minoltaCanvas {
+    max-width: 100vw;
+    max-height: 100vh;
+    object-fit: contain;
+}
+
+/* --- Il Livello dei Contenuti e Testi --- */
+.hero-content {
+    position: sticky;
+    top: 30vh; /* Blocca il testo ad altezza fissa mentre l'utente scrolla */
+    z-index: 10;
+    padding: 0 5vw;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Allinea i contenuti a sinistra */
+    pointer-events: none; /* Rende il contenitore inattivo al mouse... */
+}
+
+.hero-title {
+    color: var(--marrone-cuoio);
+    font-size: clamp(3rem, 8vw, 8rem); /* Tipografia gigantesca e responsiva */
+    line-height: 0.85;
+    margin: 0;
+    text-shadow: 2px 2px 0px var(--panna-carta); /* Crea uno "stacco" pulito dal modello 3D */
+    z-index: 10;
+}
+
+.hero-subtitle {
+    color: var(--antracite-scuro);
+    font-family: var(--font-testi);
+    font-size: clamp(1rem, 1.5vw, 1.5rem);
+    max-width: 500px;
+    margin-top: 2rem;
+    font-weight: 500;
+}
+
+.hero-actions {
+    margin-top: 2rem;
+    width: 100%;
+    max-width: 350px;
+    /* ... ma riattiva i clic solo nell'area dove risiede la CTA! */
+    pointer-events: auto; 
+}
