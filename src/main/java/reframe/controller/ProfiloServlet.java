@@ -2,6 +2,7 @@ package reframe.controller;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
@@ -31,15 +32,36 @@ public class ProfiloServlet extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Se si accede con GET, si viene indirizzati alla pagina del profilo
         HttpSession session = request.getSession();
-        if (session.getAttribute("utente") == null) {
+        Utente utenteLoggato = (Utente) session.getAttribute("utente");
+        
+        // 1. Controllo sicurezza: se non è loggato va al login
+        if (utenteLoggato == null) {
             response.sendRedirect(request.getContextPath() + "/login.jsp");
             return;
         }
+        
+        try {
+            // 2. RECUPERIAMO I DATI DAL DB TRAMITE I TUOI DAO
+            // Usa il metodo dei tuoi DAO che recupera i dati filtrando per l'username dell'utente
+            List<Spedizione> listaSpedizioni = spedizioneDAO.doRetrieveByUtente(utenteLoggato.getUsername()); 
+            List<Pagamento> listaPagamenti = pagamentoDAO.doRetrieveByUtente(utenteLoggato.getUsername());
+            
+            // 3. METTIAMO LE LISTE NELLA REQUEST
+            // Questo è il passaggio chiave: diamo i dati in pasto alla JSP
+            request.setAttribute("listaSpedizioni", listaSpedizioni);
+            request.setAttribute("listaPagamenti", listaPagamenti);
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // In caso di errore passiamo comunque liste vuote per evitare crash
+            request.setAttribute("listaSpedizioni", new java.util.ArrayList<>());
+            request.setAttribute("listaPagamenti", new java.util.ArrayList<>());
+        }
+        
+        // 4. INVIAMO TUTTO ALLA JSP
         request.getRequestDispatcher("/common/profilo.jsp").forward(request, response);
     }
-
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
     {
         // Controllo di sicurezza
@@ -76,6 +98,10 @@ public class ProfiloServlet extends HttpServlet {
                 gestisciPagamento(request, response, utenteLoggato);
                 break;
                 
+            case "eliminaRisorsa":
+                gestisciEliminazione(request, response, utenteLoggato);
+                break;
+                
             default:
                 response.sendRedirect(request.getContextPath() + "/common/profilo.jsp");
                 break;
@@ -90,6 +116,11 @@ public class ProfiloServlet extends HttpServlet {
 
         if (telefono == null || telefono.trim().isEmpty() || !telefono.matches("^[0-9]{10}$")) {
             response.sendRedirect(request.getContextPath() + "/common/profilo.jsp?error=telefonoObbligatorio");
+            return;
+        }
+        
+        if (bio != null && bio.trim().length() > 255) {
+            response.sendRedirect(request.getContextPath() + "/common/profilo.jsp?error=bioTroppoLunga");
             return;
         }
 
@@ -136,13 +167,13 @@ public class ProfiloServlet extends HttpServlet {
             boolean successo = utenteDAO.updatePassword(utenteLoggato.getEmail(), nuovaPasswordCriptata);
             if (successo) {
                 utenteLoggato.setPassword(nuovaPasswordCriptata);
-                response.sendRedirect(request.getContextPath() + "/common/profilo.jsp?success=passwordModificata");
+                response.sendRedirect(request.getContextPath() + "/ProfiloServlet?success=passwordModificata");
             } else {
-                response.sendRedirect(request.getContextPath() + "/common/profilo.jsp?error=cambioPasswordFallito");
+            	response.sendRedirect(request.getContextPath() + "/ProfiloServlet?error=cambioPasswordFallito");
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            response.sendRedirect(request.getContextPath() + "/common/profilo.jsp?error=db");
+            response.sendRedirect(request.getContextPath() + "/ProfiloServlet?error=db");
         }
     }
 
@@ -169,13 +200,14 @@ public class ProfiloServlet extends HttpServlet {
         try {
             boolean successo = spedizioneDAO.doSave(nuovaSpedizione);
             if (successo) {
-                response.sendRedirect(request.getContextPath() + "/common/profilo.jsp?success=spedizioneSalvata");
+                // PRIMA ERA: /common/profilo.jsp?success=...
+                response.sendRedirect(request.getContextPath() + "/ProfiloServlet?success=spedizioneSalvata");
             } else {
-                response.sendRedirect(request.getContextPath() + "/common/profilo.jsp?error=salvataggioSpedizioneFallito");
+                response.sendRedirect(request.getContextPath() + "/ProfiloServlet?error=salvataggioSpedizioneFallito");
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            response.sendRedirect(request.getContextPath() + "/common/profilo.jsp?error=db");
+            response.sendRedirect(request.getContextPath() + "/ProfiloServlet?error=db");
         }
     }
 
@@ -198,14 +230,51 @@ public class ProfiloServlet extends HttpServlet {
         try {
             boolean successo = pagamentoDAO.doSave(nuovoPagamento);
             if (successo) {
-                response.sendRedirect(request.getContextPath() + "/common/profilo.jsp?success=pagamentoSalvato");
+                response.sendRedirect(request.getContextPath() + "/ProfiloServlet?success=pagamentoSalvato");
             } else {
-                response.sendRedirect(request.getContextPath() + "/common/profilo.jsp?error=salvataggioPagamentoFallito");
+                response.sendRedirect(request.getContextPath() + "/ProfiloServlet?error=salvataggioPagamentoFallito");
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            // Gestione dei vincoli CHECK impostati su MySQL
-            response.sendRedirect(request.getContextPath() + "/common/profilo.jsp?error=datiCartaIncoerenti");
+            response.sendRedirect(request.getContextPath() + "/ProfiloServlet?error=datiCartaIncoerenti");
+        }
+    }
+    
+    private void gestisciEliminazione(HttpServletRequest request, HttpServletResponse response, Utente utenteLoggato) throws ServletException, IOException {
+        String type = request.getParameter("type");
+        String idStr = request.getParameter("id");
+
+        // Controllo di sicurezza sui parametri
+        if (type == null || idStr == null) {
+            response.sendRedirect(request.getContextPath() + "/common/profilo.jsp?error=parametriMancanti");
+            return;
+        }
+
+        try {
+            // Trasformiamo l'ID da stringa a numero intero
+            int id = Integer.parseInt(idStr);
+            boolean successo = false;
+
+            // Capiamo se l'utente ha cliccato il cestino di un indirizzo o di una carta
+            if (type.equals("shipping")) {
+                // (Per ora no) Passiamo anche l'username per sicurezza: un utente può cancellare solo i SUOI indirizzi
+                successo = spedizioneDAO.doDelete(id);
+            } else if (type.equals("payment")) {
+                successo = pagamentoDAO.doDelete(id);
+            }
+
+            // Risposta al client
+            if (successo) {
+                response.sendRedirect(request.getContextPath() + "/common/profilo.jsp?success=eliminazione");
+            } else {
+                response.sendRedirect(request.getContextPath() + "/common/profilo.jsp?error=eliminazioneFallita");
+            }
+
+        } catch (NumberFormatException e) {
+            response.sendRedirect(request.getContextPath() + "/common/profilo.jsp?error=formatoIdErrato");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            response.sendRedirect(request.getContextPath() + "/common/profilo.jsp?error=db");
         }
     }
 }

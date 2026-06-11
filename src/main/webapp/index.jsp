@@ -35,7 +35,7 @@
                 <% if (utenteLoggato != null) { %>
                     <span style="margin-right: 15px;">Benvenuto, <b><%= utenteLoggato.getNome() %></b>!</span>
                     
-                    <a href="${pageContext.request.contextPath}/common/profilo.jsp" class="nav-btn-profilo">Mio Profilo</a>
+                    <a href="<%= request.getContextPath() %>/ProfiloServlet" class="nav-btn-profilo">Il mio Profilo</a>
                     
                     <a href="${pageContext.request.contextPath}/LogoutServlet" style="color: #ff7675;">Esci</a>
                 <% } else { %>
