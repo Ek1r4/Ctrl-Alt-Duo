@@ -5,13 +5,13 @@
     <div class="goal-container">
         <div class="goal-content">
             <h2 class="hero-title">
-                OLTRE IL TEMPO.
+                UN CLASSICO.<br>DI NUOVO.
             </h2>
             
             <p class="hero-subtitle">
-                Più di un restauro, una rinascita. 
-                Macchine leggendarie che abbandonano la teca da collezione 
-                per integrarsi perfettamente nel tuo ecosistema digitale moderno.
+                Sopravvissute alle epoche, perfette per oggi.<br>
+                Il rigore della meccanica originale incontra<br>il tuo flusso di lavoro moderno,<br>
+                in un oggetto diventato più contemporaneo che mai.
             </p>
         </div>
     </div>

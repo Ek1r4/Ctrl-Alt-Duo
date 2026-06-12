@@ -61,7 +61,6 @@
     text-transform: uppercase;
     margin-bottom: 1.5rem;
     letter-spacing: 2px;
-    /* Effetto estrusione 3D + Ombra per staccare dal fondo */
     text-shadow: 
         -1px -1px 0 #111,  
          1px -1px 0 #111,
@@ -69,7 +68,7 @@
          1px  1px 0 #111,
          3px  3px 0 #1a1a1a,
          5px  5px 0 #1a1a1a,
-         8px  8px 15px rgba(0,0,0,0.8);
+         8px  12px 35px rgba(0,0,0,0.4); /* Blur aumentato a 35px, offset Y leggermente sceso, opacità al 40% */
 }
 
 .hero-subtitle {
@@ -89,19 +88,6 @@
     display: flex;
     gap: 1.5rem;
     flex-wrap: wrap;
-}
-
-.btn-primary {
-    display: inline-block;
-    padding: 1rem 1.8rem;
-    font-family: var(--font-titoli);
-    font-size: 1.1rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    text-decoration: none;
-    letter-spacing: 1px;
-    transition: all 0.3s ease;
-    cursor: pointer;
 }
 
 .hero-buttons .btn-cta {
@@ -179,8 +165,7 @@
 .goal-section {
     position: sticky;
     width: 100%;
-    min-height: 100vh; 
-    /* Cambia questo con il nome reale della tua nuova immagine */
+    min-height: 120vh; 
     background-image: url('../assets/modern_frame.png'); 
     background-size: cover;
     background-position: center center;
@@ -188,7 +173,8 @@
     display: flex;
     align-items: center;
     overflow: hidden;
-}
+top: 0;             /* <--- AGGIUNGI QUESTO! */
+    z-index: 1; }
 
 /* Gradiente invertito: copre la parte destra dell'immagine per far leggere il testo */
 .goal-overlay {
@@ -203,7 +189,7 @@
 }
 
 .goal-container {
-    position: relative;
+    position: sticky;
     z-index: 2;
     width: 100%;
     max-width: 1400px;
@@ -217,8 +203,7 @@
 
 .goal-content {
     /* Impostiamo una larghezza massima rigida affinché il testo non invada la fotocamera a sinistra */
-    flex: 0 1 500px; 
-    margin-top: 2rem;
+    flex: 0 1 650px; 
     
     /* Nota: Dal tuo mockup il testo è allineato a sinistra (ragged right) 
        all'interno del suo blocco a destra. Se invece lo volessi allineato a destra 
@@ -226,7 +211,26 @@
      text-align: right;
 }
 
-
+.card-div {
+  position: relative; /* Necessario per far funzionare lo z-index */
+  z-index: 20;         /* Sta su un livello superiore rispetto alla prima */
+  height: 100vh;
+  
+  /* FONDAMENTALE: deve avere un colore pieno, altrimenti è trasparente! */
+  background-color: var(--panna-carta); 
+  color: black;
+  
+  /* Solo per estetica */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  
+  /* Un'ombra in alto dà un bellissimo effetto profondità quando sale */
+  box-shadow: 
+    0px -10px 20px rgba(0, 0, 0, 0.5),   /* Ombra corta per definire il bordo */
+    0px -40px 80px rgba(0, 0, 0, 0.8);
+}
 
 
 

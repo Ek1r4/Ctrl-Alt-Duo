@@ -30,7 +30,7 @@
                     loader.remove();
                 }, 800); // 800ms corrisponde alla durata della transition nel CSS
                 
-            }, 4000);
+            }, 2000);
         }
     });
     </script>

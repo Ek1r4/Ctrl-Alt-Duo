@@ -28,8 +28,10 @@
 </div>
 <main class="home-container">
         <jsp:include page="/WEB-INF/components/home-goals.jsp" />
-        </main>
-        
+      
+         <div class="card-div">
+        <h1>spero che tutto il creato esploda nel modo più violento</h1>
+        </div>  </main>
         <jsp:include page="/WEB-INF/components/footer.jsp" />
 
 
