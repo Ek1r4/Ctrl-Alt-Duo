@@ -1,15 +1,10 @@
-/* Importazione Font (da inserire in cima al CSS o nell'HTML) */
-@import url('https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600&family=Oswald:wght@500&display=swap');
-
-
 /* =========================================
-   HERO SECTION LAYOUT
+   HERO SECTION
    ========================================= */
 .hero-section {
     position: relative;
     width: 100%;
-    min-height: 100vh ; /* Regola in base allo stacco desiderato sotto l'header */
-    /* Sostituisci con il path reale della tua immagine di sfondo */
+    min-height: 100vh;
     background-image: url('../assets/old_frame.png'); 
     background-size: cover;
     background-position: center center;
@@ -19,11 +14,13 @@
     overflow: hidden;
 }
 
-/* Gradiente per scurire la parte sinistra e far risaltare il testo */
 .hero-overlay {
     position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-   background: linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 45%, rgba(0,0,0,0) 100%);
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    background: linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 45%, rgba(0,0,0,0) 100%);
     z-index: 1;
 }
 
@@ -35,27 +32,20 @@
     margin: 0 auto;
     padding: 0 5%;
     display: flex;
-    justify-content: space-between; /* Divide il testo a sx e la fotocamera a dx */
+    justify-content: space-between;
     align-items: center;
 }
 
 .hero-content {
     flex: 1;
     max-width: 750px;
-    /* Leggero margine superiore per bilanciare visivamente lo spazio lasciato dall'header */
     margin-top: 2rem; 
-    
-    
 }
 
-
-
-/* =========================================
-   TYPOGRAPHY & STYLING
-   ========================================= */
+/* TYPOGRAPHY & BUTTONS (HERO) */
 .hero-title {
     font-family: var(--font-titoli);
-    font-size: clamp(4rem, 6vw, 6.5rem); /* Dimensione fluida */
+    font-size: clamp(4rem, 6vw, 6.5rem);
     line-height: 0.95;
     color: var(--marrone-cuoio);
     text-transform: uppercase;
@@ -68,7 +58,7 @@
          1px  1px 0 #111,
          3px  3px 0 #1a1a1a,
          5px  5px 0 #1a1a1a,
-         8px  12px 35px rgba(0,0,0,0.4); /* Blur aumentato a 35px, offset Y leggermente sceso, opacità al 40% */
+         8px  12px 35px rgba(0,0,0,0.4);
 }
 
 .hero-subtitle {
@@ -78,16 +68,12 @@
     color: var(--panna-carta);
     margin-bottom: 2.5rem;
     font-weight: 400;
-    text-shadow: 1px 1px 4px rgba(0,0,0,0.9); /* Aiuta la lettura sui dettagli della mappa */
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.9);
 }
 
-/* =========================================
-   BUTTONS
-   ========================================= */
 .hero-buttons {
     display: flex;
     gap: 1.5rem;
-    flex-wrap: wrap;
 }
 
 .hero-buttons .btn-cta {
@@ -105,9 +91,9 @@
     transform: translateY(-2px);
 }
 
-
-
-
+/* =========================================
+   CANVAS & SCROLL ANIMATION
+   ========================================= */
 #camera-sequence-container {
     position: fixed;
     top: 0;
@@ -115,48 +101,54 @@
     width: 100vw;
     height: 100vh;
     z-index: 10; 
-    pointer-events: none; /* Sempre fondamentale per poter cliccare il sito sotto */
-    
-    /* Centriamo perfettamente il canvas nel contenitore */
+    pointer-events: none;
+    transition: opacity 0.3s ease-in-out;
     display: flex;
     justify-content: center; 
     align-items: center;
-    overflow: hidden; /* Evita scrollbar orizzontali accidentali */
+    overflow: hidden;
 }
 
 #camera-canvas {
-    /* Forza il canvas a prendere tutto lo spazio disponibile */
     width: 100vw;
     height: 100vh;
-    /* LA MAGIA: Mantiene le proporzioni originali (1920x1080) 
-       zoomando e tagliando i bordi extra, proprio come background-size: cover */
     object-fit: cover; 
-    
-    /* Assicurati che non ci siano trasformazioni precedenti che lo spostano */
     transform: none; 
 }
 
 .scroll-container {
-    /* La pista deve essere molto più alta dello schermo. 
-       300vh significa 3 volte l'altezza del monitor. 
-       L'utente dovrà scrollare per 3 schermate prima che la pagina "riparta". */
     height: 300vh; 
     position: relative;
 }
 
-.story-div{
-	position: sticky; 
+/* =========================================
+   SECTIONS: STORY & CARD
+   ========================================= */
+.story-div {
+    position: sticky; 
     top: 0; 
-    
     width: 100%;
     height: 100vh; 
-    
-    /* Centriamo il contenuto per estetica */
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color:var(--panna-carta);
-    color:var(--antracite-scuro);
+    background-color: var(--panna-carta);
+    color: var(--antracite-scuro);
+}
+
+.card-div {
+    position: relative; 
+    z-index: 20;         
+    height: 100vh;
+    background-color: var(--panna-carta); 
+    color: black;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 
+        0px -10px 20px rgba(0, 0, 0, 0.5),   
+        0px -40px 80px rgba(0, 0, 0, 0.8);
 }
 
 /* =========================================
@@ -164,6 +156,7 @@
    ========================================= */
 .goal-section {
     position: sticky;
+    top: 0;
     width: 100%;
     min-height: 120vh; 
     background-image: url('../assets/modern_frame.png'); 
@@ -173,17 +166,15 @@
     display: flex;
     align-items: center;
     overflow: hidden;
-top: 0;             /* <--- AGGIUNGI QUESTO! */
-    z-index: 1; }
+    z-index: 1; 
+}
 
-/* Gradiente invertito: copre la parte destra dell'immagine per far leggere il testo */
 .goal-overlay {
     position: absolute;
     top: 0; 
     left: 0; 
     width: 100%; 
     height: 100%;
-    /* 270deg fa partire il nero da destra verso sinistra */
     background: linear-gradient(270deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 45%, rgba(0,0,0,0) 100%);
     z-index: 1;
 }
@@ -196,104 +187,36 @@ top: 0;             /* <--- AGGIUNGI QUESTO! */
     margin: 0 auto;
     padding: 0 5%;
     display: flex;
-    /* LA MAGIA DEL LAYOUT: spinge il contenuto text-block sul lato destro dello schermo */
     justify-content: flex-end; 
     align-items: center;
 }
 
 .goal-content {
-    /* Impostiamo una larghezza massima rigida affinché il testo non invada la fotocamera a sinistra */
     flex: 0 1 650px; 
-    
-    /* Nota: Dal tuo mockup il testo è allineato a sinistra (ragged right) 
-       all'interno del suo blocco a destra. Se invece lo volessi allineato a destra 
-       a filo col bordo dello schermo, basterebbe scommentare la riga sotto: */
-     text-align: right;
+    text-align: right; 
 }
-
-.card-div {
-  position: relative; /* Necessario per far funzionare lo z-index */
-  z-index: 20;         /* Sta su un livello superiore rispetto alla prima */
-  height: 100vh;
-  
-  /* FONDAMENTALE: deve avere un colore pieno, altrimenti è trasparente! */
-  background-color: var(--panna-carta); 
-  color: black;
-  
-  /* Solo per estetica */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  
-  /* Un'ombra in alto dà un bellissimo effetto profondità quando sale */
-  box-shadow: 
-    0px -10px 20px rgba(0, 0, 0, 0.5),   /* Ombra corta per definire il bordo */
-    0px -40px 80px rgba(0, 0, 0, 0.8);
-}
-
-
 
 /* =========================================
    MEDIA QUERIES - RESPONSIVE DESIGN
    ========================================= */
 
-/* --- 1° STEP: Tablet Orizzontale (max-width: 1024px) --- */
+/* --- Tablet Verticale --- */
 @media (max-width: 1024px) {
-    
-    /* Nascondiamo completamente la fotocamera per concentrarci sul layout */
     #camera-sequence-container {
-        display: none !important;
+        opacity: 0; 
+        transform: translateX(100vw); 
+        will-change: transform, opacity;
+        overflow: visible;
     }
 
-    /* Senza fotocamera, il testo della Hero può centrarsi e prendere più respiro */
-    .hero-container {
-        justify-content: center;
+    #camera-canvas {
+        width: 100vh; 
+        height: 100vw; 
+        flex-shrink: 0;
+        transform: rotate(90deg);
+        object-fit: cover;
     }
 
-    .hero-content {
-        max-width: 85%;
-        text-align: center;
-        margin-top: 0;
-    }
-
-    /* Cambiamo il gradiente laterale in uno uniforme/verticale per il testo centrato */
-    .hero-overlay {
-        background: linear-gradient(0deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.5) 100%);
-    }
-
-    /* TYPOGRAPHY FLUIDA (Basata sulla larghezza della viewport 'vw') */
-    .hero-title {
-        font-size: clamp(3.2rem, 7vw, 4.8rem);
-    }
-    
-    .hero-subtitle {
-        font-size: clamp(1.05rem, 2vw, 1.2rem);
-    }
-
-    /* GOAL SECTION: Adattamento analogo alla Hero */
-    .goal-container {
-        justify-content: center;
-    }
-
-    .goal-content {
-        flex: 0 1 85%;
-        text-align: center;
-    }
-
-    .goal-overlay {
-        background: linear-gradient(0deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.5) 100%);
-    }
-}
-
-/* --- 2° STEP: Tablet Verticale & Mobile (max-width: 768px) --- */
-@media (max-width: 768px) {
-    
-    /* Assicuriamo che la fotocamera rimanga nascosta */
-    #camera-sequence-container {
-        display: none !important;
-    }
-    
     .hero-container {
         flex-direction: column;
         justify-content: center;
@@ -306,29 +229,26 @@ top: 0;             /* <--- AGGIUNGI QUESTO! */
     }
 
     .hero-overlay {
-        background: rgba(0, 0, 0, 0.75); /* Copertura scura uniforme per massima leggibilità */
+        background: rgba(0, 0, 0, 0.75);
     }
 
-    /* SCALATURA TESTI ANCORA PIÙ ACCENTUATA SU MOBILE */
     .hero-title {
-        font-size: clamp(2.2rem, 8.5vw, 3.2rem);
+        font-size: clamp(3rem, 8vw, 5rem);
         line-height: 1.05;
         letter-spacing: 1px;
         margin-bottom: 1.2rem;
     }
 
     .hero-subtitle {
-        font-size: clamp(0.95rem, 2.8vw, 1.1rem);
+        font-size: clamp(1.2rem, 3.5vw, 1.8rem);
         line-height: 1.45;
         margin-bottom: 2rem;
     }
 
-    /* PULSANTI: Impilati a blocco per facilitare il tap */
     .hero-buttons {
-        flex-direction: column;
         gap: 1rem;
         width: 100%;
-        max-width: 320px;
+        max-width: 85vw;
         margin: 0 auto;
     }
 
@@ -336,14 +256,13 @@ top: 0;             /* <--- AGGIUNGI QUESTO! */
         width: 100%;
         margin-top: 0;
         padding: 14px 20px;
-        font-size: clamp(18px, 4.5vw, 22px); /* Anche la grandezza del testo del bottone scala */
+        font-size: clamp(1rem, 2.5vw, 1.2rem);
     }
 
-    /* GOAL SECTION */
     .goal-container {
         justify-content: center;
         align-items: center;
-        padding: 8vh 6%;
+        padding: 0vh 6% 8vh 6%;
     }
 
     .goal-content {
@@ -355,7 +274,6 @@ top: 0;             /* <--- AGGIUNGI QUESTO! */
         background: rgba(0, 0, 0, 0.75);
     }
     
-    /* STORY & CARD DIV (Sezioni con sfondi panna fissi) */
     .story-div, .card-div {
         padding: 0 8%;
         text-align: center;
@@ -367,7 +285,37 @@ top: 0;             /* <--- AGGIUNGI QUESTO! */
     }
 }
 
+/* --- Mobile --- */
+@media (max-width: 576px) {
+    .hero-container, .goal-container {
+        padding: 2vh 4% 5vh 4%; 
+    }
 
+    .hero-title {
+        line-height: 0.95; 
+        margin-bottom: 1.2rem;
+        letter-spacing: -1px; 
+    }
 
+    .hero-subtitle {
+        font-size: clamp(1rem, 3vw, 1.5rem);
+        line-height: 1.4;
+        margin-bottom: 2.5rem;
+        max-width: 100%;
+    }
 
-
+    .hero-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 12px; 
+        width: 100%;
+        max-width: 100%; 
+        margin: 0;
+    }
+    
+    .story-div h1, .card-div h1 {
+        font-size: clamp(2.8rem, 12vw, 4.5rem);
+        line-height: 1.05;
+        padding: 0 4%;
+    }
+}

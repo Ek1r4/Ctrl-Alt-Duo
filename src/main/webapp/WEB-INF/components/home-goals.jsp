@@ -4,9 +4,9 @@
     
     <div class="goal-container">
         <div class="goal-content">
-            <h2 class="hero-title">
+            <h1 class="hero-title">
                 UN CLASSICO.<br>DI NUOVO.
-            </h2>
+            </h1>
             
             <p class="hero-subtitle">
                 Sopravvissute alle epoche, perfette per oggi.<br>
