@@ -169,7 +169,7 @@
 
                     <div class="detail-block">
                         <p><span class="profile-label">BIO</span></p>
-                        <p id="txtBio"><%= utenteLoggato.getBio() != null ? utenteLoggato.getBio() : "Nessuna biografia inserita." %></p>
+                        <p id="txtBio"><%= (utenteLoggato.getBio() != null && !utenteLoggato.getBio().trim().isEmpty()) ? utenteLoggato.getBio() : "Nessuna biografia inserita." %></p>
                         <textarea id="textareaBio" class="edit-input hidden" rows="6"><%= utenteLoggato.getBio() != null ? utenteLoggato.getBio() : "" %></textarea>
                         <span id="errorBio" class="error-text"></span>
                     </div>
@@ -185,9 +185,29 @@
                         <input type="hidden" name="action" value="cambioPassword">
                         
                         <div class="form-grid">
-                            <fieldset class="custom-input full-width"><legend>Vecchia Password</legend><input type="password" name="vecchiaPassword" required></fieldset>
-                            <fieldset class="custom-input full-width"><legend>Nuova Password</legend><input type="password" name="nuovaPassword" required placeholder="Minimo 8 caratteri"></fieldset>
-                            <fieldset class="custom-input full-width"><legend>Conferma Password</legend><input type="password" name="confermaPassword" required></fieldset>
+                            <div class="full-width">
+                                <fieldset class="custom-input">
+                                    <legend>Vecchia Password</legend>
+                                    <input type="password" id="inputVecchiaPassword" name="vecchiaPassword" required>
+                                </fieldset>
+                                <span id="hintVecchiaPassword" class="error-text"></span>
+                            </div>
+                            
+                            <div class="full-width">
+                                <fieldset class="custom-input">
+                                    <legend>Nuova Password</legend>
+                                    <input type="password" id="inputNuovaPassword" name="nuovaPassword" required placeholder="Minimo 8 caratteri">
+                                </fieldset>
+                                <span id="hintNuovaPassword" class="error-text">Minimo 8 caratteri: 1 Maiusc, 1 min, 1 num, 1 speciale.</span>
+                            </div>
+
+                            <div class="full-width">
+                                <fieldset class="custom-input">
+                                    <legend>Conferma Password</legend>
+                                    <input type="password" id="inputConfermaPassword" name="confermaPassword" required>
+                                </fieldset>
+                                <span id="hintConfermaPassword" class="error-text">Le password non coincidono.</span>
+                            </div>
                         </div>
 
                         <div class="form-actions">

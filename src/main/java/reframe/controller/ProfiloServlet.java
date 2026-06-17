@@ -130,7 +130,7 @@ public class ProfiloServlet extends HttpServlet {
         try {
             boolean successo = utenteDAO.doUpdate(utenteLoggato);
             if (successo) {
-                session.setAttribute("utenteLoggato", utenteLoggato);
+                session.setAttribute("utente", utenteLoggato);
                 response.sendRedirect(request.getContextPath() + "/common/profilo.jsp?success=anagrafica");
             } else {
                 response.sendRedirect(request.getContextPath() + "/common/profilo.jsp?error=updateFallito");
@@ -143,38 +143,54 @@ public class ProfiloServlet extends HttpServlet {
 
     private void gestisciPassword(HttpServletRequest request, HttpServletResponse response, Utente utenteLoggato) throws ServletException, IOException 
     {
+        System.out.println("\n--- DEBUG INIZIO CAMBIO PASSWORD ---");
+        
         String vecchiaPassword = request.getParameter("vecchiaPassword");
         String nuovaPassword = request.getParameter("nuovaPassword");
         String confermaPassword = request.getParameter("confermaPassword");
 
+        System.out.println("1. Ricezione parametri dal form completata.");
+
         // Controlli di corrispondenza e robustezza della nuova password
         if (nuovaPassword == null || nuovaPassword.length() < 8 || !nuovaPassword.equals(confermaPassword)) {
+            System.out.println("2. FALLITO: Nuova password non valida o non coincide con la conferma.");
             response.sendRedirect(request.getContextPath() + "/common/profilo.jsp?error=passwordInvalida");
             return;
         }
         
         String vecchiaPasswordCriptata = HashingPassword.hashPassword(vecchiaPassword);
+        System.out.println("3. Hash Vecchia Password (inserita dall'utente): " + vecchiaPasswordCriptata);
+        System.out.println("4. Hash Password Corrente (salvata in Sessione/DB): " + utenteLoggato.getPassword());
 
         // Controllo di sicurezza: verifica della password attuale dell'utente
         if (vecchiaPassword == null || !utenteLoggato.getPassword().equals(vecchiaPasswordCriptata)) {
+            System.out.println("5. FALLITO: La vecchia password inserita è Sbagliata!");
             response.sendRedirect(request.getContextPath() + "/common/profilo.jsp?error=vecchiaPasswordErrata");
             return;
         }
         
+        System.out.println("5. OK: La vecchia password coincide.");
         String nuovaPasswordCriptata = HashingPassword.hashPassword(nuovaPassword);
+        System.out.println("6. Hash Nuova Password (pronta per il DB): " + nuovaPasswordCriptata);
 
         try {
+            System.out.println("7. Chiamata al DAO per l'update in corso...");
             boolean successo = utenteDAO.updatePassword(utenteLoggato.getEmail(), nuovaPasswordCriptata);
+            
             if (successo) {
                 utenteLoggato.setPassword(nuovaPasswordCriptata);
+                System.out.println("8. SUCCESSO TOTALE: Il DAO ha restituito TRUE. Sessione aggiornata.");
                 response.sendRedirect(request.getContextPath() + "/ProfiloServlet?success=passwordModificata");
             } else {
+                System.out.println("8. FALLITO: Il DAO ha restituito FALSE. Errore query UPDATE.");
             	response.sendRedirect(request.getContextPath() + "/ProfiloServlet?error=cambioPasswordFallito");
             }
         } catch (SQLException e) {
+            System.out.println("!!! ECCEZIONE SQL !!! " + e.getMessage());
             e.printStackTrace();
             response.sendRedirect(request.getContextPath() + "/ProfiloServlet?error=db");
         }
+        System.out.println("--- DEBUG FINE CAMBIO PASSWORD ---\n");
     }
 
     private void gestisciSpedizione(HttpServletRequest request, HttpServletResponse response, Utente utenteLoggato) throws ServletException, IOException 
