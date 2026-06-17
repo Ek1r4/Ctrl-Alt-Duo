@@ -6,7 +6,7 @@ body {
     color: var(--antracite-scuro);
     margin: 0;
     line-height: 1.6;
-    padding-top: 80px;
+    
 }
 
 *, *::before, *::after {
@@ -21,17 +21,19 @@ h1, h2, h3, h4, h5, h6 {
 }
 /* CTA e Link*/
 .btn-cta {
-    display: block;
-    width: 100%;
-    background-color: transparent;
+    display: inline-block;
+   /*  width: 100%; */
+    background-color: var(--panna-carta);
     color: var(--verde-ottanio);
     font-size: 22px;
     font-family: var(--font-titoli); 
     text-transform: uppercase;
     letter-spacing: 1px;
-    padding: 15px 0;
+    padding: 15px 20px;
     margin-top: 30px;
     cursor: pointer;
+    
+    
     border-radius: 12px;
     
     /* Doppio bordo */
