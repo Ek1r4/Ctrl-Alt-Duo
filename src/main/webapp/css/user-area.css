@@ -10,6 +10,9 @@
     padding: 0 20px;
     box-sizing: border-box;
     align-items: flex-start;
+    
+    /* Font unico per tutti i testi dell'intera area profilo */
+    font-family: var(--font-testi); 
 }
 
 .profile-column {
@@ -36,7 +39,7 @@
 
 
 /* ==========================================================================
-   DESIGN DELLE CARD (Ispirato a USERAREA.png)
+   DESIGN DELLE CARD
    ========================================================================== */
 .profile-card {
     background: transparent;
@@ -62,11 +65,24 @@
     text-transform: uppercase;
     margin: 0;
     letter-spacing: 1px;
+    display: flex;      
+    align-items: center;    
+    gap: 15px;
+    font-family: var(--font-titoli);
+}
+
+.profile-card-header {
+    margin-bottom: 30px;
+}
+
+.profile-card-header h2 {
+    font-size: 32px;
+    text-transform: uppercase;
 }
 
 
 /* ==========================================================================
-   LISTE ED ELEMENTI INTERNI
+   LISTE ED ELEMENTI INTERNI (TIPOGRAFIA E RIGHE ANAGRAFICA)
    ========================================================================== */
 .user-details-grid {
     display: flex;
@@ -78,6 +94,18 @@
     margin: 0;
     font-size: 18px;
     color: var(--antracite-scuro);
+}
+
+/* Etichetta generica in grassetto con lo stesso font del testo */
+.profile-label {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+/* Soluzione di sicurezza per JS: il ::before non viene toccato da textContent */
+#txtTelefono::before {
+    content: "TELEFONO: ";
+    font-weight: bold;
 }
 
 .info-row-item {
@@ -100,9 +128,14 @@
     margin-top: 5px;
 }
 
+.password-display-row {
+    display: flex;
+    justify-content: space-between;
+}
+
 
 /* ==========================================================================
-   ICONE D'AZIONE (Minimali per non rompere il layout)
+   ICONE D'AZIONE
    ========================================================================== */
 .btn-edit, .btn-delete, .btn-add {
     background: none;
@@ -117,7 +150,6 @@
 .btn-delete { color: var(--rosso-ruggine); font-size: 18px; }
 .btn-add:hover, .btn-edit:hover, .btn-delete:hover { transform: scale(1.1); }
 
-/* Bottone circolare della matita (Profilo) */
 .btn-edit-profile {
     background: var(--antracite-scuro);
     color: var(--panna-carta);
@@ -134,7 +166,6 @@
 }
 .btn-edit-profile:hover { transform: scale(1.1); }
 
-/* Link per aprire la password */
 .link-button {
     background: none;
     border: none;
@@ -148,13 +179,17 @@
 
 
 /* ==========================================================================
-   FORM A SCOMPARSA (Stile "Pellicola" importato)
+   FORM A SCOMPARSA E CAMPI DI INPUT
    ========================================================================== */
 .form-container {
     border: 2px dashed var(--grigio-taupe);
     padding: 15px;
     margin-bottom: 20px;
     background: transparent;
+}
+
+.password-form-container {
+    margin-top: 15px;
 }
 
 .form-grid {
@@ -192,7 +227,7 @@ fieldset.custom-input textarea {
     font-size: 16px;
     color: var(--antracite-scuro);
     padding: 5px 0;
-    font-family: inherit;
+    font-family: var(--font-testi); 
     resize: vertical;
 }
 
@@ -201,7 +236,7 @@ fieldset.custom-input input[type="password"]::-ms-clear { display: none; }
 
 
 /* ==========================================================================
-   I BOTTONI CTA GLOBALI (Adattati ai Form)
+   I BOTTONI CTA GLOBALI
    ========================================================================== */
 .form-actions {
     display: flex;
@@ -217,7 +252,6 @@ fieldset.custom-input input[type="password"]::-ms-clear { display: none; }
     margin-top: 20px;
 }
 
-/* 1. Modificatore per "incastrare" il .btn-cta globale nei form */
 .btn-cta.form-btn {
     width: auto;
     margin-top: 0;
@@ -225,7 +259,6 @@ fieldset.custom-input input[type="password"]::-ms-clear { display: none; }
     font-size: 16px;
 }
 
-/* 2. Modificatore di colore per il tasto "Annulla" (Grigio) */
 .btn-cta.cancel-btn {
     color: var(--grigio-taupe);
     border-color: var(--grigio-taupe);
@@ -246,9 +279,10 @@ fieldset.custom-input input[type="password"]::-ms-clear { display: none; }
     padding: 10px;
     border-radius: 12px;
     box-sizing: border-box;
-    font-family: inherit;
+    font-family: var(--font-testi); 
     margin-top: 10px;
 }
+
 
 /* ==========================================================================
    HELPER JAVASCRIPT

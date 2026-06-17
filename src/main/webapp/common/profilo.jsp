@@ -32,7 +32,7 @@
             
             <div class="profile-card">
                 <div class="card-header">
-                    <h2>SHIPPING</h2>
+                    <h2><i class="fas fa-truck"></i> SHIPPING</h2>
                     <button id="btnAddSpedizione" class="btn-add" title="Aggiungi nuovo indirizzo"><i class="fas fa-plus"></i></button>
                 </div>
                 
@@ -73,7 +73,7 @@
 
             <div class="profile-card">
                 <div class="card-header">
-                    <h2>PAYMENT</h2>
+                    <h2><i class="fas fa-credit-card"></i> PAYMENT</h2>
                     <button id="btnAddPagamento" class="btn-add" title="Aggiungi nuovo metodo"><i class="fas fa-plus"></i></button>
                 </div>
 
@@ -128,11 +128,12 @@
 
         </div> 
 
-        <div class="profile-column fixed-column">
+		<div class="profile-column fixed-column">
             
             <div class="profile-card general-info-card">
-                <div class="card-header" style="align-items: flex-start; border: none; margin-bottom: 30px;">
-                    <h2 style="font-size: 32px;"><%= utenteLoggato.getUsername() %></h2>
+                
+                <div class="card-header profile-card-header">
+                    <h2><i class="fas fa-user"></i> <%= utenteLoggato.getUsername() %></h2>
                     <div>
                         <button id="btnEditProfile" class="btn-edit-profile" title="Modifica Profilo">
                             <i class="fas fa-pencil-alt"></i>
@@ -142,16 +143,32 @@
 
                 <div class="user-details-grid">
                     <div class="detail-block">
-                        <p>EMAIL: <%= utenteLoggato.getEmail() %></p>
+                        <p><span class="profile-label">NOME:</span> <%= utenteLoggato.getNome() %></p>
                     </div>
                     
                     <div class="detail-block">
-                        <p id="txtTelefono">NUMBER: <%= utenteLoggato.getTelefono() != null ? utenteLoggato.getTelefono() : "Non specificato" %></p>
+                        <p><span class="profile-label">COGNOME:</span> <%= utenteLoggato.getCognome() %></p>
+                    </div>
+                    
+                    <div class="detail-block">
+                        <p><span class="profile-label">EMAIL:</span> <%= utenteLoggato.getEmail() %></p>
+                    </div>
+                    
+                    <div class="password-display-row">
+                    	<p><span class="profile-label">PASSWORD:</span> <span class="tech-text">&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;</span></p>
+                    	<button id="btnPasswordToggle" class="btn-edit" title="Cambia Password">
+                        	<i class="fas fa-key"></i>
+                    	</button>
+                	</div>
+                    
+                    <div class="detail-block">
+                        <p id="txtTelefono"><%= utenteLoggato.getTelefono() != null ? utenteLoggato.getTelefono() : "Non specificato" %></p>
                         <input type="text" id="inputTelefono" class="edit-input hidden" value="<%= utenteLoggato.getTelefono() != null ? utenteLoggato.getTelefono() : "" %>">
                         <span id="errorTelefono" class="error-text"></span>
                     </div>
 
                     <div class="detail-block">
+                        <p><span class="profile-label">BIO</span></p>
                         <p id="txtBio"><%= utenteLoggato.getBio() != null ? utenteLoggato.getBio() : "Nessuna biografia inserita." %></p>
                         <textarea id="textareaBio" class="edit-input hidden" rows="6"><%= utenteLoggato.getBio() != null ? utenteLoggato.getBio() : "" %></textarea>
                         <span id="errorBio" class="error-text"></span>
@@ -163,29 +180,14 @@
                     <button id="btnSaveProfile" class="btn-cta form-btn">Salva</button>
                 </div>
 
-                <button id="btnPasswordToggle" class="link-button" title="Cambia Password">Change password</button>
-
-                <div id="formPasswordContainer" class="hidden form-container">
+                <div id="formPasswordContainer" class="hidden form-container password-form-container">
                     <form action="<%= request.getContextPath() %>/ProfiloServlet" method="POST">
                         <input type="hidden" name="action" value="cambioPassword">
                         
                         <div class="form-grid">
-                            
-                            <fieldset class="custom-input full-width">
-                                <legend>Vecchia Password</legend>
-                                <input type="password" name="vecchiaPassword" required>
-                            </fieldset>
-
-                            <fieldset class="custom-input full-width">
-                                <legend>Nuova Password</legend>
-                                <input type="password" name="nuovaPassword" required placeholder="Minimo 8 caratteri">
-                            </fieldset>
-
-                            <fieldset class="custom-input full-width">
-                                <legend>Conferma Password</legend>
-                                <input type="password" name="confermaPassword" required>
-                            </fieldset>
-                            
+                            <fieldset class="custom-input full-width"><legend>Vecchia Password</legend><input type="password" name="vecchiaPassword" required></fieldset>
+                            <fieldset class="custom-input full-width"><legend>Nuova Password</legend><input type="password" name="nuovaPassword" required placeholder="Minimo 8 caratteri"></fieldset>
+                            <fieldset class="custom-input full-width"><legend>Conferma Password</legend><input type="password" name="confermaPassword" required></fieldset>
                         </div>
 
                         <div class="form-actions">
@@ -194,11 +196,9 @@
                         </div>
                     </form>
                 </div>
-            </div>
 
-        </div> 
-
-    </div>
+            </div> 
+		</div>
 
     <script>const contestoReFrame = '<%= request.getContextPath() %>';</script>
     <script src="<%= request.getContextPath() %>/js/profilo.js"></script>
