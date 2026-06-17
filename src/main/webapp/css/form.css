@@ -130,7 +130,23 @@ fieldset.custom-input input {
     font-size: 14px;
 }
 
-/* Solo per Accesso Negato INIZIO */
+/* =========================================
+   CLASSI DI UTILITÀ PER LE PAGINE DI ERRORE
+   ========================================= */
+
+/* Colore del testo per i titoli di errore (403, 404, 500) */
+.text-rust {
+    color: var(--rosso-ruggine);
+}
+
+/* icone SVG di errore */
+.icon-rust {
+    width: 3rem; 
+    height: 3rem;
+    stroke: var(--rosso-ruggine);
+    stroke-width: 2px; 
+}
+/* cambiare il nome e i riferimenti in error-text!!!!!!! */
 .denied-text {
 	font-size: 16px;
 	color: var(--antracite-scuro);

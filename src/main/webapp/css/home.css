@@ -234,20 +234,138 @@ top: 0;             /* <--- AGGIUNGI QUESTO! */
 
 
 
+/* =========================================
+   MEDIA QUERIES - RESPONSIVE DESIGN
+   ========================================= */
 
+/* --- 1° STEP: Tablet Orizzontale (max-width: 1024px) --- */
+@media (max-width: 1024px) {
+    
+    /* Nascondiamo completamente la fotocamera per concentrarci sul layout */
+    #camera-sequence-container {
+        display: none !important;
+    }
 
+    /* Senza fotocamera, il testo della Hero può centrarsi e prendere più respiro */
+    .hero-container {
+        justify-content: center;
+    }
 
+    .hero-content {
+        max-width: 85%;
+        text-align: center;
+        margin-top: 0;
+    }
 
+    /* Cambiamo il gradiente laterale in uno uniforme/verticale per il testo centrato */
+    .hero-overlay {
+        background: linear-gradient(0deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.5) 100%);
+    }
 
+    /* TYPOGRAPHY FLUIDA (Basata sulla larghezza della viewport 'vw') */
+    .hero-title {
+        font-size: clamp(3.2rem, 7vw, 4.8rem);
+    }
+    
+    .hero-subtitle {
+        font-size: clamp(1.05rem, 2vw, 1.2rem);
+    }
 
+    /* GOAL SECTION: Adattamento analogo alla Hero */
+    .goal-container {
+        justify-content: center;
+    }
 
+    .goal-content {
+        flex: 0 1 85%;
+        text-align: center;
+    }
 
+    .goal-overlay {
+        background: linear-gradient(0deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.5) 100%);
+    }
+}
 
+/* --- 2° STEP: Tablet Verticale & Mobile (max-width: 768px) --- */
+@media (max-width: 768px) {
+    
+    /* Assicuriamo che la fotocamera rimanga nascosta */
+    #camera-sequence-container {
+        display: none !important;
+    }
+    
+    .hero-container {
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+        padding: 8vh 6%;
+    }
 
+    .hero-content {
+        max-width: 100%;
+    }
 
+    .hero-overlay {
+        background: rgba(0, 0, 0, 0.75); /* Copertura scura uniforme per massima leggibilità */
+    }
 
+    /* SCALATURA TESTI ANCORA PIÙ ACCENTUATA SU MOBILE */
+    .hero-title {
+        font-size: clamp(2.2rem, 8.5vw, 3.2rem);
+        line-height: 1.05;
+        letter-spacing: 1px;
+        margin-bottom: 1.2rem;
+    }
 
+    .hero-subtitle {
+        font-size: clamp(0.95rem, 2.8vw, 1.1rem);
+        line-height: 1.45;
+        margin-bottom: 2rem;
+    }
 
+    /* PULSANTI: Impilati a blocco per facilitare il tap */
+    .hero-buttons {
+        flex-direction: column;
+        gap: 1rem;
+        width: 100%;
+        max-width: 320px;
+        margin: 0 auto;
+    }
+
+    .hero-buttons .btn-cta {
+        width: 100%;
+        margin-top: 0;
+        padding: 14px 20px;
+        font-size: clamp(18px, 4.5vw, 22px); /* Anche la grandezza del testo del bottone scala */
+    }
+
+    /* GOAL SECTION */
+    .goal-container {
+        justify-content: center;
+        align-items: center;
+        padding: 8vh 6%;
+    }
+
+    .goal-content {
+        flex: 1 1 100%;
+        text-align: center;
+    }
+
+    .goal-overlay {
+        background: rgba(0, 0, 0, 0.75);
+    }
+    
+    /* STORY & CARD DIV (Sezioni con sfondi panna fissi) */
+    .story-div, .card-div {
+        padding: 0 8%;
+        text-align: center;
+    }
+
+    .story-div h1, .card-div h1 {
+        font-size: clamp(1.6rem, 5.5vw, 2.5rem);
+        line-height: 1.25;
+    }
+}
 
 
 
