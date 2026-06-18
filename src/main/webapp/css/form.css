@@ -169,14 +169,15 @@ fieldset.custom-input input {
 /* Solo per Accesso Negato FINE */
 
 /* VALIDAZIONE JS */
-.error-text {
-    color: #e74c3c;
-    font-size: 0.85em;
-    display: none; /* Nascosto di default */
-    margin-top: 5px;
+.error-text { 
+    color: var(--rosso-ruggine); 
+    font-size: 14px; 
+    font-family: var(--font-testi);
+    margin-top: 5px; 
+    display: none; 
 }
 
-.error-text.visible {
+.error-text.visible { 
     display: block; 
 }
 
