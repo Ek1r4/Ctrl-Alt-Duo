@@ -1,10 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<head>
-    <meta charset="UTF-8">
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
 
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/header.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 <header class="site-header">
     <div class="header-container">
@@ -43,8 +40,7 @@
                 <li><a href="#">RICONDIZIONATE</a></li>
                 <li><a href="#">NUOVE</a></li>
                 <li><a href="#">COLLEZIONISMO</a></li>
-                <!-- Da aggiornare quando ci saranno le pagine -->
-            </ul>
+                </ul>
         </nav>
         
         <div class="header-search">
@@ -57,8 +53,7 @@
         <div class="header-icons">
             <a href="${pageContext.request.contextPath}/carrello.jsp" class="icon-link cart-link" title="Carrello">
                 <i class="fas fa-shopping-cart"></i>
-                <span class="cart-badge"></span> <!-- Da aggiornare quando ci sarà il carello -->
-            </a>
+                <span class="cart-badge"></span> </a>
             <a href="${pageContext.request.contextPath}/common/profilo.jsp" class="icon-link" title="Area Personale">
                 <i class="far fa-user-circle"></i>
             </a>
