@@ -3,11 +3,11 @@
    FOOTER STYLING
    ========================================= */
 .site-footer {
-    background-color: #111; /* Sfondo scuro coerente con il preloader */
+    background-color: #111;
     color: var(--panna-carta, #f8f9fa);
-    padding: 6rem 0 2rem 0; /* Ampio respiro in alto */
+    padding: 6rem 0 2rem 0;
     position: relative;
-    z-index: 10; /* Assicura che stia sopra eventuali canvas fixed in background */
+    z-index: 100; 
 }
 
 .footer-container {
@@ -18,7 +18,6 @@
 
 .footer-grid {
     display: grid;
-    /* Struttura asimmetrica: la colonna testo prende più spazio delle liste link */
     grid-template-columns: 2fr 1fr 1fr;
     gap: 4rem;
     margin-bottom: 4rem;
@@ -32,7 +31,7 @@
 }
 
 .footer-headline {
-    font-family: var(--font-titoli, 'Anton', sans-serif);
+    font-family: var(--font-titoli);
     font-size: clamp(3rem, 5vw, 4.5rem);
     line-height: 1;
     color: var(--marrone-cuoio, #c47e5a);
@@ -42,10 +41,10 @@
 }
 
 .footer-text {
-    font-family: var(--font-testi, 'Inter', sans-serif);
+    font-family: var(--font-testi);
     font-size: 1rem;
     line-height: 1.6;
-    color: #a0a0a0;
+    color: var(--grigio-taupe);
     max-width: 400px;
     margin-bottom: 2rem;
 }
@@ -54,21 +53,25 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font-family: var(--font-titoli, 'Anton', sans-serif);
+    font-family: var(--font-titoli);
     font-size: 1.5rem;
     letter-spacing: 2px;
-    color: var(--panna-carta, #f8f9fa);
+    color: var(--marrone-cuoio);
+}
+.footer-logo .logo-img {
+    height: 32px; 
+    object-fit: contain;
 }
 
 /* --- Colonne 2 & 3: Navigazione --- */
 .footer-title {
-    font-family: var(--font-testi, 'Inter', sans-serif);
+    font-family: var(--font-testi);
     font-size: 0.9rem;
     text-transform: uppercase;
     letter-spacing: 2px;
     margin-bottom: 1.5rem;
-    color: var(--panna-carta, #f8f9fa);
-    border-bottom: 1px solid #333;
+    color: var(--panna-carta);
+    border-bottom: 1px solid var(--beige-scuro);
     padding-bottom: 0.5rem;
     display: inline-block;
 }
@@ -83,22 +86,22 @@
 }
 
 .footer-nav a {
-    color: #a0a0a0;
+    color: var(--grigio-taupe);
     text-decoration: none;
-    font-family: var(--font-testi, 'Inter', sans-serif);
+    font-family: var(--font-testi);
     font-size: 0.95rem;
     text-transform: uppercase;
     transition: color 0.3s ease;
 }
 
 .footer-nav a:hover {
-    color: var(--verde-ottanio, #24453e); /* Richiamo al colore d'accento */
+    color: var(--verde-ottanio);
 }
 
 /* --- Footer Bottom: Divisore, Social e Copyright --- */
 .footer-divider {
     border: none;
-    border-top: 1px solid #333;
+    border-top: 1px solid var(--beige-scuro);
     margin-bottom: 2rem;
 }
 
@@ -122,39 +125,39 @@
     width: 45px;
     height: 45px;
     border: 1px solid #333;
-    color: var(--panna-carta, #f8f9fa);
+    color: var(--panna-carta);
     text-decoration: none;
-    font-family: var(--font-titoli, 'Anton', sans-serif);
+    font-family: var(--font-titoli);
     transition: all 0.3s ease;
 }
 
 .social-icon:hover {
-    background-color: var(--panna-carta, #f8f9fa);
-    color: #111;
+    background-color: var(--panna-carta);
+    color: var(--antracite-scuro);
     transform: translateY(-3px);
 }
 
 .copyright {
-    font-family: var(--font-testi, 'Inter', sans-serif);
+    font-family: var(--font-testi);
     font-size: 0.85rem;
-    color: #666;
+    color: var(--grigio-taupe);
 }
 
 /* =========================================
-   RESPONSIVE DESIGN (Tablet & Mobile)
+   			RESPONSIVE DESIGN 
    ========================================= */
 @media (max-width: 992px) {
     .footer-grid {
-        grid-template-columns: 1fr 1fr; /* Le due liste si affiancano */
+        grid-template-columns: 1fr 1fr; 
     }
     .brand-col {
-        grid-column: 1 / -1; /* Il titolo gigante prende tutta la riga in alto */
+        grid-column: 1 / -1; 
     }
 }
 
 @media (max-width: 576px) {
     .footer-grid {
-        grid-template-columns: 1fr; /* Tutto in un'unica colonna */
+        grid-template-columns: 1fr; 
         gap: 2.5rem;
     }
     

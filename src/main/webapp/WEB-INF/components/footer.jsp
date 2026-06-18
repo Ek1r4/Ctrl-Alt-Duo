@@ -12,8 +12,9 @@
                     Diamo nuova vita alla meccanica d'epoca. Ogni scatto è un frammento di eternità restaurato con cura artigianale.
                 </p>
                 <div class="footer-logo">
-                    <span class="logo-icon">📸</span> <span class="logo-text">REFRAME</span>
-                </div>
+				    <img src="${pageContext.request.contextPath}/assets/logoReFrame.png" alt="Logo ReFrame" class="logo-img">
+				    <span>REFRAME</span>
+				</div>
             </div>
 
             <div class="footer-col links-col">
