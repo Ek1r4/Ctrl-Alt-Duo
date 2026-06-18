@@ -22,10 +22,12 @@
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/variables.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/global.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/user-area.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/header.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-
+	<%@ include file="/WEB-INF/components/header.jsp" %>
+	
     <div class="profile-page-container">
         
         <div class="profile-column scrollable-column">
@@ -217,7 +219,10 @@
                     </form>
                 </div>
 
-            </div> 
+            </div>
+            	<footer class="site-footer">
+            &copy; 2026 ReFrame
+    </footer> 
 		</div>
 
     <script>const contestoReFrame = '<%= request.getContextPath() %>';</script>

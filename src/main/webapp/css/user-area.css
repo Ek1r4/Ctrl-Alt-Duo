@@ -291,3 +291,13 @@ fieldset.custom-input input[type="password"]::-ms-clear { display: none; }
 .error-text { color: var(--rosso-ruggine); font-size: 14px; margin-top: 5px; display: none; }
 .error-text.visible { display: block; }
 .empty-message { color: var(--grigio-taupe); font-style: italic; }
+
+/*	FOOTER	*/
+.site-footer {
+    text-align: center;
+    font-style: italic;
+    margin-top: 25px;
+    font-size: 12px;
+    color: var(--grigio-taupe);
+    letter-spacing: 0.5px;
+}

@@ -1,0 +1,190 @@
+/* ==========================================================================
+   HEADER GLOBALE (Stile Dark ReFrame)
+   ========================================================================== */
+.site-header {
+    background-color: #1A1A1A; /* Colore scuro e solido */
+    position: sticky; /* Rimane in alto ma occupa spazio fisico, spingendo i contenuti giù */
+    top: 0;
+    z-index: 1000;
+    color: var(--panna-carta);
+    padding: 15px 0;
+    border-bottom: 2px solid var(--antracite-scuro); 
+    font-family: var(--font-titoli); 
+}
+
+/* ==========================================================================
+   HEADER TRASPARENTE (Solo per la Home Page)
+   ========================================================================== */
+.page-home .site-header {
+    background-color: rgba(26, 26, 26, 0.6); /* Sfondo semi-trasparente */
+    
+    /* Effetto Vetro */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    
+    /* Lo facciamo galleggiare per far scivolare la foto sotto */
+    position: absolute; 
+    left: 0;
+    width: 100%; 
+    box-sizing: border-box;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* --- LOGO --- */
+.header-logo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    text-decoration: none;
+    color: var(--panna-carta);
+}
+
+.logo-icon {
+    font-size: 32px;
+    color: var(--marrone-cuoio); /* Richiamo al brand per l'icona */
+}
+
+.logo-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.logo-title {
+    font-size: 26px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    line-height: 1;
+}
+
+.logo-subtitle {
+    font-family: var(--font-tecnico); /* Stile "macchina da scrivere" per i dettagli */
+    font-size: 10px;
+    color: var(--beige-scuro);
+    letter-spacing: 1px;
+    margin-top: 3px;
+    text-transform: uppercase;
+}
+
+/* --- NAVIGAZIONE --- */
+.header-nav .nav-links {
+    display: flex;
+    list-style: none;
+    gap: 30px;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-links li a {
+    text-decoration: none;
+    color: var(--panna-carta);
+    font-size: 14px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: color 0.3s ease;
+}
+
+.nav-links li a:hover {
+    color: var(--marrone-cuoio);
+}
+
+/* ==========================================================================
+   BARRA DI RICERCA HEADER
+   ========================================================================== */
+.header-search {
+    display: flex;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.08); /* Fondo leggermente sbiancato e trasparente */
+    border: 1px solid rgba(255, 255, 255, 0.15); /* Bordino delicato */
+    border-radius: 25px; /* Bordi arrotondati a pillola */
+    padding: 5px 15px;
+    margin: 0 20px;
+    transition: all 0.3s ease;
+}
+
+/* Effetto quando l'utente clicca sulla barra */
+.header-search:focus-within {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: var(--marrone-cuoio); /* Si illumina col colore del tuo brand */
+    box-shadow: 0 0 8px rgba(139, 69, 19, 0.3); /* Leggero bagliore */
+}
+
+.search-input {
+    background: transparent;
+    border: none;
+    color: var(--panna-carta);
+    font-family: var(--font-testi);
+    font-size: 14px;
+    width: 200px; /* Larghezza base */
+    outline: none; /* Rimuove il bordo blu brutto di default del browser */
+}
+
+/* Stile per il testo del placeholder "Cerca fotocamere..." */
+.search-input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+    font-style: italic;
+}
+
+.search-btn {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0;
+    margin-left: 8px;
+    transition: color 0.3s ease;
+}
+
+.search-btn:hover {
+    color: var(--marrone-cuoio); /* L'icona si colora passando col mouse */
+}
+
+/* --- ICONE A DESTRA --- */
+.header-icons {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+
+.icon-link {
+    color: var(--panna-carta);
+    font-size: 22px;
+    text-decoration: none;
+    position: relative;
+    transition: color 0.3s ease, transform 0.2s;
+    display: flex;
+    align-items: center;
+}
+
+.icon-link:hover {
+    color: var(--marrone-cuoio);
+    transform: scale(1.1);
+}
+
+/* Badge del numero carrello */
+.cart-badge {
+    position: absolute;
+    top: -8px;
+    right: -12px;
+    background-color: var(--marrone-cuoio); /* Colore di spicco */
+    color: var(--panna-carta);
+    font-family: var(--font-testi);
+    font-size: 11px;
+    font-weight: bold;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid #1A1A1A; /* Bordo per staccarlo dall'icona sottostante */
+}

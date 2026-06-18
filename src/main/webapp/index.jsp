@@ -6,8 +6,11 @@
     <meta charset="UTF-8">
     <title>Home - ReFrame</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/form.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/header.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/variables.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/global.css">
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px; }
+        
         .container { background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); max-width: 600px; margin: 0 auto; text-align: center; }
         .navbar { display: flex; justify-content: space-between; align-items: center; background-color: #2c3e50; color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px;}
         .navbar a { color: white; text-decoration: none; font-weight: bold; }
@@ -21,7 +24,8 @@
         .nav-btn-profilo:hover { background-color: #e67e22; text-decoration: none !important; }
     </style>
 </head>
-<body>
+<body class="page-home">
+<%@ include file="WEB-INF/components/header.jsp" %>
     <div class="container">
         
         <%
