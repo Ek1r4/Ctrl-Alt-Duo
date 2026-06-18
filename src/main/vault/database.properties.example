@@ -1,0 +1,5 @@
+# CONFIGURAZIONE DATABASE TiDB
+db.url=jdbc:mysql://[HOST_TIDB]:[PORTA]/[NOME_DB]
+db.user=INSERISCI_USERNAME_QUI
+db.password=INSERISCI_PASSWORD_QUI
+db.driver=com.mysql.cj.jdbc.Driver

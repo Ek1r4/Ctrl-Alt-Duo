@@ -1,1 +1,321 @@
-@charset "UTF-8";
+/* =========================================
+   HERO SECTION
+   ========================================= */
+.hero-section {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    background-image: url('../assets/old_frame.png'); 
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    background: linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 45%, rgba(0,0,0,0) 100%);
+    z-index: 1;
+}
+
+.hero-container {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.hero-content {
+    flex: 1;
+    max-width: 750px;
+    margin-top: 2rem; 
+}
+
+/* TYPOGRAPHY & BUTTONS (HERO) */
+.hero-title {
+    font-family: var(--font-titoli);
+    font-size: clamp(4rem, 6vw, 6.5rem);
+    line-height: 0.95;
+    color: var(--marrone-cuoio);
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    letter-spacing: 2px;
+    text-shadow: 
+        -1px -1px 0 #111,  
+         1px -1px 0 #111,
+        -1px  1px 0 #111,
+         1px  1px 0 #111,
+         3px  3px 0 #1a1a1a,
+         5px  5px 0 #1a1a1a,
+         8px  12px 35px rgba(0,0,0,0.4);
+}
+
+.hero-subtitle {
+    font-family: var(--font-testi);
+    font-size: 1.15rem;
+    line-height: 1.5;
+    color: var(--panna-carta);
+    margin-bottom: 2.5rem;
+    font-weight: 400;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.9);
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.hero-buttons .btn-cta {
+    background-color: var(--verde-ottanio);
+    color: var(--panna-carta);
+    border: 2px solid var(--verde-ottanio);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+.hero-buttons .btn-cta:hover {
+    background-color: transparent;
+    color: var(--panna-carta);
+    border-color: var(--panna-carta);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.5);
+    transform: translateY(-2px);
+}
+
+/* =========================================
+   CANVAS & SCROLL ANIMATION
+   ========================================= */
+#camera-sequence-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 10; 
+    pointer-events: none;
+    transition: opacity 0.3s ease-in-out;
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    overflow: hidden;
+}
+
+#camera-canvas {
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover; 
+    transform: none; 
+}
+
+.scroll-container {
+    height: 300vh; 
+    position: relative;
+}
+
+/* =========================================
+   SECTIONS: STORY & CARD
+   ========================================= */
+.story-div {
+    position: sticky; 
+    top: 0; 
+    width: 100%;
+    height: 100vh; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--panna-carta);
+    color: var(--antracite-scuro);
+}
+
+.card-div {
+    position: relative; 
+    z-index: 20;         
+    height: 100vh;
+    background-color: var(--panna-carta); 
+    color: black;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 
+        0px -10px 20px rgba(0, 0, 0, 0.5),   
+        0px -40px 80px rgba(0, 0, 0, 0.8);
+}
+
+/* =========================================
+   GOAL SECTION 
+   ========================================= */
+.goal-section {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    min-height: 120vh; 
+    background-image: url('../assets/modern_frame.png'); 
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    z-index: 1; 
+}
+
+.goal-overlay {
+    position: absolute;
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    background: linear-gradient(270deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 45%, rgba(0,0,0,0) 100%);
+    z-index: 1;
+}
+
+.goal-container {
+    position: sticky;
+    z-index: 2;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 5%;
+    display: flex;
+    justify-content: flex-end; 
+    align-items: center;
+}
+
+.goal-content {
+    flex: 0 1 650px; 
+    text-align: right; 
+}
+
+/* =========================================
+   MEDIA QUERIES - RESPONSIVE DESIGN
+   ========================================= */
+
+/* --- Tablet Verticale --- */
+@media (max-width: 1024px) {
+    #camera-sequence-container {
+        opacity: 0; 
+        transform: translateX(100vw); 
+        will-change: transform, opacity;
+        overflow: visible;
+    }
+
+    #camera-canvas {
+        width: 100vh; 
+        height: 100vw; 
+        flex-shrink: 0;
+        transform: rotate(90deg);
+        object-fit: cover;
+    }
+
+    .hero-container {
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+        padding: 8vh 6%;
+    }
+
+    .hero-content {
+        max-width: 100%;
+    }
+
+    .hero-overlay {
+        background: rgba(0, 0, 0, 0.75);
+    }
+
+    .hero-title {
+        font-size: clamp(3rem, 8vw, 5rem);
+        line-height: 1.05;
+        letter-spacing: 1px;
+        margin-bottom: 1.2rem;
+    }
+
+    .hero-subtitle {
+        font-size: clamp(1.2rem, 3.5vw, 1.8rem);
+        line-height: 1.45;
+        margin-bottom: 2rem;
+    }
+
+    .hero-buttons {
+        gap: 1rem;
+        width: 100%;
+        max-width: 85vw;
+        margin: 0 auto;
+    }
+
+    .hero-buttons .btn-cta {
+        width: 100%;
+        margin-top: 0;
+        padding: 14px 20px;
+        font-size: clamp(1rem, 2.5vw, 1.2rem);
+    }
+
+    .goal-container {
+        justify-content: center;
+        align-items: center;
+        padding: 0vh 6% 8vh 6%;
+    }
+
+    .goal-content {
+        flex: 1 1 100%;
+        text-align: center;
+    }
+
+    .goal-overlay {
+        background: rgba(0, 0, 0, 0.75);
+    }
+    
+    .story-div, .card-div {
+        padding: 0 8%;
+        text-align: center;
+    }
+
+    .story-div h1, .card-div h1 {
+        font-size: clamp(1.6rem, 5.5vw, 2.5rem);
+        line-height: 1.25;
+    }
+}
+
+/* --- Mobile --- */
+@media (max-width: 576px) {
+    .hero-container, .goal-container {
+        padding: 2vh 4% 5vh 4%; 
+    }
+
+    .hero-title {
+        line-height: 0.95; 
+        margin-bottom: 1.2rem;
+        letter-spacing: -1px; 
+    }
+
+    .hero-subtitle {
+        font-size: clamp(1rem, 3vw, 1.5rem);
+        line-height: 1.4;
+        margin-bottom: 2.5rem;
+        max-width: 100%;
+    }
+
+    .hero-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 12px; 
+        width: 100%;
+        max-width: 100%; 
+        margin: 0;
+    }
+    
+    .story-div h1, .card-div h1 {
+        font-size: clamp(2.8rem, 12vw, 4.5rem);
+        line-height: 1.05;
+        padding: 0 4%;
+    }
+}
