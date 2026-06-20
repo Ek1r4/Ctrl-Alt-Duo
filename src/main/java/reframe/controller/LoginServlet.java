@@ -56,7 +56,7 @@ public class LoginServlet extends HttpServlet {
         	if (utenteLoggato != null && utenteLoggato.getPassword().equals(passwordCriptata)) {
             HttpSession session = request.getSession();
             session.setAttribute("utente", utenteLoggato);
-            response.sendRedirect(request.getContextPath() + "/index.jsp");
+            response.sendRedirect(request.getContextPath() + "/index.jsp?success=login");
         	} 
         	else {	response.sendRedirect(request.getContextPath() + "/login.jsp?errore=credenziali_errate");	}
         } catch(SQLException e) {	e.printStackTrace();	}

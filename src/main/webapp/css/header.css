@@ -1,62 +1,360 @@
-@charset "UTF-8";
-/* css/header.css */
 @import url("variables.css");
 @import url("global.css");
 
+/* --- Header Globale --- */
 .site-header {
-    position: fixed;
+    background-color: #1A1A1A; 
+    position: sticky; 
     top: 0;
+    z-index: 1000;
+    color: var(--panna-carta);
+    padding: 15px 0;
+    border-bottom: 2px solid var(--antracite-scuro); 
+    font-family: var(--font-titoli); 
+}
+
+/* --- Header Trasparente (Home Page) --- */
+.page-home .site-header {
+    background: linear-gradient(to bottom, rgba(26, 26, 26, 0.9) 0%, rgba(26, 26, 26, 0.7) 100%);
+    
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    
+    position: fixed; 
+    top: 0; 
     left: 0;
-    width: 100%;
-    height: 80px;
-    background-color: transparent;
+    width: 100%; 
+    box-sizing: border-box;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
+}
+
+.header-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 4vw;
-    z-index: 999;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
 }
 
-.header-logo a {
-    font-family: var(--font-titoli);
-    font-size: 1.8rem;
-    color: var(--antracite-scuro);
-    text-decoration: none;
-    text-transform: uppercase;
-    letter-spacing: -0.04em;
-}
-
-.header-nav {
+/* --- Logo --- */
+.header-logo {
     display: flex;
-    gap: 3rem;
+    align-items: center;
+    gap: 15px;
+    text-decoration: none;
+    color: var(--panna-carta);
 }
 
-.header-nav a {
+.logo-icon {
+    font-size: 32px;
+    color: var(--marrone-cuoio); 
+}
+
+.logo-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.logo-title {
+    font-size: 26px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    line-height: 1;
+}
+
+.logo-subtitle {
+    font-family: var(--font-tecnico); 
+    font-size: 10px;
+    color: var(--beige-scuro);
+    letter-spacing: 1px;
+    margin-top: 3px;
+    text-transform: uppercase;
+}
+
+/* --- Navigazione --- */
+.header-nav .nav-links {
+    display: flex;
+    list-style: none;
+    gap: 30px;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-links li a {
+    text-decoration: none;
+    color: var(--panna-carta);
+    font-size: 14px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: color 0.3s ease;
+}
+
+.nav-links li a:hover {
+    color: var(--marrone-cuoio);
+}
+
+/* --- Barra di Ricerca --- */
+.header-search {
+    display: flex;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.08); 
+    border: 1px solid rgba(255, 255, 255, 0.15); 
+    border-radius: 25px; 
+    padding: 5px 15px;
+    margin: 0 20px;
+    transition: all 0.3s ease;
+}
+
+/* Stato attivo barra di ricerca */
+.header-search:focus-within {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: var(--marrone-cuoio); 
+    box-shadow: 0 0 8px rgba(139, 69, 19, 0.3); 
+}
+
+.search-input {
+    background: transparent;
+    border: none;
+    color: var(--panna-carta);
     font-family: var(--font-testi);
-    font-size: 0.95rem;
-    color: var(--antracite-scuro);
-    text-decoration: none;
-    text-transform: uppercase;
-    font-weight: 500;
-    letter-spacing: 0.05em;
-    transition: color 0.2s ease;
+    font-size: 14px;
+    width: 200px; 
+    outline: none; 
 }
 
-.header-nav a:hover {
-    color: var(--verde-ottanio);
+/* Placeholder barra di ricerca */
+.search-input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+    font-style: italic;
 }
 
-.header-actions {
+.search-btn {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0;
+    margin-left: 8px;
+    transition: color 0.3s ease;
+}
+
+.search-btn:hover {
+    color: var(--marrone-cuoio); 
+}
+
+/* --- Icone Strumenti --- */
+.header-icons {
     display: flex;
-    gap: 2rem;
+    align-items: center;
+    gap: 25px;
+}
+
+.icon-link {
+    color: var(--panna-carta);
+    font-size: 22px;
+    text-decoration: none;
+    position: relative;
+    transition: color 0.3s ease, transform 0.2s;
+    display: flex;
     align-items: center;
 }
 
-.header-actions a {
-    text-decoration: none;
-    transition: opacity 0.2s ease;
+.icon-link:hover {
+    color: var(--marrone-cuoio);
+    transform: scale(1.1);
 }
 
-.header-actions a:hover {
-    opacity: 0.6;
+/* --- Pulsante Accedi --- */
+.login-link {
+    color: var(--panna-carta);
+    font-family: var(--font-testi);
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    margin-left: 10px; 
+    padding: 6px 16px; 
+    border: 2px solid var(--panna-carta); 
+    border-radius: 8px; 
+    transition: all 0.3s ease; 
+}
+
+/* Hover pulsante accedi */
+.login-link:hover {
+    color: var(--verde-ottanio); 
+    border-color: var(--verde-ottanio); 
+}
+
+/* --- Pulsante Logout --- */
+.logout-link {
+    margin-left: 5px; 
+}
+
+/* Hover pulsante logout */
+.logout-link:hover, 
+.logout-link:hover i {
+    color: var(--rosso-ruggine) !important;
+}
+
+/* --- Badge Carrello --- */
+.cart-badge {
+    position: absolute;
+    top: -8px;
+    right: -12px;
+    background-color: var(--marrone-cuoio); 
+    color: var(--panna-carta);
+    font-family: var(--font-testi);
+    font-size: 11px;
+    font-weight: bold;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid #1A1A1A; 
+}
+
+/* --- Responsive Design --- */
+
+/* Elementi mobile nascosti su Desktop */
+.hamburger-btn {
+    display: none;
+    background: transparent;
+    border: none;
+    color: var(--panna-carta);
+    font-size: 28px;
+    cursor: pointer;
+    margin-left: 20px;
+}
+
+.mobile-only-links {
+    display: none;
+}
+
+.icon-label { 
+    display: none; 
+}
+
+/* --- Tablet (max 1024px) --- */
+@media (max-width: 1024px) {
+    /* Nascondi testo logo */
+    .logo-text { display: none; }
+    
+    /* Nascondi barra ricerca */
+    .header-search { display: none; } 
+    
+    /* Allineamento navigazione */
+    .header-nav { margin: 0 auto; }
+
+    /* Visualizza toggle menu mobile */
+    .hamburger-btn { display: block; }
+
+    /* Stile Menu Laterale */
+    .header-icons {
+        position: absolute;
+        top: 100%; 
+        right: 0; 
+        
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-20px); 
+        
+        width: 320px;
+        padding: 40px 35px;
+        background-color: rgba(26, 26, 26, 0.98);
+        backdrop-filter: blur(12px);
+        
+        flex-direction: column; 
+        align-items: center;
+        gap: 0; 
+        
+        border-bottom-left-radius: 20px;
+        border-left: 1px solid rgba(255, 255, 255, 0.1);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+    }
+
+    /* Stato Menu Aperto */
+    .site-header.menu-open .header-icons {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0); 
+    }
+
+    /* Stile voci menu laterale */
+    .icon-link {
+        display: flex;
+        align-items: center;
+        justify-content: center; 
+        gap: 15px; 
+        width: 100%;
+        padding: 28px 0; 
+        border-bottom: none; 
+    }
+
+    /* Label testuali menu laterale */
+    .icon-label {
+        display: inline-block;
+        font-family: var(--font-testi);
+        font-size: 14px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--panna-carta);
+    }
+
+    /* Allineamento badge carrello menu laterale */
+    .cart-badge {
+        position: relative;
+        top: 0;
+        right: 0;
+        margin-left: 5px; 
+        transform: translateY(-2px); 
+        flex-shrink: 0; 
+    }
+
+    .site-header.menu-open .header-icons {
+        right: 0; 
+    }
+
+    /* Reset stile icone standard */
+    .icon-link, .login-link {
+        margin: 0;
+        width: auto;
+        font-size: 22px;
+    }
+    
+    .logout-link { 
+        margin: 0; 
+    }
+}
+
+/* --- Smartphone (max 576px) --- */
+@media (max-width: 576px) {
+    /* Nascondi navigazione standard */
+    .header-nav { display: none; }
+
+    /* Navigazione integrata menu mobile */
+    .mobile-only-links {
+        display: flex;
+        flex-direction: column;
+        align-items: center; 
+        gap: 20px;
+        width: 100%;
+        margin: 0 0 25px 0;
+        padding: 0 0 35px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
+    }
+
+    .mobile-only-links li a {
+        font-size: 16px;
+        font-weight: bold;
+        letter-spacing: 1px;
+    }
 }

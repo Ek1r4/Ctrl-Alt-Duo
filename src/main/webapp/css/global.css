@@ -7,6 +7,10 @@ body {
     margin: 0;
     line-height: 1.6;
     
+    /* --- NUOVE REGOLE PER IL FOOTER A FONDO PAGINA --- */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Dice al body di essere alto ALMENO quanto tutto lo schermo */
 }
 
 *, *::before, *::after {
@@ -22,7 +26,7 @@ h1, h2, h3, h4, h5, h6 {
 /* CTA e Link*/
 .btn-cta {
     display: inline-block;
-   /*  width: 100%; */
+   /* width: 100%; */
     background-color: var(--panna-carta);
     color: var(--verde-ottanio);
     font-size: 22px;
@@ -33,7 +37,6 @@ h1, h2, h3, h4, h5, h6 {
     margin-top: 30px;
     cursor: pointer;
     align-content: center;
-    
     border-radius: 12px;
     
     /* Doppio bordo */
@@ -60,4 +63,36 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--grigio-taupe);
     text-transform: uppercase;
     letter-spacing: 0.05em;
+}
+
+/* Messaggio di conferma */
+.toast-notification {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background-color: var(--beige-scuro); 
+    color: var(--antracite-scuro);
+    padding: 15px 25px;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    z-index: 9999;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Rimbalzo fluido */
+    font-family: var(--font-testi);
+    font-size: 16px;
+    border-left: 5px solid var(--verde-ottanio); /* Linea verde di successo */
+}
+
+.toast-notification.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.toast-notification i {
+    font-size: 24px;
+    color: var(--verde-ottanio); /* Verde successo */
 }

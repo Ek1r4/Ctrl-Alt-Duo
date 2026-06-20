@@ -1,54 +1,50 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="reframe.model.beans.Utente" %>
 <!DOCTYPE html>
-<html lang="it">
+<html>
 <head>
     <meta charset="UTF-8">
-    <title>Home - ReFrame</title>
-    <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px; }
-        .container { background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); max-width: 600px; margin: 0 auto; text-align: center; }
-        .navbar { display: flex; justify-content: space-between; align-items: center; background-color: #2c3e50; color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px;}
-        .navbar a { color: white; text-decoration: none; font-weight: bold; }
-        .navbar a:hover { text-decoration: underline; }
-        .btn { display: inline-block; padding: 10px 20px; margin: 10px; background-color: #3498db; color: white; text-decoration: none; border-radius: 4px; font-weight: bold;}
-        .btn:hover { background-color: #2980b9; }
-        .test-box { margin-top: 30px; padding: 20px; background-color: #e9ecef; border-radius: 8px; border: 2px dashed #ccc;}
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homepage</title>
+    <script type="text/javascript">
+	    window.MY_APP_CONTEXT = "${pageContext.request.contextPath}";
+	</script>
+	<script src="${pageContext.request.contextPath}/js/home.js" defer></script>
+	<script src="${pageContext.request.contextPath}/js/home-deals.js" defer></script>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/home.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
-<body>
-    <div class="container">
-        
-        <%
-            // 1. IL CONTROLLO DELLA RAM: Cerco lo scatolone "utente"
-            Utente utenteLoggato = (Utente) session.getAttribute("utente");
-        %>
+<body class="page-home">
 
-        <div class="navbar">
-            <div style="font-size: 1.2em; font-weight: bold;">📷 ReFrame</div>
-            <div>
-                <% if (utenteLoggato != null) { %>
-                    <span style="margin-right: 15px;">Benvenuto, <b><%= utenteLoggato.getNome() %></b>!</span>
-                    <a href="${pageContext.request.contextPath}/LogoutServlet" style="color: #ff7675;">Esci</a>
-                <% } else { %>
-                    <a href="${pageContext.request.contextPath}/login.jsp">Accedi</a> |
-                    <a href="${pageContext.request.contextPath}/registrazione.jsp">Registrati</a>
-                <% } %>
-            </div>
-        </div>
+    <jsp:include page="/WEB-INF/components/preloader.jsp" />
+    <jsp:include page="/WEB-INF/components/header.jsp" />
 
-        <h1>Il mondo della fotografia</h1>
-        <p>Acquista e vendi fotocamere nuove, usate e da collezione.</p>
+    <main class="home-container">
+        <jsp:include page="/WEB-INF/components/home-hero.jsp" />
+    </main>
 
-        <div class="test-box">
-            <h3>Area di Collaudo (Testa i Filtri!)</h3>
-            <p>Clicca sui bottoni qui sotto per verificare se la sicurezza funziona:</p>
-            
-            <a href="${pageContext.request.contextPath}/common/provaUtente.jsp" class="btn">Test Area Cliente (/common/)</a>
-            
-            <a href="${pageContext.request.contextPath}/admin/provaAdmin.jsp" class="btn">Test Area Admin (/admin/)</a>
-        </div>
-
+    <div id="camera-sequence-container">
+        <canvas id="camera-canvas"></canvas>
     </div>
+
+    <div class="scroll-container">
+        <div class="story-div">
+            <jsp:include page="/WEB-INF/components/home-story.jsp" />
+        </div>
+    </div>
+
+    <main class="home-container">
+        <jsp:include page="/WEB-INF/components/home-goals.jsp" />
+      
+        <div class="card-div">
+            <jsp:include page="/WEB-INF/components/home-deals.jsp" />
+        </div>  
+    </main>
+
+    <jsp:include page="/WEB-INF/components/footer.jsp" />
+     
 </body>
 </html>
