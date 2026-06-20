@@ -9,14 +9,13 @@ public class Utente
 	    private String nome;
 	    private String cognome;
 	    private String bio;
+	    private boolean isAdmin;
 
 	    // Costruttore vuoto
-	    
 	    public Utente() {
 	    }
 	    
-	    // Costruttore (usato per testing/debug)
-	    
+	    // Costruttore pieno
 	    public Utente(String username, String email, String password, String telefono, String nome, String cognome, String bio) {
 	        this.username = username;
 	        this.email = email;
@@ -28,7 +27,6 @@ public class Utente
 	    }
 
 	    // Getter/Setter
-
 	    public String getUsername() {
 	        return username;
 	    }
@@ -85,6 +83,16 @@ public class Utente
 	        this.bio = bio;
 	    }
 	    
+	    public boolean isAdmin() {
+	        return isAdmin;
+	    }
+
+	    // 3. Aggiungi il Setter
+	    public void setAdmin(boolean isAdmin) {
+	        this.isAdmin = isAdmin;
+	    }
+	    
+	 // Override del toString
 	    @Override
 	    public String toString() {
 	        return "Utente{" +

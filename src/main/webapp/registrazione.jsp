@@ -9,7 +9,7 @@
     <title>Registrazione - ReFrame</title>
     
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/form.css">
-</head>
+    </head>
 
 <body>
 
@@ -39,58 +39,67 @@
                 }
             %>
             
-			<form action="${pageContext.request.contextPath}/RegistrazioneServlet" method="POST">
+			<form id="registrazioneForm" action="${pageContext.request.contextPath}/RegistrazioneServlet" method="POST">
                 
                 <div class="form-row">
                     <fieldset class="custom-input">
                         <legend>Nome</legend>
-                        <input type="text" name="nome">
+                        <input type="text" id="nome" name="nome">
+                        <span id="nomeError" class="error-text"></span>
                     </fieldset>
 
                     <fieldset class="custom-input">
                         <legend>Cognome</legend>
-                        <input type="text" name="cognome">
+                        <input type="text" id="cognome" name="cognome">
+                        <span id="cognomeError" class="error-text"></span>
                     </fieldset>
                 </div>
                                
                 <fieldset class="custom-input">
                     <legend>E-mail</legend>
-                    <input type="email" name="email">
+                    <input type="email" id="email" name="email">
+                    <span id="emailError" class="error-text"></span>
                 </fieldset>
                     
                 <fieldset class="custom-input">
                     <legend>Password</legend>
-                    <input type="password" name="password">
+                    <input type="password" id="password" name="password">
+                    <span id="passwordError" class="error-text"></span>
                 </fieldset>
                 
                 <fieldset class="custom-input">
                         <legend>Conferma Password</legend>
                         <input type="password" id="confermaPassword" name="confermaPassword">
+                        <span id="confermaError" class="error-text"></span>
                 </fieldset>
                 
                 <div class="form-row">
                 <fieldset class="custom-input">
                     <legend>Username</legend>
-                    <input type="text" name="username">
+                    <input type="text" id="username" name="username">
+                    <span id="usernameError" class="error-text"></span>
                 </fieldset>
                 
 				<fieldset class="custom-input">
     				<legend>Telefono</legend>
-    				<input type="tel" name="telefono" pattern="[0-9]" title="Inserisci un numero di telefono valido" required>
+    				<input type="tel" id="telefono" name="telefono" pattern="[0-9]{10}" title="Inserisci un numero di telefono valido" required>
+    				<span id="telefonoError" class="error-text"></span>
 				</fieldset>
               	</div>
               	
-                <button type="submit" class="btn-cta">REGISTRATI</button>
+              	<button type="submit" id="btnSubmit" class="btn-cta">REGISTRATI</button>
                 
             </form>
             
-            <a href="${pageContext.request.contextPath}/jsp/login.jsp" class="form-link">Hai già un account? Accedi qui</a>
+            <a href="${pageContext.request.contextPath}/login.jsp" class="form-link">Hai già un account? Accedi qui</a>
        
     </div>
             
-        <footer class="site-footer">
+        <footer class="site-footer-minimal">
             &copy; 2026 ReFrame
         </footer>
     
+    <script src="${pageContext.request.contextPath}/js/registrazione.js"></script>
+</div>
 </body>
 </html>

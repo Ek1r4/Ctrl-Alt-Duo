@@ -112,7 +112,7 @@ public class RegistrazioneServlet extends HttpServlet {
 
             dao.doSave(nuovoUtente); 
 
-            response.sendRedirect(request.getContextPath() + "/login.jsp?messaggio=registrazione_completata");
+            response.sendRedirect(request.getContextPath() + "/login.jsp?success=registrazione");
             
         } catch (SQLException e) {
             e.printStackTrace();
