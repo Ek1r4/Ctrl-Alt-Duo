@@ -6,12 +6,24 @@ document.addEventListener("DOMContentLoaded", function() {
     const email = document.getElementById("email");
     const password = document.getElementById("password");
 
+    // RICEZIONE PARAMETRI URL
     const urlParams = new URLSearchParams(window.location.search);
+    let urlCleanNeeded = false;
+
+    // TOAST: Solo per i successi
     if (urlParams.get("success") === "registrazione") {
-        mostraNotifica("Registrazione completata con successo! Ora puoi accedere.", "success-banner");
+        mostraNotifica("Registrazione completata con successo! Ora puoi accedere.");
+        urlCleanNeeded = true;
     }
     if (urlParams.get("success") === "login") {
-        mostraNotifica("Login effettuato con successo!", "success-banner");
+        mostraNotifica("Login effettuato con successo!");
+        urlCleanNeeded = true;
+    }
+
+    // Pulizia dell'URL per nascondere i parametri all'utente
+    if (urlCleanNeeded) {
+        const cleanUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, cleanUrl);
     }
 
     btnSubmit.disabled = true;
@@ -64,7 +76,7 @@ document.addEventListener("DOMContentLoaded", function() {
         btnSubmit.disabled = !formValido;
     }
 
-    // UTILITY GRAFICHE (ERRORI)
+    // UTILITY GRAFICHE (ERRORI INLINE ORIGINALI)
     function mostraErrore(id, messaggio) {
         const el = document.getElementById(id);
         if(el) {
@@ -79,18 +91,21 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 
-// UTILITY GRAFICHE (NOTIFICHE GLOBALI)
-function mostraNotifica(messaggio, classeCss) {
-    const banner = document.createElement("div");
-    banner.textContent = messaggio;
-    banner.classList.add("notification-banner", classeCss);
+// UTILITY GRAFICHE (NOTIFICHE GLOBALI TOAST - SOLO SUCCESSO)
+function mostraNotifica(messaggio) {
+    const toast = document.createElement("div");
+    toast.className = "toast-notification";
     
-    const container = document.querySelector('.film-container');
-    if (container) {
-        container.insertBefore(banner, container.firstChild);
-    } else {
-        document.body.insertBefore(banner, document.body.firstChild);
-    }
+    // Stile fisso verde di successo
+    toast.style.borderLeft = "5px solid #4CAF50";
+    toast.innerHTML = `<i class="fas fa-check-circle" style="color: #4CAF50; font-size: 24px;"></i> <span>${messaggio}</span>`;
     
-    setTimeout(() => { banner.remove(); }, 4000);
+    document.body.appendChild(toast);
+
+    setTimeout(() => toast.classList.add("show"), 10);
+
+    setTimeout(() => {
+        toast.classList.remove("show");
+        setTimeout(() => toast.remove(), 400); 
+    }, 3500);
 }

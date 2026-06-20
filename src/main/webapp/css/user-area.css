@@ -1,6 +1,4 @@
-/* ==========================================================================
-   STRUTTURA E IMPAGINAZIONE
-   ========================================================================== */
+/* --- Struttura e Impaginazione --- */
 .profile-page-container {
     display: flex;
     flex-direction: row;
@@ -10,9 +8,11 @@
     padding: 0 20px;
     box-sizing: border-box;
     align-items: flex-start;
-    
-    /* Font unico per tutti i testi dell'intera area profilo */
     font-family: var(--font-testi); 
+    
+    /* Espansione per sticky footer */
+    flex-grow: 1; 
+    width: 100%; 
 }
 
 .profile-column {
@@ -38,9 +38,7 @@
 .scrollable-column::-webkit-scrollbar-thumb { background-color: var(--grigio-taupe); border-radius: 3px; }
 
 
-/* ==========================================================================
-   DESIGN DELLE CARD
-   ========================================================================== */
+/* --- Design delle Card --- */
 .profile-card {
     background: transparent;
     border: 4px solid var(--antracite-scuro);
@@ -81,9 +79,7 @@
 }
 
 
-/* ==========================================================================
-   LISTE ED ELEMENTI INTERNI (TIPOGRAFIA E RIGHE ANAGRAFICA)
-   ========================================================================== */
+/* --- Tipografia e Righe Anagrafica --- */
 .user-details-grid {
     display: flex;
     flex-direction: column;
@@ -96,13 +92,13 @@
     color: var(--antracite-scuro);
 }
 
-/* Etichetta generica in grassetto con lo stesso font del testo */
+/* Stile etichette generiche */
 .profile-label {
     font-weight: bold;
     font-size: 18px;
 }
 
-/* Soluzione di sicurezza per JS: il ::before non viene toccato da textContent */
+/* Pseudo-elemento per compatibilità JS */
 #txtTelefono::before {
     content: "TELEFONO: ";
     font-weight: bold;
@@ -134,9 +130,7 @@
 }
 
 
-/* ==========================================================================
-   ICONE D'AZIONE
-   ========================================================================== */
+/* --- Icone d'Azione --- */
 .btn-edit, .btn-delete, .btn-add {
     background: none;
     border: none;
@@ -178,9 +172,7 @@
 }
 
 
-/* ==========================================================================
-   FORM A SCOMPARSA E CAMPI DI INPUT
-   ========================================================================== */
+/* --- Form e Campi di Input --- */
 .form-container {
     border: 2px dashed var(--grigio-taupe);
     padding: 15px;
@@ -235,9 +227,7 @@ fieldset.custom-input input[type="password"]::-ms-reveal,
 fieldset.custom-input input[type="password"]::-ms-clear { display: none; }
 
 
-/* ==========================================================================
-   I BOTTONI CTA GLOBALI
-   ========================================================================== */
+/* --- Call To Action (Form) --- */
 .form-actions {
     display: flex;
     justify-content: flex-end;
@@ -267,9 +257,7 @@ fieldset.custom-input input[type="password"]::-ms-clear { display: none; }
 .btn-cta.cancel-btn:hover { background-color: var(--beige-scuro); }
 
 
-/* ==========================================================================
-   INPUT INLINE (Per Bio e Telefono)
-   ========================================================================== */
+/* --- Input Inline --- */
 .edit-input {
     width: 100%;
     border: 1px dashed var(--grigio-taupe);
@@ -284,20 +272,205 @@ fieldset.custom-input input[type="password"]::-ms-clear { display: none; }
 }
 
 
-/* ==========================================================================
-   HELPER JAVASCRIPT
-   ========================================================================== */
+/* --- Helper Class --- */
 .hidden { display: none !important; }
 .error-text { color: var(--rosso-ruggine); font-size: 14px; margin-top: 5px; display: none; }
 .error-text.visible { display: block; }
 .empty-message { color: var(--grigio-taupe); font-style: italic; }
 
-/*	FOOTER	*/
+/* --- Footer --- */
 .site-footer {
+    background-color: #1A1A1A; 
+    color: var(--panna-carta); 
+    width: 100%;
+    padding: 25px 0; 
+    margin-top: 50px; 
     text-align: center;
-    font-style: italic;
-    margin-top: 25px;
-    font-size: 12px;
-    color: var(--grigio-taupe);
-    letter-spacing: 0.5px;
+    font-family: var(--font-testi);
+    font-size: 14px;
+    letter-spacing: 1px;
+    box-sizing: border-box;
+}
+
+/* --- Responsive: Tablet --- */
+@media (max-width: 1024px) {
+    
+    /* Layout Generale */
+    .profile-page-container {
+        flex-direction: column; 
+        padding: 10px 15px;
+        gap: 20px;
+    }
+
+    /* Riordino Colonne */
+    .fixed-column {
+        order: -1; 
+        position: static; 
+        width: 100%;
+    }
+
+    .scrollable-column {
+        order: 2; 
+        width: 100%;
+        max-height: none; 
+        padding-right: 0;
+        overflow-y: visible;
+    }
+    
+    /* Accordion Menu (Card) */
+    .profile-card.accordion:not(.open) .scrollable-content,
+    .profile-card.accordion:not(.open) .history-content,
+    .profile-card.accordion:not(.open) .form-container {
+        display: none !important;
+    }
+
+    .profile-card.accordion .card-header {
+        cursor: pointer;
+        padding-right: 40px; 
+        position: relative;
+    }
+
+    /* Icona Dropdown */
+    .profile-card.accordion .card-header::after {
+        content: '\f078'; 
+        font-family: "Font Awesome 6 Free";
+        font-weight: 900;
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        transition: transform 0.3s ease;
+        color: var(--verde-ottanio); 
+        font-size: 20px;
+    }
+
+    /* Stato Attivo Dropdown */
+    .profile-card.accordion.open .card-header::after {
+        transform: translateY(-50%) rotate(180deg);
+    }
+    
+    /* Fix Layout Bottoni */
+    .form-actions, .edit-actions {
+        flex-direction: column-reverse; 
+        width: 100%;
+        gap: 15px; 
+    }
+
+    .form-actions .btn-cta, .edit-actions .btn-cta {
+        width: 100% !important; 
+        margin: 0; 
+        justify-content: center; 
+    }
+}
+
+/* --- Toast Notifications --- */
+.toast-notification {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background-color: var(--beige-scuro); 
+    color: var(--antracite-scuro);
+    padding: 15px 25px;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    z-index: 9999;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+    font-family: var(--font-testi);
+    font-size: 16px;
+    border-left: 5px solid var(--verde-ottanio); 
+}
+
+.toast-notification.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.toast-notification i {
+    font-size: 24px;
+    color: var(--verde-ottanio); 
+}
+
+/* Adattamento Toast per Mobile */
+@media (max-width: 576px) {
+    .toast-notification {
+        bottom: 20px;
+        right: 20px;
+        left: 20px; 
+        justify-content: center;
+    }
+}
+
+/* --- Responsive: Mobile --- */
+@media (max-width: 576px) {
+    
+    /* Ottimizzazione Spazi */
+    .profile-page-container {
+        margin: 20px auto; 
+        padding: 0 10px;
+    }
+
+    .profile-card, .general-info-card {
+        padding: 15px; 
+        border-width: 2px; 
+    }
+
+    /* Tipografia Ridimensionata */
+    .profile-card-header h2 {
+        font-size: 24px;
+    }
+
+    .card-header h2 {
+        font-size: 20px;
+        gap: 10px;
+    }
+
+    .detail-block p, .profile-label {
+        font-size: 16px; 
+    }
+
+    /* Layout Form Singola Colonna */
+    .form-grid {
+        grid-template-columns: 1fr; 
+        gap: 15px;
+    }
+
+    .form-grid .full-width {
+        grid-column: span 1; 
+    }
+
+    /* Layout Righe e Bottoni */
+    .info-row-item {
+        flex-direction: row; 
+        gap: 15px;
+        text-align: left;
+    }
+
+    /* Allineamento Icone a Destra */
+    .info-row-item > div:last-child {
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+    }
+    
+    .password-display-row {
+        flex-direction: row;
+        gap: 15px;
+    }
+
+    /* Adattamento Input e Bottoni Profilo */
+    .link-button {
+        font-size: 16px;
+        margin-top: 25px;
+    }
+
+    .btn-edit-profile {
+        width: 35px;
+        height: 35px;
+        font-size: 16px;
+    }
 }

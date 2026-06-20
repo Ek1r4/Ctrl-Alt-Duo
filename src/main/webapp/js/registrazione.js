@@ -16,7 +16,10 @@ document.addEventListener("DOMContentLoaded", function() {
 
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get("success") === "registrazione") {
-        mostraNotifica("Registrazione completata con successo! Ora puoi accedere.", "success-banner");
+        mostraNotifica("Registrazione completata con successo! Ora puoi accedere.");
+        // Pulizia URL
+        const cleanUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, cleanUrl);
     }
 
     btnSubmit.disabled = true;
@@ -26,7 +29,6 @@ document.addEventListener("DOMContentLoaded", function() {
         nome: () => validaLunghezza(nome, "nomeError", "Il nome deve avere almeno 2 caratteri."),
         cognome: () => validaLunghezza(cognome, "cognomeError", "Il cognome deve avere almeno 2 caratteri."),
         username: () => validaRegex(username, "usernameError", /^[a-zA-Z0-9_]+$/, "Solo lettere, numeri e underscore (_) senza spazi."),
-        email: () => validaRegex(email, "emailError", /^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Email non valida (es. nome@dominio.it)."),
         telefono: () => validaRegex(telefono, "telefonoError", /^[0-9]{10}$/, "Il numero deve contenere esattamente 10 cifre (senza spazi o prefissi)."),
         password: () => validaPassword(password, "passwordError"),
         confermaPassword: () => validaConferma(password, confermaPassword, "confermaError"),
@@ -56,10 +58,8 @@ document.addEventListener("DOMContentLoaded", function() {
 		                if (value.match(regex)) {
 		                    try {
 		                        const response = await fetch('VerificaEmailServlet?email=' + encodeURIComponent(value));
-
 		                        const data = await response.json(); 
 		                        emailGiaInUso = data.esiste; 
-		                        
 		                    } catch (error) {
 		                        console.error('Errore AJAX:', error);
 		                    }
@@ -113,17 +113,14 @@ document.addEventListener("DOMContentLoaded", function() {
 	// GESTIONE STATO DEL FORM
 	function controllaFormInTempoReale() {
 		let formValido = true;
-		
 		for (let key in validatori) {
-
 			let campoCorretto = validatori[key]();
-	        // Se anche un solo campo restituisce false, il formValido globale diventa false
 	        if (!campoCorretto) {
 	            formValido = false;
-	            }
 	        }
-	        btnSubmit.disabled = !formValido;
 	    }
+	    btnSubmit.disabled = !formValido;
+	}
 
     // UTILITY GRAFICHE (ERRORI)
     function mostraErrore(id, messaggio) {
@@ -140,19 +137,20 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 
-// UTILITY GRAFICHE (NOTIFICHE GLOBALI)
-function mostraNotifica(messaggio, classeCss) {
-    const banner = document.createElement("div");
-    banner.textContent = messaggio;
-    banner.classList.add("notification-banner", classeCss);
+// UTILITY GRAFICHE (NOTIFICHE GLOBALI TOAST - SOLO SUCCESSO)
+function mostraNotifica(messaggio) {
+    const toast = document.createElement("div");
+    toast.className = "toast-notification";
+
+    toast.style.borderLeft = "5px solid #4CAF50";
+    toast.innerHTML = `<i class="fas fa-check-circle" style="color: #4CAF50; font-size: 24px;"></i> <span>${messaggio}</span>`;
     
-    // Per la registrazione (che ha una classe container leggermente diversa)
-    const container = document.querySelector('.film-container');
-    if (container) {
-        container.insertBefore(banner, container.firstChild);
-    } else {
-        document.body.insertBefore(banner, document.body.firstChild);
-    }
-    
-    setTimeout(() => { banner.remove(); }, 4000);
+    document.body.appendChild(toast);
+
+    setTimeout(() => toast.classList.add("show"), 10);
+
+    setTimeout(() => {
+        toast.classList.remove("show");
+        setTimeout(() => toast.remove(), 400); 
+    }, 3500);
 }

@@ -225,10 +225,11 @@ fieldset.custom-input input {
 .error-box ul { margin: 0; padding-left: 20px; }
 
 /* Footer per form*/
-.site-footer {
+.site-footer-minimal {
     text-align: center;
     font-style: italic;
-    margin-top: 25px;
+    margin-bottom: 15px;
+    margin-top: 30px;
     font-size: 12px;
     color: var(--grigio-taupe);
     letter-spacing: 0.5px;

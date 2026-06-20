@@ -17,12 +17,14 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ReFrame - Profilo di @<%= utenteLoggato.getUsername() %></title>
     
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/variables.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/global.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/user-area.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/header.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/form.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
@@ -86,7 +88,7 @@
                             <fieldset class="custom-input full-width"><legend>Nome Intestatario</legend><input type="text" name="nomeIntestatario" required></fieldset>
                             <fieldset class="custom-input full-width"><legend>Circuito</legend>
                                 <select name="circuito" required>
-                                    <option value="" disabled selected>Seleziona...</option>
+                                    <option value="" disabled selected>Seleziona il circuito...</option>
                                     <option value="Visa">Visa</option>
                                     <option value="Mastercard">Mastercard</option>
                                     <option value="American Express">American Express</option>
@@ -218,13 +220,14 @@
                         </div>
                     </form>
                 </div>
-
             </div>
-            	<footer class="site-footer">
-            &copy; 2026 ReFrame
-    </footer> 
 		</div>
-
+ 
+	</div>
+			<footer class="site-footer-minimal">
+            	&copy; 2026 ReFrame
+    		</footer>
+	
     <script>const contestoReFrame = '<%= request.getContextPath() %>';</script>
     <script src="<%= request.getContextPath() %>/js/profilo.js"></script>
 </body>

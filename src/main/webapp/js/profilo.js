@@ -1,5 +1,23 @@
 document.addEventListener("DOMContentLoaded", function() {
 
+    // --- 0. FUNZIONE TOAST NOTIFICATION (MESSAGGI DI CONFERMA) ---
+    function showToast(message) {
+        // Crea il div del toast
+        const toast = document.createElement('div');
+        toast.className = 'toast-notification';
+        toast.innerHTML = `<i class="fas fa-check-circle"></i> <span>${message}</span>`;
+        document.body.appendChild(toast);
+
+        // Anima l'entrata dopo un istante
+        setTimeout(() => toast.classList.add('show'), 10);
+
+        // Dopo 3.5 secondi lo nasconde e poi lo distrugge
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 400); // Aspetta che finisca l'animazione CSS
+        }, 3500);
+    }
+
     // --- 1. SETUP E INIZIALIZZAZIONE ---
     const btnEditProfile = document.getElementById("btnEditProfile");
     const btnCancelProfile = document.getElementById("btnCancelProfile");
@@ -18,22 +36,36 @@ document.addEventListener("DOMContentLoaded", function() {
     const hintVecchia = document.getElementById("hintVecchiaPassword");
 
 
-    // --- RICEZIONE ERRORE VECCHIA PASSWORD DAL SERVER ---
+    // --- RICEZIONE MESSAGGI (ERRORE O SUCCESSO) DAL SERVER AL CARICAMENTO ---
     const urlParams = new URLSearchParams(window.location.search);
+    
+    // Gestione Errore Password
     if (urlParams.get("error") === "vecchiaPasswordErrata") { 
-        
         const btnToggle = document.getElementById("btnPasswordToggle");
         const formContainer = document.getElementById("formPasswordContainer");
         if (btnToggle && formContainer) {
             formContainer.classList.remove("hidden");
             btnToggle.classList.add("hidden");
         }
-        
         if (hintVecchia) {
             hintVecchia.textContent = "La password attuale non è corretta.";
             hintVecchia.classList.add("visible");
         }
+    }
 
+    // Gestione Successi (Form standard ricaricati dal Server)
+    const successParam = urlParams.get("success");
+    if (successParam) {
+        let msg = "";
+        if (successParam === "passwordModificata") msg = "Password aggiornata con successo!";
+        else if (successParam === "spedizioneSalvata") msg = "Indirizzo aggiunto alla rubrica!";
+        else if (successParam === "pagamentoSalvato") msg = "Metodo di pagamento salvato!";
+
+        if (msg) setTimeout(() => showToast(msg), 400);
+    }
+
+    // Pulizia dell'URL
+    if (urlParams.has("error") || urlParams.has("success")) {
         const cleanUrl = window.location.pathname;
         window.history.replaceState({}, document.title, cleanUrl);
     }
@@ -47,7 +79,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // --- 2. VALIDAZIONE IN TEMPO REALE ---
     
-    // A) Validazione Anagrafica (Telefono e Bio) con Feedback Visivo
     function checkAnagraficaValidity() {
         if (!inputTelefono || !textareaBio) return;
         const telValue = inputTelefono.value.trim();
@@ -56,7 +87,6 @@ document.addEventListener("DOMContentLoaded", function() {
         const isTelValid = /^[0-9]{10}$/.test(telValue);
         const isBioValid = bioValue.length <= 255;
 
-        // Feedback in tempo reale per il Telefono
         if (telValue.length > 0 && !isTelValid) {
             if (errorTel) {
                 errorTel.textContent = "Il numero deve contenere esattamente 10 cifre.";
@@ -66,7 +96,6 @@ document.addEventListener("DOMContentLoaded", function() {
             if (errorTel) errorTel.classList.remove("visible");
         }
 
-        // Feedback in tempo reale per la Bio
         if (!isBioValid) {
             if (errorBio) {
                 errorBio.textContent = "La biografia non può superare i 255 caratteri.";
@@ -76,18 +105,15 @@ document.addEventListener("DOMContentLoaded", function() {
             if (errorBio) errorBio.classList.remove("visible");
         }
         
-        // Accende o spegne il tasto "Salva"
         if (btnSaveProfile) {
             btnSaveProfile.disabled = !(isTelValid && isBioValid);
         }
     }
 
-    // Ascoltatori per far scattare il controllo ad ogni carattere digitato
     if (inputTelefono) inputTelefono.addEventListener("input", checkAnagraficaValidity);
     if (textareaBio) textareaBio.addEventListener("input", checkAnagraficaValidity);
 
 
-    // B) Validazione Form Standard (Spedizioni, Pagamenti, Password)
     const allForms = document.querySelectorAll("form");
     allForms.forEach(form => {
         const submitBtn = form.querySelector("button[type='submit']");
@@ -110,18 +136,12 @@ document.addEventListener("DOMContentLoaded", function() {
                     if (inputNuova && inputConferma) {
                         const nuova = inputNuova.value;
                         const conferma = inputConferma.value;
-                        
                         const hintNuova = document.getElementById("hintNuovaPassword");
                         const hintConferma = document.getElementById("hintConfermaPassword");
-                        
                         const regexPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
 
-                        if (nuova.length > 0 && !regexPassword.test(nuova)) {
-                            isValid = false; 
-                        }
-                        if (conferma.length > 0 && nuova !== conferma) {
-                            isValid = false;
-                        }
+                        if (nuova.length > 0 && !regexPassword.test(nuova)) isValid = false; 
+                        if (conferma.length > 0 && nuova !== conferma) isValid = false;
 
                         if (nuova.length > 0 && hintNuova) {
                             hintNuova.classList.add("visible");
@@ -156,7 +176,6 @@ document.addEventListener("DOMContentLoaded", function() {
                         }
                     }
                 }
-                
                 submitBtn.disabled = !isValid;
             };
 
@@ -238,6 +257,8 @@ document.addEventListener("DOMContentLoaded", function() {
                     txtTelefono.innerText = telValue;
                     txtBio.innerText = bioValue ? bioValue : "Nessuna biografia inserita.";
                     btnCancelProfile.click(); 
+
+                    showToast("Dati anagrafici aggiornati con successo!");
                 } 
                 else if (response.url.includes("error=telefonoObbligatorio")) {
                     errorTel.textContent = "Errore dal server: Telefono obbligatorio.";
@@ -295,6 +316,9 @@ document.addEventListener("DOMContentLoaded", function() {
                                     : "Nessun metodo di pagamento salvato.";
                                 parentContainer.appendChild(emptyMsg);
                             }
+                            
+                            showToast(itemType === "shipping" ? "Indirizzo rimosso!" : "Metodo di pagamento rimosso!");
+
                         }, 300);
                     } 
                     else {
@@ -319,7 +343,6 @@ document.addEventListener("DOMContentLoaded", function() {
         if (form) {
             form.reset();
             form.dispatchEvent(new Event('input'));
-            
             const comments = form.querySelectorAll(".input-comment");
             comments.forEach(c => c.classList.remove("visible", "error", "success"));
         }
@@ -380,4 +403,21 @@ document.addEventListener("DOMContentLoaded", function() {
             btnPasswordToggle.classList.remove("hidden");
         });
     }
+	
+	// --- 8. MENU A TENDINA PER CELLULARI (ACCORDION) ---
+    const accordionCards = document.querySelectorAll('.scrollable-column .profile-card');
+    
+    accordionCards.forEach(card => {
+        card.classList.add('accordion');
+        const header = card.querySelector('.card-header');
+        if (header) {
+            header.addEventListener('click', function(e) {
+                if (e.target.closest('.btn-add')) {
+                    card.classList.add('open');
+                    return;
+                }
+                card.classList.toggle('open');
+            });
+        }
+    });
 });

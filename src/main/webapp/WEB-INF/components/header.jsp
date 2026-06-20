@@ -50,14 +50,50 @@
             </button>
         </div>
 
+		<button class="hamburger-btn" id="mobileMenuBtn">
+            <i class="fas fa-bars"></i>
+        </button>
+
         <div class="header-icons">
+            
+            <ul class="nav-links mobile-only-links">
+                <li><a href="#">RICONDIZIONATE</a></li>
+                <li><a href="#">NUOVE</a></li>
+                <li><a href="#">COLLEZIONISMO</a></li>
+            </ul>
+
             <a href="${pageContext.request.contextPath}/carrello.jsp" class="icon-link cart-link" title="Carrello">
                 <i class="fas fa-shopping-cart"></i>
-                <span class="cart-badge"></span> </a>
-            <a href="${pageContext.request.contextPath}/common/profilo.jsp" class="icon-link" title="Area Personale">
-                <i class="far fa-user-circle"></i>
+                <span class="icon-label">Carrello</span> <span class="cart-badge"></span>
             </a>
+            
+            <% if (session.getAttribute("utente") != null) { %>
+                <a href="${pageContext.request.contextPath}/common/profilo.jsp" class="icon-link" title="Area Personale">
+                    <i class="far fa-user-circle"></i>
+                    <span class="icon-label">Il Mio Profilo</span> </a>
+                <a href="${pageContext.request.contextPath}/LogoutServlet" class="icon-link logout-link" title="Esci">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span class="icon-label">Esci</span> </a>
+            <% } else { %>
+                <a href="${pageContext.request.contextPath}/login.jsp" class="login-link">ACCEDI</a>
+            <% } %>
+            
         </div>
         
     </div>
-</header>
+     
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const siteHeader = document.querySelector('.site-header');
+        
+        if (mobileMenuBtn && siteHeader) {
+            mobileMenuBtn.addEventListener('click', function() {
+                // Aggiunge o toglie la classe "menu-open" all'header
+                siteHeader.classList.toggle('menu-open');
+            });
+        }
+    });
+	</script>
+    
+    </header>

@@ -9,7 +9,13 @@
 	    window.MY_APP_CONTEXT = "${pageContext.request.contextPath}";
 	</script>
 	<script src="${pageContext.request.contextPath}/js/home.js" defer></script>
+	<script src="${pageContext.request.contextPath}/js/home-deals.js" defer></script>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/home.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
 <body class="page-home">
 
@@ -26,7 +32,7 @@
 
     <div class="scroll-container">
         <div class="story-div">
-            <h1>spero che tutto il creato esploda nel modo più violento</h1>
+            <jsp:include page="/WEB-INF/components/home-story.jsp" />
         </div>
     </div>
 
@@ -34,7 +40,7 @@
         <jsp:include page="/WEB-INF/components/home-goals.jsp" />
       
         <div class="card-div">
-            <h1>spero che tutto il creato esploda nel modo più violento</h1>
+            <jsp:include page="/WEB-INF/components/home-deals.jsp" />
         </div>  
     </main>
 

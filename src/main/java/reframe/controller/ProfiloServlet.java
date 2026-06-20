@@ -43,12 +43,10 @@ public class ProfiloServlet extends HttpServlet {
         
         try {
             // 2. RECUPERIAMO I DATI DAL DB TRAMITE I TUOI DAO
-            // Usa il metodo dei tuoi DAO che recupera i dati filtrando per l'username dell'utente
             List<Spedizione> listaSpedizioni = spedizioneDAO.doRetrieveByUtente(utenteLoggato.getUsername()); 
             List<Pagamento> listaPagamenti = pagamentoDAO.doRetrieveByUtente(utenteLoggato.getUsername());
             
             // 3. METTIAMO LE LISTE NELLA REQUEST
-            // Questo è il passaggio chiave: diamo i dati in pasto alla JSP
             request.setAttribute("listaSpedizioni", listaSpedizioni);
             request.setAttribute("listaPagamenti", listaPagamenti);
             
@@ -115,12 +113,12 @@ public class ProfiloServlet extends HttpServlet {
         String bio = request.getParameter("bio");
 
         if (telefono == null || telefono.trim().isEmpty() || !telefono.matches("^[0-9]{10}$")) {
-            response.sendRedirect(request.getContextPath() + "/common/profilo.jsp?error=telefonoObbligatorio");
+            response.sendRedirect(request.getContextPath() + "/ProfiloServlet?error=telefonoObbligatorio");
             return;
         }
         
         if (bio != null && bio.trim().length() > 255) {
-            response.sendRedirect(request.getContextPath() + "/common/profilo.jsp?error=bioTroppoLunga");
+            response.sendRedirect(request.getContextPath() + "/ProfiloServlet?error=bioTroppoLunga");
             return;
         }
 
@@ -131,13 +129,13 @@ public class ProfiloServlet extends HttpServlet {
             boolean successo = utenteDAO.doUpdate(utenteLoggato);
             if (successo) {
                 session.setAttribute("utente", utenteLoggato);
-                response.sendRedirect(request.getContextPath() + "/common/profilo.jsp?success=anagrafica");
+                response.sendRedirect(request.getContextPath() + "/ProfiloServlet?success=anagrafica");
             } else {
-                response.sendRedirect(request.getContextPath() + "/common/profilo.jsp?error=updateFallito");
+                response.sendRedirect(request.getContextPath() + "/ProfiloServlet?error=updateFallito");
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            response.sendRedirect(request.getContextPath() + "/common/profilo.jsp?error=db");
+            response.sendRedirect(request.getContextPath() + "/ProfiloServlet?error=db");
         }
     }
 
@@ -154,7 +152,7 @@ public class ProfiloServlet extends HttpServlet {
         // Controlli di corrispondenza e robustezza della nuova password
         if (nuovaPassword == null || nuovaPassword.length() < 8 || !nuovaPassword.equals(confermaPassword)) {
             System.out.println("2. FALLITO: Nuova password non valida o non coincide con la conferma.");
-            response.sendRedirect(request.getContextPath() + "/common/profilo.jsp?error=passwordInvalida");
+            response.sendRedirect(request.getContextPath() + "/ProfiloServlet?error=passwordInvalida");
             return;
         }
         
@@ -165,7 +163,7 @@ public class ProfiloServlet extends HttpServlet {
         // Controllo di sicurezza: verifica della password attuale dell'utente
         if (vecchiaPassword == null || !utenteLoggato.getPassword().equals(vecchiaPasswordCriptata)) {
             System.out.println("5. FALLITO: La vecchia password inserita è Sbagliata!");
-            response.sendRedirect(request.getContextPath() + "/common/profilo.jsp?error=vecchiaPasswordErrata");
+            response.sendRedirect(request.getContextPath() + "/ProfiloServlet?error=vecchiaPasswordErrata");
             return;
         }
         
@@ -216,7 +214,6 @@ public class ProfiloServlet extends HttpServlet {
         try {
             boolean successo = spedizioneDAO.doSave(nuovaSpedizione);
             if (successo) {
-                // PRIMA ERA: /common/profilo.jsp?success=...
                 response.sendRedirect(request.getContextPath() + "/ProfiloServlet?success=spedizioneSalvata");
             } else {
                 response.sendRedirect(request.getContextPath() + "/ProfiloServlet?error=salvataggioSpedizioneFallito");
@@ -262,7 +259,7 @@ public class ProfiloServlet extends HttpServlet {
 
         // Controllo di sicurezza sui parametri
         if (type == null || idStr == null) {
-            response.sendRedirect(request.getContextPath() + "/common/profilo.jsp?error=parametriMancanti");
+            response.sendRedirect(request.getContextPath() + "/ProfiloServlet?error=parametriMancanti");
             return;
         }
 
@@ -281,16 +278,16 @@ public class ProfiloServlet extends HttpServlet {
 
             // Risposta al client
             if (successo) {
-                response.sendRedirect(request.getContextPath() + "/common/profilo.jsp?success=eliminazione");
+                response.sendRedirect(request.getContextPath() + "/ProfiloServlet?success=eliminazione");
             } else {
-                response.sendRedirect(request.getContextPath() + "/common/profilo.jsp?error=eliminazioneFallita");
+                response.sendRedirect(request.getContextPath() + "/ProfiloServlet?error=eliminazioneFallita");
             }
 
         } catch (NumberFormatException e) {
-            response.sendRedirect(request.getContextPath() + "/common/profilo.jsp?error=formatoIdErrato");
+            response.sendRedirect(request.getContextPath() + "/ProfiloServlet?error=formatoIdErrato");
         } catch (SQLException e) {
             e.printStackTrace();
-            response.sendRedirect(request.getContextPath() + "/common/profilo.jsp?error=db");
+            response.sendRedirect(request.getContextPath() + "/ProfiloServlet?error=db");
         }
     }
 }
