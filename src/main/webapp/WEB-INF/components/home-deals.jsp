@@ -17,7 +17,7 @@
     
     <div class="val-card-back">
         <i class="ph ph-arrows-clockwise card-icon"></i>
-        <span><a href="#">SCOPRI I NOSTRI ARTICOLI RICONDIZIONATI</a></span>
+        <span><a href="${pageContext.request.contextPath}/ProdottoServlet?tipo=Usato">SCOPRI I NOSTRI ARTICOLI RICONDIZIONATI</a></span>
     </div>
 </div>
 
@@ -30,7 +30,7 @@
     </div>
     <div class="val-card-back">
         <i class="ph ph-sparkle card-icon"></i>
-        <span><a href="#">ESPLORA LE NUOVE TECNOLOGIE</a></span>
+        <span><a href="${pageContext.request.contextPath}/ProdottoServlet?tipo=Nuovo">ESPLORA LE NUOVE TECNOLOGIE</a></span>
     </div>
 </div>
 
@@ -43,7 +43,7 @@
     </div>
     <div class="val-card-back">
         <i class="ph ph-film-strip card-icon"></i>
-        <span><a href="#">VIAGGIA NEL TEMPO CON LA NOSTRA LINEA COLLEZIONISMO</a></span>
+        <span><a href="${pageContext.request.contextPath}/ProdottoServlet?tipo=Collezione">VIAGGIA NEL TEMPO CON LA NOSTRA LINEA COLLEZIONISMO</a></span>
     </div>
 </div>
 </div>

@@ -31,16 +31,15 @@
             </svg> 
             <div class="logo-text">
                 <span class="logo-title">REFRAME</span>
-                <span class="logo-subtitle">STORIE DI FOTOCAMERE | RICERCA & RESTAURO</span>
             </div>
         </a>
 
         <nav class="header-nav">
             <ul class="nav-links">
-                <li><a href="#">RICONDIZIONATE</a></li>
-                <li><a href="#">NUOVE</a></li>
-                <li><a href="#">COLLEZIONISMO</a></li>
-                </ul>
+                <li><a href="${pageContext.request.contextPath}/ProdottoServlet?tipo=Usato">RICONDIZIONATE</a></li>
+				<li><a href="${pageContext.request.contextPath}/ProdottoServlet?tipo=Nuovo">NUOVE</a></li>
+				<li><a href="${pageContext.request.contextPath}/ProdottoServlet?tipo=Collezione">COLLEZIONISMO</a></li>
+            </ul>
         </nav>
         
         <div class="header-search">
@@ -57,9 +56,9 @@
         <div class="header-icons">
             
             <ul class="nav-links mobile-only-links">
-                <li><a href="#">RICONDIZIONATE</a></li>
-                <li><a href="#">NUOVE</a></li>
-                <li><a href="#">COLLEZIONISMO</a></li>
+                <li><a href="${pageContext.request.contextPath}/ProdottoServlet?tipo=Usato">RICONDIZIONATE</a></li>
+				<li><a href="${pageContext.request.contextPath}/ProdottoServlet?tipo=Nuovo">NUOVE</a></li>
+				<li><a href="${pageContext.request.contextPath}/ProdottoServlet?tipo=Collezione">COLLEZIONISMO</a></li>
             </ul>
 
             

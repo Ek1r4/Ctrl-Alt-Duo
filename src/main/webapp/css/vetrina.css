@@ -1,1 +1,394 @@
 @charset "UTF-8";
+
+/* =========================================
+   IMPOSTAZIONI GENERALI (Light Theme)
+   ========================================= */
+.catalog-page {
+    background-color: var(--panna-carta, #f8f5f0); 
+    color: var(--antracite-scuro, #1A1A1A);
+    min-height: 100vh;
+    padding-bottom: 80px;
+}
+
+/* Modificato: occupa tutto lo schermo spingendo i filtri all'estrema sinistra */
+.catalog-container {
+    width: 100%;
+    max-width: 100%; 
+    margin: 0;
+    padding: 40px 4%; /* 4% di respiro dai bordi del monitor */
+    box-sizing: border-box;
+    font-family: var(--font-testi);
+}
+
+.catalog-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.catalog-header h1 {
+    font-family: var(--font-titoli);
+    font-size: clamp(2.5rem, 5vw, 3.5rem);
+    color: var(--marrone-cuoio);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    letter-spacing: 2px;
+}
+
+.catalog-header p {
+    color: var(--grigio-taupe);
+    font-size: 1.1rem;
+}
+
+/* =========================================
+   MESSAGGI DI STATO
+   ========================================= */
+.db-error-message {
+    color: var(--rosso-ruggine, #D32F2F);
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.empty-catalog-msg {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: var(--grigio-taupe);
+    padding: 40px 0;
+    font-size: 1.1rem;
+}
+
+/* =========================================
+   LAYOUT A DUE COLONNE
+   ========================================= */
+.catalog-body {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+}
+
+/* =========================================
+   SIDEBAR FILTRI (Stile Amazon - Tutto a Sinistra)
+   ========================================= */
+.catalog-sidebar {
+    width: 240px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 100px; 
+    background: transparent;
+}
+
+.catalog-sidebar h3 {
+    font-family: var(--font-titoli);
+    font-size: 1.2rem;
+    color: var(--antracite-scuro);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+.filter-group {
+    margin-bottom: 25px;
+}
+
+.filter-group h4 {
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--antracite-scuro);
+    margin-bottom: 12px;
+}
+
+.filter-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    color: var(--antracite-scuro);
+    transition: color 0.2s;
+}
+
+.filter-label:hover {
+    color: var(--verde-ottanio);
+}
+
+/* Checkbox Custom Stile Amazon */
+.filter-label input[type="checkbox"] {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--grigio-taupe);
+    border-radius: 3px;
+    background-color: transparent;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s;
+}
+
+.filter-label input[type="checkbox"]:checked {
+    background-color: var(--verde-ottanio);
+    border-color: var(--verde-ottanio);
+}
+
+.filter-label input[type="checkbox"]:checked::after {
+    content: '✔';
+    position: absolute;
+    color: white;
+    font-size: 10px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* --- Barra di Ricerca Sidebar --- */
+.sidebar-search {
+    display: flex;
+    align-items: center;
+    margin-bottom: 25px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+    background-color: #ffffff;
+    overflow: hidden;
+    transition: border-color 0.3s;
+}
+
+.sidebar-search:focus-within {
+    border-color: var(--verde-ottanio);
+    box-shadow: 0 0 0 2px rgba(0, 128, 128, 0.1); /* Sostituisci i valori RGB se il tuo verde ottanio è diverso */
+}
+
+.catalog-search-input {
+    flex-grow: 1;
+    border: none;
+    padding: 12px 15px;
+    font-family: var(--font-testi);
+    font-size: 0.95rem;
+    color: var(--antracite-scuro);
+    outline: none;
+    background: transparent;
+}
+
+.catalog-search-input::placeholder {
+    color: var(--grigio-taupe);
+}
+
+.catalog-search-btn {
+    background: transparent;
+    border: none;
+    padding: 10px 15px;
+    color: var(--grigio-taupe);
+    cursor: pointer;
+    font-size: 1rem;
+    transition: color 0.3s;
+}
+
+.catalog-search-btn:hover {
+    color: var(--verde-ottanio);
+}
+
+/* =========================================
+   GRIGLIA E CARD "POLAROID"
+   ========================================= */
+.catalog-main {
+    flex-grow: 1;
+}
+
+/* Modificato: Forza esattamente 4 colonne per riga */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+}
+
+/* Effetto Polaroid Stampata */
+.product-card {
+    background-color: #ffffff; /* Bianco puro fotografico */
+    padding: 15px 15px 25px 15px; /* Margini asimmetrici: più spazio in basso */
+    border-radius: 2px; /* Angoli leggermente spigolosi */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08); /* Ombra realistica */
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: var(--antracite-scuro);
+    position: relative;
+}
+
+/* Hover: La foto si solleva e ruota leggermente */
+.product-card:hover {
+    transform: translateY(-8px) rotate(1deg);
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+}
+
+/* Riquadro interno della foto */
+.product-image-container {
+    width: 100%;
+    height: 250px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #fcfcfc; /* Sfondo quasi bianco per contrasto */
+    border: 1px solid #ebebeb;
+    margin-bottom: 15px;
+    position: relative;
+    overflow: hidden;
+}
+
+.product-image-container img {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1)); /* Ombra dell'oggetto */
+}
+
+.product-card:hover .product-image-container img {
+    transform: scale(1.05);
+}
+
+/* Etichette sopra l'immagine */
+.card-badges {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 2;
+}
+
+.badge {
+    background-color: rgba(26, 26, 26, 0.7);
+    color: white;
+    font-family: var(--font-tecnico);
+    font-size: 0.7rem;
+    padding: 4px 8px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.badge.highlight {
+    background-color: var(--verde-ottanio); 
+}
+
+/* Testi della Polaroid */
+.product-brand {
+    font-family: var(--font-tecnico);
+    font-size: 0.8rem;
+    color: var(--grigio-taupe);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.product-name {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: var(--antracite-scuro);
+    margin: 5px 0 10px 0;
+    line-height: 1.2;
+}
+
+.product-price {
+    font-family: var(--font-titoli);
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: var(--marrone-cuoio);
+    margin-top: auto;
+}
+
+/* =========================================
+   FUNZIONALITÀ ADMIN E OVERLAY CARD
+   ========================================= */
+
+/* Link invisibile che rende cliccabile l'intera card come prima */
+.card-main-link {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 5; /* Sta sopra all'immagine e ai testi */
+}
+
+/* Form per eliminare il prodotto */
+.admin-delete-form {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 20; /* Deve stare rigorosamente SOPRA al card-main-link! */
+}
+
+/* Bottone Cestino */
+.btn-delete-product {
+    background-color: white;
+    color: var(--rosso-ruggine, #D32F2F);
+    border: 1px solid var(--rosso-ruggine, #D32F2F);
+    border-radius: 4px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.btn-delete-product:hover {
+    background-color: var(--rosso-ruggine, #D32F2F);
+    color: white;
+    transform: scale(1.1);
+}
+
+/* =========================================
+   RESPONSIVE (Per far scalare bene la griglia)
+   ========================================= */
+/* Schermi medi / Notebook (3 per riga) */
+@media (max-width: 1400px) {
+    .products-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Tablet (Filtri in alto, 2 prodotti per riga) */
+@media (max-width: 1024px) {
+    .catalog-body {
+        flex-direction: column;
+    }
+    
+    .catalog-sidebar {
+        width: 100%;
+        position: static;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 30px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        padding-bottom: 20px;
+        margin-bottom: 10px;
+    }
+
+    .filter-group {
+        margin-bottom: 0;
+        flex: 1;
+        min-width: 150px;
+    }
+
+    .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Mobile (1 prodotto per riga) */
+@media (max-width: 576px) {
+    .products-grid {
+        grid-template-columns: 1fr;
+    }
+    .catalog-container {
+        padding: 20px 5%; /* Meno spazio laterale su cellulare */
+    }
+}
