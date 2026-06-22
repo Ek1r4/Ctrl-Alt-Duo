@@ -9,7 +9,7 @@ public class Utente
 	    private String nome;
 	    private String cognome;
 	    private String bio;
-	    private boolean isAdmin;
+	    private int isAdmin;
 
 	    // Costruttore vuoto
 	    public Utente() {
@@ -83,12 +83,11 @@ public class Utente
 	        this.bio = bio;
 	    }
 	    
-	    public boolean isAdmin() {
+	    public int getIsAdmin() {
 	        return isAdmin;
 	    }
 
-	    // 3. Aggiungi il Setter
-	    public void setAdmin(boolean isAdmin) {
+	    public void setIsAdmin(int isAdmin) {
 	        this.isAdmin = isAdmin;
 	    }
 	    

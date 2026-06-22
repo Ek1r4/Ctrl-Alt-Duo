@@ -62,15 +62,34 @@
                 <li><a href="#">COLLEZIONISMO</a></li>
             </ul>
 
-            <a href="${pageContext.request.contextPath}/carrello.jsp" class="icon-link cart-link" title="Carrello">
-                <i class="fas fa-shopping-cart"></i>
-                <span class="icon-label">Carrello</span> <span class="cart-badge"></span>
-            </a>
             
-            <% if (session.getAttribute("utente") != null) { %>
-                <a href="${pageContext.request.contextPath}/common/profilo.jsp" class="icon-link" title="Area Personale">
-                    <i class="far fa-user-circle"></i>
-                    <span class="icon-label">Il Mio Profilo</span> </a>
+            <% if (session.getAttribute("utente") != null) { 
+            	reframe.model.beans.Utente userMenu = (reframe.model.beans.Utente) session.getAttribute("utente");
+            %>
+                <% if (userMenu.getIsAdmin() > 0) { %>
+                
+                    <a href="${pageContext.request.contextPath}/admin/profiloAdmin.jsp" class="icon-link" title="Area Personale Admin">
+                        <i class="far fa-user-circle"></i>
+                        <span class="icon-label">Profilo Admin</span> 
+                    </a>
+                    
+                    <a href="${pageContext.request.contextPath}/admin/provaAdmin.jsp" class="icon-link" title="Pannello di Gestione">
+                    	<i class="fas fa-sliders-h"></i> <span class="icon-label">Gestione</span>
+                	</a>
+                	
+                <% } else { %>
+                
+                    <a href="${pageContext.request.contextPath}/common/profilo.jsp" class="icon-link" title="Area Personale">
+                        <i class="far fa-user-circle"></i>
+                        <span class="icon-label">Il Mio Profilo</span> 
+                    </a>
+                    
+                    <a href="${pageContext.request.contextPath}/carrello.jsp" class="icon-link cart-link" title="Carrello">
+                		<i class="fas fa-shopping-cart"></i>
+                		<span class="icon-label">Carrello</span> <span class="cart-badge"></span>
+            		</a>
+            		
+                <% } %>
                 <a href="${pageContext.request.contextPath}/LogoutServlet" class="icon-link logout-link" title="Esci">
                     <i class="fas fa-sign-out-alt"></i>
                     <span class="icon-label">Esci</span> </a>

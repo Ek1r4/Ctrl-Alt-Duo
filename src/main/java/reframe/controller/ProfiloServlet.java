@@ -57,6 +57,14 @@ public class ProfiloServlet extends HttpServlet {
             request.setAttribute("listaPagamenti", new java.util.ArrayList<>());
         }
         
+        if (utenteLoggato.getIsAdmin() > 0) {
+            // È un admin, gli mostro la sua dashboard personalizzata
+            request.getRequestDispatcher("/admin/profiloAdmin.jsp").forward(request, response);
+        } else {
+            // È un utente normale, gli mostro il profilo classico
+            request.getRequestDispatcher("/common/profilo.jsp").forward(request, response);
+        }
+        
         // 4. INVIAMO TUTTO ALLA JSP
         request.getRequestDispatcher("/common/profilo.jsp").forward(request, response);
     }

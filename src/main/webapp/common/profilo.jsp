@@ -137,7 +137,14 @@
             <div class="profile-card general-info-card">
                 
                 <div class="card-header profile-card-header">
-                    <h2><i class="fas fa-user"></i> <%= utenteLoggato.getUsername() %></h2>
+                    <h2>
+        				<i class="fas fa-user"></i> <%= utenteLoggato.getUsername() %>
+        				<% if (utenteLoggato.getIsAdmin() == 1) { %>
+            				<span class="admin-badge badge-admin">ADMIN</span>
+        				<% } else if (utenteLoggato.getIsAdmin() == 2) { %>
+            				<span class="admin-badge badge-superadmin">SUPER ADMIN</span>
+        				<% } %>
+    				</h2>
                     <div>
                         <button id="btnEditProfile" class="btn-edit-profile" title="Modifica Profilo">
                             <i class="fas fa-pencil-alt"></i>
