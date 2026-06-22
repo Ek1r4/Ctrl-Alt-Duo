@@ -31,7 +31,6 @@
             </svg> 
             <div class="logo-text">
                 <span class="logo-title">REFRAME</span>
-                <span class="logo-subtitle">STORIE DI FOTOCAMERE | RICERCA & RESTAURO</span>
             </div>
         </a>
 
