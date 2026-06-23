@@ -31,7 +31,6 @@
             </svg> 
             <div class="logo-text">
                 <span class="logo-title">REFRAME</span>
-                <span class="logo-subtitle">STORIE DI FOTOCAMERE | RICERCA & RESTAURO</span>
             </div>
         </a>
 
@@ -62,7 +61,7 @@
                 <li><a href="#">COLLEZIONISMO</a></li>
             </ul>
 
-            <a href="${pageContext.request.contextPath}/carrello.jsp" class="icon-link cart-link" title="Carrello">
+            <a href="${pageContext.request.contextPath}/common/carrello.jsp" class="icon-link cart-link" title="Carrello">
                 <i class="fas fa-shopping-cart"></i>
                 <span class="icon-label">Carrello</span> <span class="cart-badge"></span>
             </a>
