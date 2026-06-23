@@ -44,23 +44,38 @@
             <aside class="catalog-sidebar">
             
             	<div class="sidebar-search">
-                    <input type="text" class="catalog-search-input" placeholder="Cerca modello o seriale...">
+                    <input type="text" class="catalog-search-input" placeholder="Cerca..." 
+                           value="<%= request.getParameter("search") != null ? request.getParameter("search") : "" %>">
                     <button type="button" class="catalog-search-btn" title="Cerca">
                         <i class="fas fa-search"></i>
                     </button>
                 </div>
             
-                <h3>FILTRA PER</h3>
+                <div class="sidebar-title-container">
+                    <h3>FILTRA PER</h3>
+                    <button type="button" id="btn-reset-filtri" class="btn-reset-filtri" title="Azzera filtri">
+                        <i class="fas fa-eraser"></i>
+                    </button>
+                </div>
                 
                 <div class="filter-group">
                     <h4>Marca</h4>
-                    <label class="filter-label"><input type="checkbox" name="marca" value="Leica"> Leica</label>
-                    <label class="filter-label"><input type="checkbox" name="marca" value="Hasselblad"> Hasselblad</label>
-                    <label class="filter-label"><input type="checkbox" name="marca" value="Nikon"> Nikon</label>
-                    <label class="filter-label"><input type="checkbox" name="marca" value="Canon"> Canon</label>
-                    <label class="filter-label"><input type="checkbox" name="marca" value="Sony"> Sony</label>
-                    <label class="filter-label"><input type="checkbox" name="marca" value="Fujifilm"> Fujifilm</label>
-                    <label class="filter-label"><input type="checkbox" name="marca" value="Polaroid"> Polaroid</label>
+                    <%
+                        // Recuperiamo la lista di stringhe passata dalla Servlet
+                        List<String> marcheDisponibili = (List<String>) request.getAttribute("marcheDisponibili");
+                        
+                        if (marcheDisponibili != null && !marcheDisponibili.isEmpty()) {
+                            for (String marca : marcheDisponibili) {
+                    %>
+                                <label class="filter-label">
+                                    <input type="checkbox" name="marca" value="<%= marca %>"> <%= marca %>
+                                </label>
+                    <%
+                            }
+                        } else {
+                    %>
+                            <p class="empty-catalog-msg" >Nessuna marca disponibile</p>
+                    <%  } %>
                 </div>
 
                 <div class="filter-group">
@@ -73,56 +88,20 @@
             </aside>
 
             <div class="catalog-main">
-                <div class="products-grid">
-                    <%
-                        List<Prodotto> lista = (List<Prodotto>) request.getAttribute("listaProdotti");
-                        
-                        if (lista != null && !lista.isEmpty()) {
-                            for (Prodotto p : lista) { 
-                    %>
-                            <div class="product-card">
-                                
-                                <a href="<%= request.getContextPath() %>/DettaglioProdottoServlet?id=<%= p.getId() %>" class="card-main-link" title="Vedi dettaglio"></a>
-                                
-                                <%-- SEZIONE ADMIN: Tasto Elimina --%>
-                                <% if (isAdmin) { %>
-                                    <form action="<%= request.getContextPath() %>/ProdottoServlet" method="POST" class="admin-delete-form">
-                                    	<input type="hidden" name="action" value="delete">
-                                        <input type="hidden" name="idProdotto" value="<%= p.getId() %>">
-                                        <button type="submit" class="btn-delete-product" title="Elimina Prodotto" onclick="return confirm('Sei sicuro di voler eliminare definitivamente questo prodotto?');">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
-                                    </form>
-                                <% } %>
-
-                                <div class="product-image-container">
-                                    <div class="card-badges">
-                                        <span class="badge highlight"><%= p.getTipo() %></span>
-                                        <% if (p.getCondizioneCollezionistica() != null && !p.getCondizioneCollezionistica().isEmpty()) { %>
-                                            <span class="badge">Grado <%= p.getCondizioneCollezionistica() %></span>
-                                        <% } %>
-                                    </div>
-                                    
-                                    <img src="<%= request.getContextPath() %><%= p.getImageUrl() %>" alt="<%= p.getNome() %>">
-                                </div>
-                                
-                                <span class="product-brand"><%= p.getMarchio() %></span>
-                                <h3 class="product-name"><%= p.getNome() %></h3>
-                                
-                                <div class="product-price">
-                                    € <%= String.format("%.2f", p.getPrezzo()) %>
-                                </div>
-                            </div>
-                    <% 
-                            }
-                        } else if (lista != null && lista.isEmpty()) { 
-                    %>
-                        <p class="empty-catalog-msg">Nessuna fotocamera trovata per questa categoria.</p>
-                    <% } %>
+                <div class="products-grid" id="grid-container">
+                    <jsp:include page="/WEB-INF/components/griglia-prodotti.jsp" />
                 </div>
-            </div> </div> </main>
+            </div>
+        </div>
+    </main>
 
     <%@ include file="/WEB-INF/components/footer.jsp" %>
-
+	
+	<script>
+        // Rendiamo il contextPath globale per farlo leggere al file .js
+        const contextPath = '<%= request.getContextPath() %>';
+    </script>
+    <script src="<%= request.getContextPath() %>/js/filtri-catalogo.js"></script>
+    
 </body>
 </html>

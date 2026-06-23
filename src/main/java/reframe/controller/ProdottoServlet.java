@@ -18,33 +18,57 @@ public class ProdottoServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // 1. Inizializziamo il DAO subito
         ProdottoDAO dao = new ProdottoDAO();
         
-        // Controlliamo se l'utente ha cliccato su una categoria specifica (es. "Ricondizionate")
+        // 2. Recuperiamo i parametri (se sono null, le variabili saranno null, è normale)
+        String isAjax = request.getParameter("ajax");
+        String[] marcheScelte = request.getParameterValues("marca");
+        String[] prezziScelti = request.getParameterValues("prezzo");
+        String searchTesto = request.getParameter("search");
         String tipoFiltro = request.getParameter("tipo");
         
         try {
             List<Prodotto> catalogo;
             
-            if (tipoFiltro != null && !tipoFiltro.trim().isEmpty()) {
-                // Filtriamo per tipo
+            // 3. Logica di filtraggio
+            boolean hasFiltri = (marcheScelte != null && marcheScelte.length > 0) || 
+                                (prezziScelti != null && prezziScelti.length > 0) ||
+                                (searchTesto != null && !searchTesto.trim().isEmpty());
+            
+            if (hasFiltri) {
+                catalogo = dao.fetchProdottiFiltrati(marcheScelte, prezziScelti, searchTesto);
+                request.setAttribute("titoloVetrina", "Risultati Ricerca");
+            } else if (tipoFiltro != null && !tipoFiltro.trim().isEmpty()) {
                 catalogo = dao.fetchProdottiByTipo(tipoFiltro);
-                request.setAttribute("titoloVetrina", "Fotocamere di tipo " + tipoFiltro);
+                request.setAttribute("titoloVetrina", "FOTOCAMERE DI TIPO " + tipoFiltro);
             } else {
-                // Nessun filtro: mostriamo tutto il catalogo
                 catalogo = dao.fetchAllProdotti();
                 request.setAttribute("titoloVetrina", "Tutto il Catalogo");
             }
             
-            // Inseriamo la lista nella request per farla leggere alla JSP
             request.setAttribute("listaProdotti", catalogo);
+            
+            // 4. Recupero marche per la sidebar (ATTENZIONE: questo deve stare qui!)
+            // Se dao è null, qui avresti la NullPointerException
+            List<String> marcheDisponibili = dao.fetchDistinctMarche(); 
+            request.setAttribute("marcheDisponibili", marcheDisponibili);
+            
+            // ... resto del codice ...
+            
+            // INTERCETTAZIONE AJAX: Restituiamo solo il frammento HTML senza ricaricare la pagina
+            if ("true".equals(isAjax)) {
+                // Percorso corretto partendo dalla root dell'applicazione, senza contextPath
+                request.getRequestDispatcher("/WEB-INF/components/griglia-prodotti.jsp").forward(request, response);
+                return; // Ferma l'esecuzione per non inviare anche l'header e il footer
+            }
             
         } catch (SQLException e) {
             e.printStackTrace();
-            request.setAttribute("erroreDatabase", "Ci scusiamo, impossibile caricare il catalogo in questo momento.");
+            request.setAttribute("erroreDatabase", "Errore di caricamento del catalogo.");
         }
 
-        // Passiamo la palla all'interfaccia grafica
+        // Normale caricamento della pagina intera (es. prima visita o refresh manuale col tasto F5)
         request.getRequestDispatcher("/vetrina.jsp").forward(request, response);
     }
     
@@ -52,25 +76,24 @@ public class ProdottoServlet extends HttpServlet {
         
         String action = request.getParameter("action");
         
-        // INTERCETTAZIONE AZIONE: ELIMINA PRODOTTO
+        // INTERCETTAZIONE AZIONE: ELIMINA PRODOTTO (Lato Admin)
         if ("delete".equals(action)) {
             
-            // 1. CONTROLLO DI SICUREZZA MANUALE (Fondamentale!)
+            // 1. Controllo di sicurezza per accertarsi che chi richiede l'eliminazione sia un Admin loggato
             Utente utenteLoggato = (Utente) request.getSession().getAttribute("utente");
             if (utenteLoggato == null || utenteLoggato.getIsAdmin() == 0) {
-                // Se non sei loggato o non sei admin, ti sbatto fuori
                 response.sendRedirect(request.getContextPath() + "/accessoNegato.jsp");
                 return;
             }
             
-            // 2. RECUPERO ID ED ELIMINAZIONE
+            // 2. Recupero ID del prodotto da eliminare
             String idProdotto = request.getParameter("idProdotto");
             if (idProdotto != null && !idProdotto.trim().isEmpty()) {
-                reframe.model.dao.ProdottoDAO dao = new reframe.model.dao.ProdottoDAO();
+                ProdottoDAO dao = new ProdottoDAO();
                 try {
                     dao.deleteProdotto(idProdotto);
                     response.sendRedirect(request.getContextPath() + "/ProdottoServlet?success=eliminato");
-                } catch (java.sql.SQLException e) {
+                } catch (SQLException e) {
                     e.printStackTrace();
                     response.sendRedirect(request.getContextPath() + "/ProdottoServlet?erroreDatabase=Impossibile eliminare il prodotto.");
                 }
@@ -78,11 +101,8 @@ public class ProdottoServlet extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + "/ProdottoServlet");
             }
             
-            return;
+            return; // Ferma l'esecuzione per evitare di procedere con altro codice doPost
         }
-        
-        
-        // ... Qui sotto ci sarà il resto del tuo codice doPost (es. per inserire un prodotto o per le recensioni) ...
         
     }
 }

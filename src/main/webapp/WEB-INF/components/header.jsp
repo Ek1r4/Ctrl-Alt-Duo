@@ -43,12 +43,15 @@
         </nav>
         
         <div class="header-search">
-            <input type="text" class="search-input" placeholder="Cerca prodotti...">
-            <button type="button" class="search-btn" title="Cerca">
-                <i class="fas fa-search"></i>
-            </button>
-        </div>
-
+        <form action="<%= request.getContextPath() %>/ProdottoServlet" method="GET" class="header-search-form">
+    		<input type="text" name="search" class="search-input" placeholder="Cerca..." 
+          		 value="<%= request.getParameter("search") != null ? request.getParameter("search") : "" %>">
+    		<button type="submit" class="search-btn">
+        		<i class="fas fa-search"></i>
+    		</button>
+		</form>
+		</div>
+		
 		<button class="hamburger-btn" id="mobileMenuBtn">
             <i class="fas fa-bars"></i>
         </button>
@@ -68,8 +71,8 @@
                 <% if (userMenu.getIsAdmin() > 0) { %>
                 
                     <a href="${pageContext.request.contextPath}/admin/profiloAdmin.jsp" class="icon-link" title="Area Personale Admin">
-                        <i class="far fa-user-circle"></i>
-                        <span class="icon-label">Profilo Admin</span> 
+                        <i class="fas fa-headset"></i>
+                        <span class="icon-label">Assistenza</span> 
                     </a>
                     
                     <a href="${pageContext.request.contextPath}/admin/provaAdmin.jsp" class="icon-link" title="Pannello di Gestione">

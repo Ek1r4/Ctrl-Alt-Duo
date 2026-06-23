@@ -200,81 +200,99 @@ public class ProdottoDAO {
         }
     }
     
- // ==========================================================================
-    // MAIN PER IL TESTING E DEBUG DEL DAO
-    // ==========================================================================
-    public static void main(String[] args) {
-        ProdottoDAO dao = new ProdottoDAO();
-        System.out.println("=== INIZIO COLLAUDO DAO PRODOTTI ===");
-
+ // Recupera la lista di tutte le marche (senza duplicati) ordinate in ordine alfabetico
+    public List<String> fetchDistinctMarche() throws SQLException {
+        List<String> marche = new ArrayList<>();
+        String query = "SELECT DISTINCT Marchio FROM Prodotto ORDER BY Marchio ASC";
+        
+        Connection conn = null;
+        PreparedStatement ps = null;
+        
         try {
-            // --- 1. TEST: insertProdotto ---
-            System.out.println("\n[TEST 1] Inserimento nuovo prodotto...");
-            Prodotto nuovo = new Prodotto();
-            nuovo.setId("TEST01");
-            nuovo.setMarchio("Minolta");
-            nuovo.setNome("X-700");
-            nuovo.setSeriale("MNL-998877");
-            nuovo.setPrezzo(250.00);
-            nuovo.setModelUrl("/assets/3d/minolta_x700.gltf");
-            nuovo.setImageUrl("/assets/img/minolta_x700.jpg");
-            nuovo.setDescrizione("Fotocamera analogica perfetta per iniziare il restauro.");
-            nuovo.setInStock(5);
-            nuovo.setTipo("Usato");
-            nuovo.setStato("Ottimo");
-            nuovo.setNumeroScatti(1500);
-            nuovo.setCondizioneCollezionistica("Grado A");
-            nuovo.setIva(22);
-
-            dao.insertProdotto(nuovo);
-            System.out.println("-> OK: Fotocamera inserita nel DB.");
-
-            // --- 2. TEST: fetchProdottoById ---
-            System.out.println("\n[TEST 2] Recupero prodotto tramite ID...");
-            Prodotto recuperato = dao.fetchProdottoById("TEST01");
-            if (recuperato != null) {
-                System.out.println("-> OK: Trovato " + recuperato.getMarchio() + " " + recuperato.getNome());
-                System.out.println("         Prezzo attuale: €" + recuperato.getPrezzo());
-            } else {
-                System.out.println("-> ERRORE: Prodotto non trovato!");
-            }
-
-            // --- 3. TEST: updateProdotto ---
-            System.out.println("\n[TEST 3] Aggiornamento del prezzo e dello stock...");
-            if (recuperato != null) {
-                recuperato.setPrezzo(199.99); // Sconto
-                recuperato.setInStock(2);     // Scorte diminuite
-                boolean aggiornato = dao.updateProdotto(recuperato);
-                System.out.println("-> OK: Prodotto aggiornato? " + aggiornato);
-            }
-
-            // --- 4. TEST: fetchProdottiByTipo ---
-            System.out.println("\n[TEST 4] Recupero prodotti per tipo (Usato)...");
-            List<Prodotto> ricondizionati = dao.fetchProdottiByTipo("Usato");
-            System.out.println("-> OK: Trovati " + ricondizionati.size() + " prodotti di questa categoria.");
-
-            // --- 5. TEST: fetchAllProdotti ---
-            System.out.println("\n[TEST 5] Recupero intero catalogo...");
-            List<Prodotto> catalogo = dao.fetchAllProdotti();
-            System.out.println("-> OK: Il catalogo contiene attualmente " + catalogo.size() + " prodotti.");
-
-            // --- 6. TEST: deleteProdotto ---
-            System.out.println("\n[TEST 6] Eliminazione prodotto di test...");
-            dao.deleteProdotto("TEST01");
+            conn = ConnessioneDB.getConnection();
+            ps = conn.prepareStatement(query);
             
-            // Verifica finale
-            Prodotto verificaEliminazione = dao.fetchProdottoById("TEST-CAM-01");
-            if (verificaEliminazione == null) {
-                System.out.println("-> OK: Prodotto eliminato definitivamente dal DB.");
-            } else {
-                System.out.println("-> ERRORE: Il prodotto esiste ancora!");
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    marche.add(rs.getString("Marchio"));
+                }
+            }
+        } finally {
+            if (ps != null) ps.close();
+            if (conn != null) ConnessioneDB.releaseConnection(conn);
+        }
+        return marche;
+    }
+    
+ // Recupera i prodotti filtrati per marca, fascia di prezzo e testo di ricerca
+    public List<Prodotto> fetchProdottiFiltrati(String[] marche, String[] fascePrezzo, String search) throws SQLException {
+        List<Prodotto> prodotti = new ArrayList<>();
+        StringBuilder query = new StringBuilder("SELECT * FROM Prodotto WHERE 1=1 ");
+
+        // 1. Costruzione dinamica per i Marchi
+        if (marche != null && marche.length > 0) {
+            query.append("AND Marchio IN (");
+            for (int i = 0; i < marche.length; i++) {
+                query.append("?");
+                if (i < marche.length - 1) query.append(",");
+            }
+            query.append(") ");
+        }
+
+        // 2. Costruzione dinamica per i Prezzi
+        if (fascePrezzo != null && fascePrezzo.length > 0) {
+            query.append("AND (");
+            for (int i = 0; i < fascePrezzo.length; i++) {
+                switch (fascePrezzo[i]) {
+                    case "0-500": query.append("(Prezzo BETWEEN 0 AND 500)"); break;
+                    case "500-1000": query.append("(Prezzo BETWEEN 500.01 AND 1000)"); break;
+                    case "1000-2000": query.append("(Prezzo BETWEEN 1000.01 AND 2000)"); break;
+                    case "2000-max": query.append("(Prezzo > 2000)"); break;
+                }
+                if (i < fascePrezzo.length - 1) query.append(" OR ");
+            }
+            query.append(") ");
+        }
+
+        // 3. Costruzione dinamica per la Barra di Ricerca forzando il minuscolo
+        boolean hasSearch = (search != null && !search.trim().isEmpty());
+        if (hasSearch) {
+            query.append("AND (LOWER(Nome) LIKE ? OR LOWER(Marchio) LIKE ? OR LOWER(Seriale) LIKE ?) ");
+        }
+
+        Connection conn = null;
+        PreparedStatement ps = null;
+        try {
+            conn = ConnessioneDB.getConnection();
+            ps = conn.prepareStatement(query.toString());
+
+            int paramIndex = 1;
+            
+            // Inserimento parametri Marche
+            if (marche != null && marche.length > 0) {
+                for (String marca : marche) {
+                    ps.setString(paramIndex++, marca);
+                }
+            }
+            
+            // NUOVO: Inserimento parametri Ricerca
+            if (hasSearch) {
+                // I % indicano a SQL di cercare la stringa in qualsiasi posizione
+                String searchPattern = "%" + search.trim() + "%"; 
+                ps.setString(paramIndex++, searchPattern); // Per Nome
+                ps.setString(paramIndex++, searchPattern); // Per Marchio
+                ps.setString(paramIndex++, searchPattern); // Per Seriale
             }
 
-            System.out.println("\n=== COLLAUDO COMPLETATO CON SUCCESSO! ===");
-
-        } catch (Exception e) {
-            System.out.println("\n[!] CRASH DURANTE IL TEST [!]");
-            e.printStackTrace();
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    prodotti.add(estraiProdotto(rs)); 
+                }
+            }
+        } finally {
+            if (ps != null) ps.close();
+            if (conn != null) ConnessioneDB.releaseConnection(conn);
         }
+        return prodotti;
     }
 }
