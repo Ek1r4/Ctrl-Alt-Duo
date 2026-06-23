@@ -224,12 +224,17 @@ public class ProdottoDAO {
         return marche;
     }
     
- // Recupera i prodotti filtrati per marca, fascia di prezzo e testo di ricerca
-    public List<Prodotto> fetchProdottiFiltrati(String[] marche, String[] fascePrezzo, String search) throws SQLException {
+    // Recupera i prodotti filtrati per marca, prezzo, ricerca e tipo
+    public List<Prodotto> fetchProdottiFiltrati(String[] marche, String[] fascePrezzo, String search, String tipo) throws SQLException {
         List<Prodotto> prodotti = new ArrayList<>();
         StringBuilder query = new StringBuilder("SELECT * FROM Prodotto WHERE 1=1 ");
 
-        // 1. Costruzione dinamica per i Marchi
+        // 1. Costruzione dinamica per la Categoria (Tipo)
+        if (tipo != null && !tipo.trim().isEmpty()) {
+            query.append("AND Tipo = ? ");
+        }
+
+        // 2. Costruzione dinamica per i Marchi
         if (marche != null && marche.length > 0) {
             query.append("AND Marchio IN (");
             for (int i = 0; i < marche.length; i++) {
@@ -239,7 +244,7 @@ public class ProdottoDAO {
             query.append(") ");
         }
 
-        // 2. Costruzione dinamica per i Prezzi
+        // 3. Costruzione dinamica per i Prezzi
         if (fascePrezzo != null && fascePrezzo.length > 0) {
             query.append("AND (");
             for (int i = 0; i < fascePrezzo.length; i++) {
@@ -254,7 +259,7 @@ public class ProdottoDAO {
             query.append(") ");
         }
 
-        // 3. Costruzione dinamica per la Barra di Ricerca forzando il minuscolo
+        // 4. Costruzione dinamica per la Barra di Ricerca forzando il minuscolo
         boolean hasSearch = (search != null && !search.trim().isEmpty());
         if (hasSearch) {
             query.append("AND (LOWER(Nome) LIKE ? OR LOWER(Marchio) LIKE ? OR LOWER(Seriale) LIKE ?) ");
@@ -268,6 +273,11 @@ public class ProdottoDAO {
 
             int paramIndex = 1;
             
+            // Inserimento parametro Tipo
+            if (tipo != null && !tipo.trim().isEmpty()) {
+                ps.setString(paramIndex++, tipo);
+            }
+            
             // Inserimento parametri Marche
             if (marche != null && marche.length > 0) {
                 for (String marca : marche) {
@@ -275,10 +285,9 @@ public class ProdottoDAO {
                 }
             }
             
-            // NUOVO: Inserimento parametri Ricerca
+            // Inserimento parametri Ricerca
             if (hasSearch) {
-                // I % indicano a SQL di cercare la stringa in qualsiasi posizione
-                String searchPattern = "%" + search.trim() + "%"; 
+                String searchPattern = "%" + search.trim().toLowerCase() + "%"; 
                 ps.setString(paramIndex++, searchPattern); // Per Nome
                 ps.setString(paramIndex++, searchPattern); // Per Marchio
                 ps.setString(paramIndex++, searchPattern); // Per Seriale

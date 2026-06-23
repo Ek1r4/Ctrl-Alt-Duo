@@ -11,8 +11,7 @@
         for (Prodotto p : lista) { 
 %>
         <div class="product-card">
-            <a href="<%= request.getContextPath() %>/DettaglioProdottoServlet?id=<%= p.getId() %>" class="card-main-link" title="Vedi dettaglio"></a>
-            
+            <a href="<%= request.getContextPath() %>/DettaglioProdottoServlet?idProdotto=<%= p.getId() %>" class="card-main-link" title="Vedi dettaglio"> </a>
             <% if (isAdmin) { %>
                 <form action="<%= request.getContextPath() %>/ProdottoServlet" method="POST" class="admin-delete-form">
                     <input type="hidden" name="action" value="delete">

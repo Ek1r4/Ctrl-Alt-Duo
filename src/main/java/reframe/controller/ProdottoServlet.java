@@ -37,7 +37,7 @@ public class ProdottoServlet extends HttpServlet {
                                 (searchTesto != null && !searchTesto.trim().isEmpty());
             
             if (hasFiltri) {
-                catalogo = dao.fetchProdottiFiltrati(marcheScelte, prezziScelti, searchTesto);
+            	catalogo = dao.fetchProdottiFiltrati(marcheScelte, prezziScelti, searchTesto, tipoFiltro);
                 request.setAttribute("titoloVetrina", "Risultati Ricerca");
             } else if (tipoFiltro != null && !tipoFiltro.trim().isEmpty()) {
                 catalogo = dao.fetchProdottiByTipo(tipoFiltro);

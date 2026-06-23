@@ -1,0 +1,293 @@
+@import url("variables.css");
+@import url("global.css");
+
+/* =========================================
+   CONTENITORE PRINCIPALE
+   ========================================= */
+.single-product-page {
+    background-color: var(--panna-carta, #f8f5f0);
+    margin: 0;
+    padding: 0;
+}
+
+.product-container {
+    max-width: 1200px;
+    margin: 60px auto; /* 60px di spazio sopra/sotto, centrato ai lati */
+    width: 90%; /* Evita che tocchi i bordi su schermi medi */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    padding: 40px;
+}
+
+/* =========================================
+   COLONNA SINISTRA: GALLERIA IMMAGINI
+   ========================================= */
+.product-gallery {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    background-color: #fcfcfc;
+    border-radius: 8px;
+    padding: 20px;
+    border: 1px solid #f0f0f0;
+    
+    align-self: start;
+}
+
+.product-main-image {
+    width: 100%;
+    max-width: 500px;
+    height: auto;
+    object-fit: contain;
+    mix-blend-mode: multiply; /* Aiuta a fondere i bordi bianchi delle foto collo sfondo */
+}
+
+/* =========================================
+   COLONNA DESTRA: INFORMAZIONI
+   ========================================= */
+.product-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.breadcrumb {
+    font-size: 0.85rem;
+    color: var(--grigio-taupe);
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.breadcrumb a {
+    color: var(--grigio-taupe);
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.breadcrumb a:hover {
+    color: var(--verde-ottanio);
+}
+
+.product-title {
+    font-family: var(--font-titoli);
+    font-size: 2.8rem;
+    color: var(--antracite-scuro);
+    margin: 0 0 15px 0;
+    line-height: 1.1;
+}
+
+.product-price {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--verde-ottanio);
+    margin-bottom: 30px;
+}
+
+.product-description {
+    font-size: 1rem;
+    color: var(--antracite-scuro);
+    line-height: 1.6;
+    margin-bottom: 40px;
+    opacity: 0.9;
+}
+
+/* =========================================
+   AGGIUNTA AL CARRELLO
+   ========================================= */
+.add-to-cart-section {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 50px;
+    align-items: center;
+}
+
+.quantity-selector {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    overflow: hidden;
+    height: 50px;
+}
+
+.qty-btn {
+    background-color: #f9f9f9;
+    border: none;
+    width: 40px;
+    height: 100%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: var(--antracite-scuro);
+    transition: background 0.2s;
+}
+
+.qty-btn:hover {
+    background-color: #eee;
+}
+
+.qty-input {
+    width: 50px;
+    height: 100%;
+    border: none;
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: bold;
+    -moz-appearance: textfield;
+}
+
+.qty-input::-webkit-outer-spin-button,
+.qty-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.btn-add-cart {
+    flex-grow: 1;
+    background-color: var(--antracite-scuro);
+    color: white;
+    border: none;
+    height: 50px;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.btn-add-cart:hover {
+    background-color: var(--verde-ottanio);
+    transform: translateY(-2px);
+}
+
+/* =========================================
+   ACCORDION (Dettagli / Spedizioni)
+   ========================================= */
+.product-details-accordion {
+    border-top: 1px solid #eee;
+}
+
+.product-details-accordion details {
+    border-bottom: 1px solid #eee;
+}
+
+.product-details-accordion summary {
+    padding: 20px 0;
+    font-weight: bold;
+    font-size: 1.1rem;
+    cursor: pointer;
+    list-style: none; /* Rimuove la freccina standard */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--antracite-scuro);
+}
+
+/* Creiamo una freccina personalizzata stile mockup */
+.product-details-accordion summary::after {
+    content: '\f107'; /* Icona freccia in giù di FontAwesome */
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    transition: transform 0.3s ease;
+}
+
+.product-details-accordion details[open] summary::after {
+    transform: rotate(180deg);
+}
+
+.product-details-accordion summary::-webkit-details-marker {
+    display: none; /* Per Safari vecchi */
+}
+
+.accordion-content {
+    padding-bottom: 20px;
+    color: var(--grigio-taupe);
+    line-height: 1.5;
+    font-size: 0.95rem;
+}
+
+/* =========================================
+   TABELLA SPECIFICHE TECNICHE
+   ========================================= */
+.product-spec-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 5px 0;
+}
+
+.product-spec-table td {
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    font-size: 0.95rem;
+}
+
+/* Rimuove il bordo dall'ultima riga della tabella */
+.product-spec-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Colonna di sinistra: i nomi dei campi (Etichette) */
+.product-spec-table td:first-child {
+    width: 40%;
+    font-weight: 600;
+    color: var(--antracite-scuro);
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+}
+
+/* Colonna di destra: i valori reali provenienti dal DB */
+.product-spec-table td:last-child {
+    color: var(--grigio-taupe);
+    text-align: left;
+}
+
+/* =========================================
+   STATO: PRODOTTO NON TROVATO (Fallback)
+   ========================================= */
+.product-not-found-container {
+    display: block;
+    text-align: center;
+    padding: 100px 20px;
+}
+
+.product-not-found-link {
+    color: var(--verde-ottanio);
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+.product-not-found-link:hover {
+    color: var(--antracite-scuro);
+}
+
+/* RESPONSIVE: Impila le colonne su mobile */
+@media (max-width: 900px) {
+    .product-container {
+        grid-template-columns: 1fr;
+        padding: 20px;
+        gap: 30px;
+    }
+    
+    .add-to-cart-section {
+        flex-direction: column;
+    }
+    
+    .quantity-selector {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .qty-input {
+        width: 100%;
+    }
+    
+    .btn-add-cart {
+        width: 100%;
+    }
+}

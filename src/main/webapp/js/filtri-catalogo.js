@@ -34,6 +34,25 @@ document.addEventListener("DOMContentLoaded", () => {
             applicaFiltri();
         });
     }
+	
+	// ==========================================
+	    // GESTIONE APERTURA/CHIUSURA FILTRI SU MOBILE
+	    // ==========================================
+	    const btnToggleFilters = document.getElementById('btn-toggle-filters');
+	    const btnCloseFilters = document.getElementById('btn-close-filters');
+	    const sidebar = document.querySelector('.catalog-sidebar');
+
+	    if (btnToggleFilters && sidebar) {
+	        btnToggleFilters.addEventListener('click', () => {
+	            sidebar.classList.add('open');
+	        });
+	    }
+
+	    if (btnCloseFilters && sidebar) {
+	        btnCloseFilters.addEventListener('click', () => {
+	            sidebar.classList.remove('open');
+	        });
+	    }
 
     function applicaFiltri() {
         const marche = Array.from(document.querySelectorAll('input[name="marca"]:checked')).map(cb => cb.value);
@@ -48,6 +67,12 @@ document.addEventListener("DOMContentLoaded", () => {
         if (searchText) {
             params.append("search", searchText);
         }
+		
+		const urlParams = new URLSearchParams(window.location.search);
+		        const tipoCorrente = urlParams.get('tipo');
+		        if (tipoCorrente) {
+		            params.append("tipo", tipoCorrente);
+		        }
 
         fetch(contextPath + "/ProdottoServlet?" + params.toString())
             .then(response => {

@@ -72,17 +72,14 @@
 /* =========================================
    SIDEBAR FILTRI (Scorrimento Indipendente)
    ========================================= */
+/* =========================================
+   SIDEBAR FILTRI (Scorrimento Naturale)
+   ========================================= */
 .catalog-sidebar {
     width: 240px;
     flex-shrink: 0;
-    position: sticky;
-    top: 100px; 
+    padding-right: 15px;
     background: transparent;
-    
-    /* Regole per lo scorrimento indipendente */
-    max-height: calc(100vh - 130px); /* Altezza massima: lo schermo meno lo spazio in alto/basso */
-    overflow-y: auto;                /* Abilita lo scroll verticale se i filtri sbordano */
-    padding-right: 15px;             /* Spazio per evitare che il testo tocchi la scrollbar */
 }
 
 /* Personalizzazione della scrollbar della sidebar (Stile moderno e sottile) */
@@ -405,49 +402,115 @@
 }
 
 /* =========================================
-   RESPONSIVE (Per far scalare bene la griglia)
+   MENU FILTRI MOBILE (Stato base per Desktop)
    ========================================= */
-/* Schermi medi / Notebook (3 per riga) */
+   
+/* Nascondiamo i bottoni di apertura/chiusura quando siamo su Desktop */
+.mobile-filter-bar {
+    display: none;
+    margin-bottom: 20px;
+}
+
+.btn-close-filters {
+    display: none;
+}
+
+/* =========================================
+   RESPONSIVE (Griglia e Filtri a cassetto)
+   ========================================= */
+
+/* 1. Schermi medi / Notebook (3 prodotti per riga) */
 @media (max-width: 1400px) {
     .products-grid {
         grid-template-columns: repeat(3, 1fr);
     }
 }
 
-/* Tablet (Filtri in alto, 2 prodotti per riga) */
+/* 2. Tablet e Smartphone (Filtri a cassetto + 2 prodotti per riga) */
 @media (max-width: 1024px) {
+    
+    /* Disattiviamo l'affiancamento tra filtri e griglia */
     .catalog-body {
-        flex-direction: column;
+        display: block; 
     }
     
-    .catalog-sidebar {
-        width: 100%;
-        position: static;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 30px;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-        padding-bottom: 20px;
-        margin-bottom: 10px;
-    }
-
-    .filter-group {
-        margin-bottom: 0;
-        flex: 1;
-        min-width: 150px;
-    }
-
     .products-grid {
         grid-template-columns: repeat(2, 1fr);
     }
+
+    /* Mostriamo il bottone per aprire i filtri AL CENTRO */
+    .mobile-filter-bar {
+        display: flex;
+        justify-content: center; 
+    }
+
+    .btn-toggle-filters {
+        background-color: var(--antracite-scuro, #1A1A1A);
+        color: var(--panna-carta, #f8f5f0);
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        font-size: 1rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        transition: background 0.3s;
+    }
+
+    .btn-toggle-filters:hover {
+        background-color: var(--verde-ottanio);
+    }
+
+    /* Trasformiamo la vecchia Sidebar in un menù a scomparsa */
+    .catalog-sidebar {
+        position: fixed;
+        top: 0;
+        left: -100%; /* Nascosta oltre il bordo sinistro */
+        width: 320px;
+        max-width: 85vw;
+        height: 100vh;
+        background-color: #ffffff;
+        z-index: 9999;
+        overflow-y: auto;
+        box-shadow: 5px 0 15px rgba(0,0,0,0.3);
+        transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        padding: 40px 20px 20px 20px;
+        
+        /* Annulliamo eventuali vecchie regole */
+        display: block; 
+        border-bottom: none;
+    }
+
+    /* Questa è la classe magica che Javascript aggiunge al click */
+    .catalog-sidebar.open {
+        left: 0;
+    }
+
+    /* Mostriamo e stiliamo la X per chiudere */
+    .btn-close-filters {
+        display: block;
+        background: transparent;
+        border: none;
+        font-size: 2.2rem;
+        color: var(--antracite-scuro);
+        position: absolute;
+        top: 0;
+        right: 20px;
+        cursor: pointer;
+        transition: transform 0.2s, color 0.2s;
+    }
+
+    .btn-close-filters:hover {
+        transform: scale(1.1);
+        color: var(--rosso-ruggine, #D32F2F);
+    }
 }
 
-/* Mobile (1 prodotto per riga) */
-@media (max-width: 576px) {
+/* 3. Smartphone piccoli (1 prodotto per riga) */
+@media (max-width: 600px) {
     .products-grid {
         grid-template-columns: 1fr;
-    }
-    .catalog-container {
-        padding: 20px 5%; /* Meno spazio laterale su cellulare */
     }
 }

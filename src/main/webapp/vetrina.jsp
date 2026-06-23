@@ -32,7 +32,6 @@
             <p>Esplora la nostra collezione di storie racchiuse in ogni obiettivo.</p>
         </div>
 
-        <%-- Messaggio di errore se il DB è down --%>
         <% if (request.getAttribute("erroreDatabase") != null) { %>
             <div class="db-error-message">
                 <p><i class="fas fa-exclamation-triangle"></i> <%= request.getAttribute("erroreDatabase") %></p>
@@ -40,8 +39,16 @@
         <% } %>
 
         <div class="catalog-body">
-            
-            <aside class="catalog-sidebar">
+        
+        <div class="mobile-filter-bar">
+            <button class="btn-toggle-filters" id="btn-toggle-filters">
+                <i class="fas fa-sliders-h"></i> Filtri
+            </button>
+        </div>
+
+        <aside class="catalog-sidebar">
+            <button class="btn-close-filters" id="btn-close-filters" title="Chiudi">&times;</button>
+
             
             	<div class="sidebar-search">
                     <input type="text" class="catalog-search-input" placeholder="Cerca..." 
