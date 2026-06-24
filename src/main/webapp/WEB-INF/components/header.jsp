@@ -54,7 +54,7 @@
                         <span class="icon-label">Assistenza</span> 
                     </a>
                     
-                    <a href="${pageContext.request.contextPath}/admin/provaAdmin.jsp" class="icon-link" title="Pannello di Gestione">
+                    <a href="${pageContext.request.contextPath}/PannelloAdminServlet" class="icon-link" title="Pannello di Gestione">
                     	<i class="fas fa-sliders-h"></i> <span class="icon-label">Gestione</span>
                 	</a>
                 	

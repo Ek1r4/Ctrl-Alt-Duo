@@ -18,10 +18,9 @@ public class ProdottoServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // 1. Inizializziamo il DAO subito
+        // --- LOGICA DI VISUALIZZAZIONE CATALOGO (Invariata) ---
         ProdottoDAO dao = new ProdottoDAO();
         
-        // 2. Recuperiamo i parametri (se sono null, le variabili saranno null, è normale)
         String isAjax = request.getParameter("ajax");
         String[] marcheScelte = request.getParameterValues("marca");
         String[] prezziScelti = request.getParameterValues("prezzo");
@@ -31,7 +30,6 @@ public class ProdottoServlet extends HttpServlet {
         try {
             List<Prodotto> catalogo;
             
-            // 3. Logica di filtraggio
             boolean hasFiltri = (marcheScelte != null && marcheScelte.length > 0) || 
                                 (prezziScelti != null && prezziScelti.length > 0) ||
                                 (searchTesto != null && !searchTesto.trim().isEmpty());
@@ -49,18 +47,12 @@ public class ProdottoServlet extends HttpServlet {
             
             request.setAttribute("listaProdotti", catalogo);
             
-            // 4. Recupero marche per la sidebar (ATTENZIONE: questo deve stare qui!)
-            // Se dao è null, qui avresti la NullPointerException
             List<String> marcheDisponibili = dao.fetchDistinctMarche(); 
             request.setAttribute("marcheDisponibili", marcheDisponibili);
             
-            // ... resto del codice ...
-            
-            // INTERCETTAZIONE AJAX: Restituiamo solo il frammento HTML senza ricaricare la pagina
             if ("true".equals(isAjax)) {
-                // Percorso corretto partendo dalla root dell'applicazione, senza contextPath
                 request.getRequestDispatcher("/WEB-INF/components/griglia-prodotti.jsp").forward(request, response);
-                return; // Ferma l'esecuzione per non inviare anche l'header e il footer
+                return; 
             }
             
         } catch (SQLException e) {
@@ -68,41 +60,89 @@ public class ProdottoServlet extends HttpServlet {
             request.setAttribute("erroreDatabase", "Errore di caricamento del catalogo.");
         }
 
-        // Normale caricamento della pagina intera (es. prima visita o refresh manuale col tasto F5)
         request.getRequestDispatcher("/vetrina.jsp").forward(request, response);
     }
     
+    
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         
+        // 1. CONTROLLO SICUREZZA GLOBALE PER TUTTE LE AZIONI POST
+        // Nessun utente normale o non loggato deve poter aggiungere o eliminare nulla.
+        Utente utenteLoggato = (Utente) request.getSession().getAttribute("utente");
+        if (utenteLoggato == null || utenteLoggato.getIsAdmin() == 0) {
+            response.sendRedirect(request.getContextPath() + "/accessoNegato.jsp");
+            return;
+        }
+
         String action = request.getParameter("action");
+        ProdottoDAO dao = new ProdottoDAO();
         
-        // INTERCETTAZIONE AZIONE: ELIMINA PRODOTTO (Lato Admin)
+        
+        // ==========================================
+        // AZIONE: ELIMINA PRODOTTO
+        // ==========================================
         if ("delete".equals(action)) {
-            
-            // 1. Controllo di sicurezza per accertarsi che chi richiede l'eliminazione sia un Admin loggato
-            Utente utenteLoggato = (Utente) request.getSession().getAttribute("utente");
-            if (utenteLoggato == null || utenteLoggato.getIsAdmin() == 0) {
-                response.sendRedirect(request.getContextPath() + "/accessoNegato.jsp");
-                return;
-            }
-            
-            // 2. Recupero ID del prodotto da eliminare
             String idProdotto = request.getParameter("idProdotto");
+            
             if (idProdotto != null && !idProdotto.trim().isEmpty()) {
-                ProdottoDAO dao = new ProdottoDAO();
                 try {
                     dao.deleteProdotto(idProdotto);
-                    response.sendRedirect(request.getContextPath() + "/ProdottoServlet?success=eliminato");
+                    // Modificato: Ora rimanda alla Dashboard Admin e non più alla Vetrina!
+                    response.sendRedirect(request.getContextPath() + "/PannelloAdminServlet?success=eliminato");
                 } catch (SQLException e) {
                     e.printStackTrace();
-                    response.sendRedirect(request.getContextPath() + "/ProdottoServlet?erroreDatabase=Impossibile eliminare il prodotto.");
+                    response.sendRedirect(request.getContextPath() + "/PannelloAdminServlet?errore=Impossibile eliminare il prodotto");
                 }
             } else {
-                response.sendRedirect(request.getContextPath() + "/ProdottoServlet");
+                response.sendRedirect(request.getContextPath() + "/PannelloAdminServlet");
             }
-            
-            return; // Ferma l'esecuzione per evitare di procedere con altro codice doPost
+            return; 
         }
         
+        
+        // ==========================================
+        // AZIONE: AGGIUNGI PRODOTTO
+        // ==========================================
+        if ("add".equals(action)) {
+            try {
+                // Recupero i dati inviati dal form della Dashboard
+                String idProdotto = request.getParameter("idProdotto");
+                String seriale = request.getParameter("seriale");
+                String marchio = request.getParameter("marchio");
+                String nome = request.getParameter("nome");
+                String prezzoStr = request.getParameter("prezzo");
+                String tipo = request.getParameter("tipo");
+                String descrizione = request.getParameter("descrizione");
+                
+                // Conversione dei dati numerici (se lo stock non c'è, di base mettiamo 1)
+                double prezzo = Double.parseDouble(prezzoStr);
+                String stockStr = request.getParameter("stock");
+                int stock = (stockStr != null && !stockStr.isEmpty()) ? Integer.parseInt(stockStr) : 1;
+
+                // Creazione del bean e salvataggio
+                Prodotto nuovoProdotto = new Prodotto();
+                nuovoProdotto.setId(idProdotto);
+                nuovoProdotto.setSeriale(seriale);
+                nuovoProdotto.setMarchio(marchio);
+                nuovoProdotto.setNome(nome);
+                nuovoProdotto.setPrezzo(prezzo);
+                nuovoProdotto.setTipo(tipo);
+                nuovoProdotto.setDescrizione(descrizione);
+                nuovoProdotto.setInStock(stock);
+                
+                // Assicurati che nel tuo ProdottoDAO esista un metodo chiamato doSave (o modificalo col nome corretto)
+                dao.insertProdotto(nuovoProdotto); 
+                
+                response.sendRedirect(request.getContextPath() + "/PannelloAdminServlet?success=aggiunto");
+                
+            } catch (Exception e) {
+                e.printStackTrace();
+                response.sendRedirect(request.getContextPath() + "/PannelloAdminServlet?errore=Dati non validi");
+            }
+            return;
+        }
+
+        // Se arriva un'azione non riconosciuta, rimandiamo alla dashboard
+        response.sendRedirect(request.getContextPath() + "/PannelloAdminServlet");
     }
 }

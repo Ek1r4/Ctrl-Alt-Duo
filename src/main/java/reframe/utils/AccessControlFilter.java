@@ -28,6 +28,7 @@ public class AccessControlFilter extends HttpFilter implements Filter {
     );
 
     private static final List<String> ADMIN_ROUTES = Arrays.asList(
+    	"/PannelloAdminServlet"
         // ERIKA aggiungi qui altre servlet "admin" in futuro
     );
 

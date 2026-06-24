@@ -189,6 +189,44 @@ public class UtenteDAO
 		return lista;
 	}
 	
+	// READ (Lista Admin): Recupera TUTTI gli amministratori (Admin e Super Admin) registrati
+		public List<Utente> doRetrieveAllAdmins() throws SQLException
+		{
+			// Seleziona solo chi ha permessi di amministrazione (isAdmin > 0)
+			String query = "SELECT * FROM Utente WHERE isAdmin > 0 ORDER BY isAdmin DESC, Username ASC";
+			
+			Connection conn = null;
+			PreparedStatement ps = null;
+			
+			List<Utente> listaAdmins = new ArrayList<>();
+
+			try
+			{
+				conn = ConnessioneDB.getConnection();
+				ps = conn.prepareStatement(query);
+				
+				ResultSet rs = ps.executeQuery();
+				
+				while(rs.next())
+				{
+					Utente u = estraiUtente(rs);
+					listaAdmins.add(u);	
+				}
+				
+			} catch (SQLException e) { /* Errore in console */ e.printStackTrace(); }
+			
+			finally { 
+				try 
+				{
+					if (ps != null) ps.close(); 
+				} catch (SQLException e) { e.printStackTrace(); }
+				
+				if (conn != null) { ConnessioneDB.releaseConnection(conn); } 
+			}
+			
+			return listaAdmins;
+		}
+	
 	// UPDATE: Modifica l'anagrafica completa di un utente esistente
 	// (Ritorna TRUE se la modifica avviene con successo, FALSE in caso di errore)
 	public boolean doUpdate(Utente utenteModificato) throws SQLException
