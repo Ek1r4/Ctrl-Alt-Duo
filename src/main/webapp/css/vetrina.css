@@ -1,13 +1,12 @@
 @charset "UTF-8";
 
 /* =========================================
-   IMPOSTAZIONI GENERALI (Light Theme)
+   IMPOSTAZIONI GENERALI 
    ========================================= */
 .catalog-page {
     background-color: var(--panna-carta, #f8f5f0); 
     color: var(--antracite-scuro, #1A1A1A);
     min-height: 100vh;
-    padding-bottom: 80px;
 }
 
 /* Modificato: occupa tutto lo schermo spingendo i filtri all'estrema sinistra */
@@ -348,12 +347,51 @@
     line-height: 1.2;
 }
 
+/* =========================================
+   RIGA INFERIORE (Prezzo e Carrello)
+   ========================================= */
+.card-bottom-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto; /* Spinge tutta la riga verso il fondo della Polaroid */
+}
+
+/* Modificata: rimosso il margin-top: auto perché ora lo gestisce la riga qui sopra */
 .product-price {
     font-family: var(--font-titoli);
     font-size: 1.6rem;
     font-weight: 900;
     color: var(--marrone-cuoio);
-    margin-top: auto;
+}
+
+.quick-add-form {
+    position: relative;
+    z-index: 20; /* FONDAMENTALE: deve stare sopra al .card-main-link per essere cliccabile */
+}
+
+.btn-quick-add {
+    background-color: var(--verde-ottanio);
+    color: white;
+    border: 2px solid var(--verde-ottanio);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%; /* Lo rende un cerchio perfetto */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.3s, transform 0.2s;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.btn-quick-add:hover {
+    background-color: transparent;
+    transform: scale(1.1); /* Effetto pop al passaggio del mouse */
+    color: var(--verde-ottanio);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    transform: translateY(-2px);
 }
 
 /* =========================================

@@ -5,7 +5,7 @@
    CONTENITORE PRINCIPALE
    ========================================= */
 .single-product-page {
-    background-color: var(--panna-carta, #f8f5f0);
+    background-color: var(--beige-scuro, #f8f5f0);
     margin: 0;
     padding: 0;
 }
@@ -17,9 +17,9 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 60px;
-    background-color: #ffffff;
+    background-color: var(--panna-carta);
     border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     padding: 40px;
 }
 
@@ -60,10 +60,12 @@
     margin-bottom: 20px;
     text-transform: uppercase;
     letter-spacing: 1px;
+    font-family: var(--font-tecnico);
+    color: var(--antracite-scuro);
 }
 
 .breadcrumb a {
-    color: var(--grigio-taupe);
+    color: var(--antracite-scuro);
     text-decoration: none;
     transition: color 0.3s;
 }
@@ -105,17 +107,32 @@
     align-items: center;
 }
 
+.add-to-cart-section .btn-cta {
+    background-color: var(--verde-ottanio);
+    color: var(--panna-carta);
+    border: 2px solid var(--verde-ottanio);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    margin-top: 0px;
+}
+
+.add-to-cart-section .btn-cta:hover {
+    background-color: transparent;
+    color: var(--verde-ottanio);
+   	box-shadow: 0 6px 12px rgba(0,0,0,0.5);
+    transform: translateY(-2px);
+}
+
 .quantity-selector {
     display: flex;
     align-items: center;
-    border: 1px solid #ddd;
+    border: 1px solid var(--verde-ottanio);
     border-radius: 6px;
     overflow: hidden;
     height: 50px;
 }
 
 .qty-btn {
-    background-color: #f9f9f9;
+    background-color: color-mix(in srgb, var(--grigio-taupe) 10%, transparent);
     border: none;
     width: 40px;
     height: 100%;
@@ -126,7 +143,7 @@
 }
 
 .qty-btn:hover {
-    background-color: #eee;
+    background-color: color-mix(in srgb, var(--verde-ottanio) 40%, transparent);
 }
 
 .qty-input {
@@ -136,7 +153,7 @@
     text-align: center;
     font-size: 1.1rem;
     font-weight: bold;
-    -moz-appearance: textfield;
+    background-color: color-mix(in srgb, var(--grigio-taupe) 10%, transparent);
 }
 
 .qty-input::-webkit-outer-spin-button,
@@ -145,34 +162,15 @@
     margin: 0;
 }
 
-.btn-add-cart {
-    flex-grow: 1;
-    background-color: var(--antracite-scuro);
-    color: white;
-    border: none;
-    height: 50px;
-    border-radius: 6px;
-    font-size: 1.1rem;
-    font-weight: bold;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: background 0.3s, transform 0.2s;
-}
-
-.btn-add-cart:hover {
-    background-color: var(--verde-ottanio);
-    transform: translateY(-2px);
-}
-
 /* =========================================
    ACCORDION (Dettagli / Spedizioni)
    ========================================= */
 .product-details-accordion {
-    border-top: 1px solid #eee;
+    border-top: 1px solid var(--beige-scuro);
 }
 
 .product-details-accordion details {
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--beige-scuro);
 }
 
 .product-details-accordion summary {
@@ -205,7 +203,6 @@
 
 .accordion-content {
     padding-bottom: 20px;
-    color: var(--grigio-taupe);
     line-height: 1.5;
     font-size: 0.95rem;
 }
@@ -242,7 +239,8 @@
 
 /* Colonna di destra: i valori reali provenienti dal DB */
 .product-spec-table td:last-child {
-    color: var(--grigio-taupe);
+	font-family: var(--font-tecnico);
+    color: var(--antracite-scuro);
     text-align: left;
 }
 
@@ -266,13 +264,183 @@
     color: var(--antracite-scuro);
 }
 
-/* RESPONSIVE: Impila le colonne su mobile */
-@media (max-width: 900px) {
-    .product-container {
-        grid-template-columns: 1fr;
+/* =========================================
+   AZIONI ADMIN E MODIFICA PRODOTTO
+   ========================================= */
+
+/* Disabilitazione totale bottone carrello per Admin */
+.btn-cta.disabled-for-admin {
+    background-color: var(--grigio-taupe, #9e9e9e);
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none; /* Regola fondamentale: impedisce letteralmente al mouse di cliccarlo */
+    transform: none !important;
+}
+
+/* Wrapper per affiancare Titolo e Matita */
+.product-title-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 15px;
+}
+
+.product-title-wrapper .product-title {
+    margin-bottom: 0; /* Rimuove il margine vecchio perché ora lo gestisce il wrapper */
+}
+
+/* Bottone Matita */
+.btn-edit-pencil {
+    background-color: transparent;
+    color: var(--grigio-taupe);
+    border: 2px solid var(--grigio-taupe);
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.btn-edit-pencil:hover {
+    color: var(--verde-ottanio);
+    border-color: var(--verde-ottanio);
+    transform: scale(1.1) rotate(10deg);
+}
+
+/* --- Finestra Modale --- */
+.edit-modal-overlay {
+    display: none; /* Nascosta di default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 10000;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Classe aggiunta dal JS per mostrare la modale */
+.edit-modal-overlay.active {
+    display: flex;
+}
+
+/* =========================================
+   INTEGRAZIONE MODALE CON STILE "PELLICOLA"
+   ========================================= */
+
+/* Animazione di discesa per il contenitore pellicola */
+.modal-film-override {
+    animation: slideDownModal 0.3s ease-out forwards;
+}
+
+@keyframes slideDownModal {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Riposizionamento della X in alto a destra nel box pellicola */
+.btn-close-modal {
+    position: absolute;
+    top: 15px;
+    right: 25px; /* Spostato internamente ai fori della pellicola */
+    background: transparent;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: var(--grigio-taupe);
+    line-height: 1;
+    transition: color 0.2s;
+    z-index: 10;
+}
+
+.btn-close-modal:hover {
+    color: var(--rosso-ruggine);
+}
+
+/* Il tuo form.css formatta solo gli "input". Estendiamo lo stile anche alla textarea */
+fieldset.custom-input textarea.custom-textarea {
+    width: 100%;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 18px; /* Allineato a .film-container.large input */
+    color: var(--antracite-scuro);
+    padding: 5px 0;
+    resize: vertical; /* Permette all'utente di allungarla solo in verticale */
+    font-family: inherit;
+}
+
+/* =========================================
+   ICONA MODALE
+   ========================================= */
+.icon-edit-modal {
+    width: 3rem; 
+    height: 3rem;
+    stroke: var(--antracite-scuro); /* Puoi mettere var(--verde-ottanio) se la vuoi colorata */
+    stroke-width: 1.5px; /* Spessore elegante del tratto */
+    fill: none; /* Rende l'icona "vuota" all'interno */
+    display: block;
+}
+
+/* Assicurati che il contenitore tagli bene il bordo sotto l'icona */
+.edit-modal-overlay .camera-icon {
+    top: -30px; /* Spostata leggermente più su per via delle dimensioni */
+    background-color: var(--panna-carta);
+    padding: 0 15px;
+    border-radius: 30%; /* Opzionale: aiuta a sfumare i bordi */
+}
+
+@media (max-width: 1025px) {
+	
+	.product-container {
+        /* Passiamo da grid a flex per poter riordinare liberamente gli elementi */
+        display: flex; 
+        flex-direction: column;
         padding: 20px;
-        gap: 30px;
+        gap: 0; /* Rimuoviamo il gap del grid, useremo i margin */
     }
+    
+    .product-info {
+        /* "Dissolve" il div. I testi e il form diventano figli diretti del container */
+        display: contents; 
+    }
+    
+    .breadcrumb {
+        order: -2; /* Lo spara in cima assoluta, sopra a tutto */
+        margin-bottom: 15px;
+    }
+    
+    .product-gallery {
+        order: -1; /* Lo piazza subito sotto il breadcrumb, ma prima del titolo */
+        margin-bottom: 25px;
+        position: static; /* Rimuove l'effetto sticky che su mobile non serve */
+    }
+    
+    .add-to-cart-section {
+        justify-content: center;
+    }
+    
+    .quantity-selector {
+        width: 100%;
+        justify-content: space-between;
+        max-width:150px;
+    }
+    
+    .qty-input {
+        width: 100%;
+    }
+    
+	}
+
+/* RESPONSIVE: Impila le colonne su mobile */
+@media (max-width: 500px) {
     
     .add-to-cart-section {
         flex-direction: column;
@@ -281,13 +449,6 @@
     .quantity-selector {
         width: 100%;
         justify-content: space-between;
-    }
-    
-    .qty-input {
-        width: 100%;
-    }
-    
-    .btn-add-cart {
-        width: 100%;
+        max-width: 250px;
     }
 }

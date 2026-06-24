@@ -18,4 +18,33 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+	
+	// ==========================================
+	    // GESTIONE MODALE EDIT (Solo Admin)
+	    // ==========================================
+	    const btnOpenEdit = document.getElementById('open-edit-modal');
+	    const btnCloseEdit = document.getElementById('close-edit-modal');
+	    const editModal = document.getElementById('edit-product-modal');
+
+	    if (btnOpenEdit && btnCloseEdit && editModal) {
+	        // Apri la modale cliccando la matita
+	        btnOpenEdit.addEventListener('click', () => {
+	            editModal.classList.add('active');
+	            document.body.style.overflow = 'hidden'; // Blocca lo scroll della pagina dietro
+	        });
+
+	        // Chiudi la modale cliccando la X
+	        btnCloseEdit.addEventListener('click', () => {
+	            editModal.classList.remove('active');
+	            document.body.style.overflow = 'auto'; // Riabilita lo scroll
+	        });
+
+	        // Chiudi la modale cliccando sullo sfondo scuro fuori dalla finestra
+	        editModal.addEventListener('click', (e) => {
+	            if (e.target === editModal) {
+	                editModal.classList.remove('active');
+	                document.body.style.overflow = 'auto';
+	            }
+	        });
+	    }
 });

@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="reframe.model.beans.Prodotto" %>
+<%@ page import="reframe.model.beans.Utente" %>
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -12,11 +13,17 @@
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/header.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/dettaglioProdotto.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/footer.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/form.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body class="single-product-page">
 
     <%@ include file="/WEB-INF/components/header.jsp" %>
+    
+    <%
+		Utente utenteDettaglio = (Utente) session.getAttribute("utente");
+		boolean isAdmin = (utenteDettaglio != null && utenteDettaglio.getIsAdmin() == 1);
+     %>
 
     <%
         // Recuperiamo il prodotto passato dalla Servlet
@@ -38,7 +45,15 @@
                 <span><%= p.getMarchio() %></span>
             </nav>
 
-            <h1 class="product-title"><%= p.getNome() %></h1>
+            <div class="product-title-wrapper">
+                <h1 class="product-title"><%= p.getNome() %></h1>
+
+                <% if (isAdmin) { %>
+                    <button type="button" class="btn-edit-pencil" id="open-edit-modal" title="Modifica Prodotto">
+                        <i class="fas fa-pencil-alt"></i>
+                    </button>
+                <% } %>
+            </div>
             
             <div class="product-price">€ <%= String.format("%.2f", p.getPrezzo()) %></div>
             
@@ -46,18 +61,21 @@
                 <p><%= p.getDescrizione() %></p>
             </div>
 
-            <form action="<%= request.getContextPath() %>/CarrelloServlet" method="POST" class="add-to-cart-form">
+
+            <form action="<%= request.getContextPath() %>/Carrello" method="POST" class="add-to-cart-form">
                 <input type="hidden" name="action" value="add">
                 <input type="hidden" name="idProdotto" value="<%= p.getId() %>">
                 
                 <div class="add-to-cart-section">
                     <div class="quantity-selector">
-                        <button type="button" class="qty-btn" id="btn-minus">-</button>
+                        <button type="button" class="qty-btn" id="btn-minus" <%= isAdmin ? "disabled" : "" %>>-</button>
                         <input type="number" id="qty-input" name="quantita" class="qty-input" value="1" min="1" max="10" readonly>
-                        <button type="button" class="qty-btn" id="btn-plus">+</button>
+                        <button type="button" class="qty-btn" id="btn-plus" <%= isAdmin ? "disabled" : "" %>>+</button>
                     </div>
                     
-                    <button type="submit" class="btn-add-cart">Aggiungi al Carrello</button>
+                    <button type="submit" class="btn-cta" <%= isAdmin ? "disabled-for-admin" : "" %>" <%= isAdmin ? "disabled" : "" %>>
+                        Aggiungi al Carrello
+                    </button>
                 </div>
             </form>
 
@@ -110,7 +128,7 @@
                 <details>
                     <summary>Spedizione e Resi</summary>
                     <div class="accordion-content">
-                        Spedizione gratuita per ordini superiori a 150€. Consegna tracciata in 48/72h lavorative in tutta Italia. <br>
+                        Costo di Spedizione fisso a 5€. <br> Consegna tracciata in 48h lavorative in tutta Italia. <br>
                         Reso garantito entro 14 giorni dalla ricezione del prodotto, a patto che le condizioni dello stesso non siano state alterate.
                     </div>
                 </details>
@@ -136,7 +154,47 @@
     <% 
         } 
     %>
-
+	
+	<% if (isAdmin) { %>
+    <div id="edit-product-modal" class="edit-modal-overlay">
+        
+        <div class="film-container large modal-film-override">
+            
+            <div class="camera-icon">
+                <svg class="icon-edit-modal" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            
+            <button type="button" id="close-edit-modal" class="btn-close-modal" title="Chiudi">&times;</button>
+            
+            <h1 class="form-title">Modifica Prodotto</h1>
+            
+            <form action="<%= request.getContextPath() %>/AdminModificaProdottoServlet" method="POST">
+                <input type="hidden" name="idProdotto" value="<%= p.getId() %>">
+                
+                <fieldset class="custom-input">
+                    <legend>Nome Prodotto</legend>
+                    <input type="text" id="edit-nome" name="nome" value="<%= p.getNome() %>" required>
+                </fieldset>
+                
+                <fieldset class="custom-input">
+                    <legend>Prezzo (€)</legend>
+                    <input type="number" id="edit-prezzo" name="prezzo" step="0.01" value="<%= p.getPrezzo() %>" required>
+                </fieldset>
+                
+                <fieldset class="custom-input">
+                    <legend>Descrizione</legend>
+                    <textarea id="edit-descrizione" name="descrizione" rows="4" class="custom-textarea" required><%= p.getDescrizione() %></textarea>
+                </fieldset>
+                
+                <button type="submit" class="btn-cta" style="margin-top: 15px;">Salva Modifiche</button>
+            </form>
+        </div>
+    </div>
+    <% } %>
+	
     <%@ include file="/WEB-INF/components/footer.jsp" %>
 
     <script src="<%= request.getContextPath() %>/js/dettaglio-prodotto.js"></script>
