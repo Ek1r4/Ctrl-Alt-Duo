@@ -102,6 +102,49 @@ public class UtenteDAO
 		return false;
 	}
 	
+	// CREATE: Salva un nuovo admin nel database
+		// (Ritorna TRUE se l'inserimento avviene con successo, FALSE in caso di errore)
+		public boolean doSaveAdmin(Utente nuovoUtente) throws SQLException
+		{
+			String query = "INSERT INTO Utente (Username, Email, Password, Nome, Cognome, isAdmin) VALUES (?, ?, ?, ?, ?, ?)";
+			
+			Connection conn = null;
+			PreparedStatement ps = null;
+			
+			try
+			{
+				conn = ConnessioneDB.getConnection(); 
+				ps = conn.prepareStatement(query); 
+				
+				if(!VerificaEmail(nuovoUtente.getEmail()))
+				{
+					ps.setString(1, nuovoUtente.getUsername());
+					ps.setString(2, nuovoUtente.getEmail());
+					ps.setString(3, nuovoUtente.getPassword());
+					ps.setString(4, nuovoUtente.getNome());
+					ps.setString(5, nuovoUtente.getCognome());
+					ps.setInt(6, 2);
+					
+					int row = ps.executeUpdate();
+					return row > 0;
+				}
+				
+			} catch(SQLException e) { /* Errore nella console */ e.printStackTrace();
+				return false;
+			}
+			
+			finally { 
+				try 
+				{
+					if (ps != null) ps.close(); 
+				} catch (SQLException e) { e.printStackTrace(); }
+				
+				if (conn != null) { ConnessioneDB.releaseConnection(conn); } 
+			}
+			
+			return false;
+		}
+	
 	// READ (Singolo): Recupera tutte le info di un utente specifico tramite il suo Username
 	public Utente doRetrieveByKey(String Username) throws SQLException
 	{

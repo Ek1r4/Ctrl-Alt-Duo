@@ -1,6 +1,8 @@
 package reframe.controller;
 
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
@@ -52,6 +54,81 @@ public class PannelloAdminServlet extends HttpServlet {
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        doGet(request, response);
+        
+    	String username = request.getParameter("username");
+    	String nome = request.getParameter("nome");
+        String cognome = request.getParameter("cognome");
+        String email = request.getParameter("adminEmail");
+        String password = request.getParameter("adminPassword");
+        
+        List<String> errors = new ArrayList<>();
+        
+        // Controlli e trim
+        if (username == null || username.trim().isEmpty()) {
+            errors.add("Tutti i campi sono obbligatori.");
+        } else {
+            username = username.trim();
+        }
+        
+        if (email == null || email.trim().isEmpty()) {
+            errors.add("Tutti i campi sono obbligatori.");
+        } else {
+            email = email.trim();
+        }
+        
+        if (password == null || password.trim().isEmpty()) {
+            errors.add("Tutti i campi sono obbligatori.");
+        } else if (password.length() < 8) {
+            errors.add("La password deve essere di almeno 8 caratteri.");
+        } else {
+            password = password.trim();
+        }
+        
+        if (nome == null || nome.trim().isEmpty()) {
+            errors.add("Tutti i campi sono obbligatori.");
+        } else {
+            nome = nome.trim();
+        }
+        
+        if (cognome == null || cognome.trim().isEmpty()) {
+            errors.add("Tutti i campi sono obbligatori.");
+        } else {
+            cognome = cognome.trim();
+        }
+        
+        if (!errors.isEmpty()) {
+            request.setAttribute("errors", errors);
+            request.getRequestDispatcher("/admin/pannelloAdmin.jsp").forward(request, response);
+            return; 
+        }
+        
+        UtenteDAO dao = new UtenteDAO();
+        
+        try {
+        	// Controllo email
+            if (dao.VerificaEmail(email)) {
+                errors.add("Questa email è già registrata nel sistema.");
+                request.setAttribute("errors", errors);
+                request.getRequestDispatcher("/admin/pannelloAdmin.jsp").forward(request, response);
+                return;
+            }
+        
+            Utente nuovoAdmin = new Utente();
+            nuovoAdmin.setUsername(username);
+            nuovoAdmin.setEmail(email);
+            nuovoAdmin.setPassword(password);
+            nuovoAdmin.setNome(nome);
+            nuovoAdmin.setCognome(cognome);
+            
+            
+            dao.doSaveAdmin(nuovoAdmin);
+            
+            response.sendRedirect(request.getContextPath() + "/PannelloAdminServlet?success=adminCreato#superadmin");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            errors.add("Errore interno del server durante la registrazione. Riprova più tardi.");
+            request.setAttribute("errors", errors);
+            request.getRequestDispatcher("/admin/pannelloAdmin.jsp").forward(request, response);
+        }
     }
 }

@@ -75,6 +75,7 @@ public class ProdottoServlet extends HttpServlet {
         }
 
         String action = request.getParameter("action");
+        
         ProdottoDAO dao = new ProdottoDAO();
         
         
@@ -100,12 +101,12 @@ public class ProdottoServlet extends HttpServlet {
         }
         
         
-        // ==========================================
+     // ==========================================
         // AZIONE: AGGIUNGI PRODOTTO
         // ==========================================
         if ("add".equals(action)) {
             try {
-                // Recupero i dati inviati dal form della Dashboard
+                // Recupero i dati base
                 String idProdotto = request.getParameter("idProdotto");
                 String seriale = request.getParameter("seriale");
                 String marchio = request.getParameter("marchio");
@@ -114,7 +115,11 @@ public class ProdottoServlet extends HttpServlet {
                 String tipo = request.getParameter("tipo");
                 String descrizione = request.getParameter("descrizione");
                 
-                // Conversione dei dati numerici (se lo stock non c'è, di base mettiamo 1)
+                // Recupero i nuovi campi specifici
+                String stato = request.getParameter("stato");
+                String scattiStr = request.getParameter("numeroScatti");
+                String condizione = request.getParameter("condizioneCollezionistica");
+                
                 double prezzo = Double.parseDouble(prezzoStr);
                 String stockStr = request.getParameter("stock");
                 int stock = (stockStr != null && !stockStr.isEmpty()) ? Integer.parseInt(stockStr) : 1;
@@ -130,18 +135,85 @@ public class ProdottoServlet extends HttpServlet {
                 nuovoProdotto.setDescrizione(descrizione);
                 nuovoProdotto.setInStock(stock);
                 
-                // Assicurati che nel tuo ProdottoDAO esista un metodo chiamato doSave (o modificalo col nome corretto)
+                // 5. Assegnazione condizionale in base al Tipo
+                if ("Usato".equalsIgnoreCase(tipo)) {
+                    nuovoProdotto.setStato(stato);
+                    if (scattiStr != null && !scattiStr.trim().isEmpty()) {
+                        nuovoProdotto.setNumeroScatti(Integer.parseInt(scattiStr));
+                    }
+                } else if ("Collezione".equalsIgnoreCase(tipo)) {
+                    nuovoProdotto.setCondizioneCollezionistica(condizione);
+                }
+                
                 dao.insertProdotto(nuovoProdotto); 
                 
                 response.sendRedirect(request.getContextPath() + "/PannelloAdminServlet?success=aggiunto");
                 
             } catch (Exception e) {
                 e.printStackTrace();
-                response.sendRedirect(request.getContextPath() + "/PannelloAdminServlet?errore=Dati non validi");
+                response.sendRedirect(request.getContextPath() + "/PannelloAdminServlet?errore=Dati_non_validi");
             }
             return;
         }
+        
+     // ==========================================
+        // AZIONE: MODIFICA PRODOTTO
+        // ==========================================
+        if ("edit".equals(action)) {
+            try {
+                // 1. Recupero i dati base
+                String idProdotto = request.getParameter("idProdotto");
+                String nome = request.getParameter("nome");
+                String prezzoStr = request.getParameter("prezzo");
+                String stockStr = request.getParameter("stock");
+                String tipo = request.getParameter("tipo");
+                String descrizione = request.getParameter("descrizione");
+                
+                // Recupero i nuovi campi specifici
+                String stato = request.getParameter("stato");
+                String scattiStr = request.getParameter("numeroScatti");
+                String condizione = request.getParameter("condizioneCollezionistica");
+                
+                double prezzo = Double.parseDouble(prezzoStr);
+                int stock = Integer.parseInt(stockStr);
 
+                // 2. Recupero il prodotto originale
+                Prodotto prodottoDaModificare = dao.fetchProdottoById(idProdotto); 
+                
+                if (prodottoDaModificare != null) {
+                    // 3. Sovrascrivo i dati di base
+                    prodottoDaModificare.setNome(nome);
+                    prodottoDaModificare.setPrezzo(prezzo);
+                    prodottoDaModificare.setInStock(stock);
+                    prodottoDaModificare.setTipo(tipo);
+                    prodottoDaModificare.setDescrizione(descrizione);
+                    
+                    // 4. Reset dei campi specifici per tenere il DB pulito
+                    prodottoDaModificare.setStato(null);
+                    prodottoDaModificare.setNumeroScatti(Integer.valueOf(0)); 
+                    prodottoDaModificare.setCondizioneCollezionistica(null);
+                    
+                    // 5. Assegnazione condizionale in base al Tipo
+                    if ("Usato".equalsIgnoreCase(tipo)) {
+                        prodottoDaModificare.setStato(stato);
+                        if (scattiStr != null && !scattiStr.trim().isEmpty()) {
+                            prodottoDaModificare.setNumeroScatti(Integer.parseInt(scattiStr));
+                        }
+                    } else if ("Collezione".equalsIgnoreCase(tipo)) {
+                        prodottoDaModificare.setCondizioneCollezionistica(condizione);
+                    }
+                    
+                    // 6. Salvo su DB
+                    dao.updateProdotto(prodottoDaModificare); 
+                }
+                
+                response.sendRedirect(request.getContextPath() + "/PannelloAdminServlet?success=modificato");
+            } catch (Exception e) {
+                e.printStackTrace();
+                response.sendRedirect(request.getContextPath() + "/PannelloAdminServlet?errore=Modifica fallita");
+            }
+            return;
+        }
         // Se arriva un'azione non riconosciuta, rimandiamo alla dashboard
         response.sendRedirect(request.getContextPath() + "/PannelloAdminServlet");
     }

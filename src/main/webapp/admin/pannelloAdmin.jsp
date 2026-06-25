@@ -26,11 +26,12 @@
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/global.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/amministrazione.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/user-area.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/form.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body class="admin-layout">
 
-
+	<input type="hidden" id="triggerTab" value="<%= request.getParameter("success") != null || request.getParameter("errore") != null ? "prodotti" : "" %>">
     <aside class="sidebar">
         <div class="sidebar-header">
             <h2><i class="fas fa-camera-retro"></i> REFRAME</h2>
@@ -64,6 +65,7 @@
                     <thead>
                         <tr>
                             <th>Seriale</th>
+                            <th>Tipo</th>
                             <th>Marchio</th>
                             <th>Modello</th>
                             <th>Prezzo</th>
@@ -76,12 +78,24 @@
                             for (Prodotto p : listaProdotti) { %>
                         <tr>
                             <td><%= p.getSeriale() %></td>
+                            <td><%= p.getTipo() %></td>
                             <td><%= p.getMarchio() %></td>
                             <td><%= p.getNome() %></td>
                             <td>€ <%= String.format("%.2f", p.getPrezzo()) %></td>
                             <td><%= p.getInStock() %></td>
                             <td class="actions">
-                                <button class="btn-icon edit" title="Modifica"><i class="fas fa-edit"></i></button>
+                                <button type="button" class="btn-icon edit btn-edit-product" title="Modifica"
+                                    data-id="<%= p.getId() %>"
+                                    data-nome="<%= p.getNome() != null ? p.getNome().replace("\"", "&quot;") : "" %>"
+                                    data-prezzo="<%= p.getPrezzo() %>"
+                                    data-stock="<%= p.getInStock() %>"
+                                    data-tipo="<%= p.getTipo() %>"
+                                    data-descrizione="<%= p.getDescrizione() != null ? p.getDescrizione().replace("\"", "&quot;") : "" %>"
+                                    data-stato="<%= p.getStato() != null ? p.getStato().replace("\"", "&quot;") : "" %>"
+                                    data-scatti="<%= p.getNumeroScatti() > 0 ? p.getNumeroScatti() : "" %>"
+                                    data-condizione="<%= p.getCondizioneCollezionistica() != null ? p.getCondizioneCollezionistica().replace("\"", "&quot;") : "" %>">
+                                    <i class="fas fa-edit"></i>
+                                </button>
                                 
                                 <form action="<%= request.getContextPath() %>/ProdottoServlet" method="POST" class="inline-form">
     								<input type="hidden" name="action" value="delete"> 
@@ -100,45 +114,69 @@
         </section>
 
         <section id="aggiungi" class="dashboard-section">
-            <div class="rect-card">
-                <h3>Inserisci un nuovo articolo</h3>
-                <form action="<%= request.getContextPath() %>/ProdottoServlet" method="POST" class="admin-form">
-    			<input type="hidden" name="action" value="add">
+            <div class="film-container">
+                <h1 class="form-title">Inserisci Nuovo Articolo</h1>
+                
+                <form action="<%= request.getContextPath() %>/ProdottoServlet" method="POST">
+                    <input type="hidden" name="action" value="add"> 
+                    
                     <div class="form-grid">
-                        <div class="input-group">
-                            <label>ID Prodotto</label>
+                        <fieldset class="custom-input">
+                            <legend>ID Prodotto</legend>
                             <input type="text" name="idProdotto" required>
-                        </div>
-                        <div class="input-group">
-                            <label>Seriale</label>
+                        </fieldset>
+                        <fieldset class="custom-input">
+                            <legend>Seriale</legend>
                             <input type="text" name="seriale" required>
-                        </div>
-                        <div class="input-group">
-                            <label>Marchio</label>
+                        </fieldset>
+                        <fieldset class="custom-input">
+                            <legend>Marchio</legend>
                             <input type="text" name="marchio" required>
-                        </div>
-                        <div class="input-group">
-                            <label>Nome / Modello</label>
+                        </fieldset>
+                        <fieldset class="custom-input">
+                            <legend>Nome / Modello</legend>
                             <input type="text" name="nome" required>
-                        </div>
-                        <div class="input-group">
-                            <label>Prezzo</label>
+                        </fieldset>
+                        <fieldset class="custom-input">
+                            <legend>Prezzo (€)</legend>
                             <input type="number" step="0.01" name="prezzo" required>
-                        </div>
-                        <div class="input-group">
-                            <label>Tipologia</label>
-                            <select name="tipo" required>
+                        </fieldset>
+                        <fieldset class="custom-input">
+                            <legend>Quantità in Stock</legend>
+                            <input type="number" name="stock" min="0" required>
+                        </fieldset>
+                        
+                        <fieldset class="custom-input">
+                            <legend>Tipologia</legend>
+                            <select name="tipo" id="add-tipo" required class="custom-select-film">
                                 <option value="Nuovo">Nuovo</option>
                                 <option value="Usato">Usato</option>
                                 <option value="Collezione">Collezione</option>
                             </select>
-                        </div>
+                        </fieldset>
+                        
+                        <fieldset class="custom-input dynamic-field add-field-usato">
+                            <legend>Stato di Usura</legend>
+                            <input type="text" name="stato" placeholder="es. Ottimo, Segni d'uso...">
+                        </fieldset>
+                        
+                        <fieldset class="custom-input dynamic-field add-field-usato">
+                            <legend>Numero Scatti</legend>
+                            <input type="number" name="numeroScatti" min="0">
+                        </fieldset>
+                        
+                        <fieldset class="custom-input full-width dynamic-field add-field-collezione">
+                            <legend>Condizione Collezionistica</legend>
+                            <input type="text" name="condizioneCollezionistica" placeholder="es. Mint, Grade A...">
+                        </fieldset>
                     </div>
-                    <div class="input-group full-width">
-                        <label>Descrizione</label>
-                        <textarea name="descrizione" rows="4" required></textarea>
-                    </div>
-                    <button type="submit" class="btn-submit">Salva Prodotto</button>
+                    
+                    <fieldset class="custom-input full-width">
+                        <legend>Descrizione Completa</legend>
+                        <textarea name="descrizione" rows="4" class="custom-textarea" required></textarea>
+                    </fieldset>
+                    
+                    <button type="submit" class="btn-cta">Aggiungi al Catalogo</button>
                 </form>
             </div>
         </section>
@@ -192,17 +230,30 @@
         <section id="superadmin" class="dashboard-section">
             <div class="rect-card mb-20">
                 <h3>Crea nuovo profilo Admin</h3>
+                <%
+            	List<String> errors = (List<String>) request.getAttribute("errors");
+                if (errors != null && !errors.isEmpty()) {
+            	%>
+               		<div class="error-box">
+                    	<ul>
+                            <li><%= errors.get(0) %></li>
+                    	</ul>
+                	</div>
+            	<%
+                	}
+            	%>
                 <form action="<%= request.getContextPath() %>/PannelloAdminServlet" method="POST" class="admin-form row-form">
-                    <input type="text" name="nome" placeholder="Nome" required>
-                    <input type="text" name="cognome" placeholder="Cognome" required>
-                    <input type="email" name="email" placeholder="Email aziendale" required>
-                    <input type="password" name="password" placeholder="Password provvisoria" required>
+                	<input type="text" name="username" id="username" placeholder="Username" autocomplete="off" required>
+                    <input type="text" name="nome" id="nome" placeholder="Nome" required>
+                    <input type="text" name="cognome" id="cognome" placeholder="Cognome" required>
+                    <input type="email" name="adminEmail" id="email" placeholder="Email aziendale" autocomplete="off" required>
+                    <input type="password" name="adminPassword" id="password" placeholder="Password provvisoria" autocomplete="off" required>
                     <button type="submit" class="btn-submit">Crea Account</button>
                 </form>
             </div>
 
             <div class="rect-card">
-                <h3>Monitoraggio Profili Operativi</h3>
+                <h3>Monitoraggio Profili Admin</h3>
                 <table class="data-table">
                     <thead>
                         <tr>
@@ -237,6 +288,78 @@
             </div>
         </section>
         <% } %>
+
+	<div id="edit-product-modal" class="admin-modal-overlay">
+            
+            <div class="film-container modal-film-override">
+                
+                <div class="camera-icon">
+                    <svg class="icon-edit-modal" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                
+                <button type="button" class="btn-close-modal" id="close-edit-modal" title="Chiudi">&times;</button>
+                
+                <div class="modal-body-scroll">
+                <h1 class="form-title">Modifica Prodotto</h1>
+                
+                <form action="<%= request.getContextPath() %>/ProdottoServlet" method="POST">
+                    <input type="hidden" name="action" value="edit">
+                    <input type="hidden" name="idProdotto" id="modal-edit-id">
+                    
+                    <div class="form-grid">
+                        <fieldset class="custom-input">
+                            <legend>Nome / Modello</legend>
+                            <input type="text" name="nome" id="modal-edit-nome" required>
+                        </fieldset>
+                        
+                        <fieldset class="custom-input">
+                            <legend>Prezzo (€)</legend>
+                            <input type="number" step="0.01" name="prezzo" id="modal-edit-prezzo" required>
+                        </fieldset>
+                        
+                        <fieldset class="custom-input">
+                            <legend>Quantità in Stock</legend>
+                            <input type="number" name="stock" id="modal-edit-stock" min="0" required>
+                        </fieldset>
+                        
+                        <fieldset class="custom-input">
+                            <legend>Tipologia</legend>
+                            <select name="tipo" id="modal-edit-tipo" required class="custom-select-film">
+                                <option value="Nuovo">Nuovo</option>
+                                <option value="Usato">Usato</option>
+                                <option value="Collezione">Collezione</option>
+                            </select>
+                        </fieldset>
+                        
+                        <fieldset class="custom-input dynamic-field field-usato">
+                            <legend>Stato di Usura</legend>
+                            <input type="text" name="stato" id="modal-edit-stato" placeholder="es. Ottimo, Segni d'uso...">
+                        </fieldset>
+                        
+                        <fieldset class="custom-input dynamic-field field-usato">
+                            <legend>Numero Scatti</legend>
+                            <input type="number" name="numeroScatti" id="modal-edit-scatti" min="0">
+                        </fieldset>
+                        
+                        <fieldset class="custom-input full-width dynamic-field field-collezione">
+                            <legend>Condizione Collezionistica</legend>
+                            <input type="text" name="condizioneCollezionistica" id="modal-edit-condizione" placeholder="es. Mint, Grade A...">
+                        </fieldset>
+                    </div>
+                    
+                    <fieldset class="custom-input full-width">
+                        <legend>Descrizione</legend>
+                        <textarea name="descrizione" id="modal-edit-descrizione" rows="4" class="custom-textarea" required></textarea>
+                    </fieldset>
+                    
+                    <button type="submit" class="btn-cta">Salva Modifiche</button>
+                </form>
+                </div>
+            </div>
+        </div>
 
     </main>
     <script>const contestoReFrame = '<%= request.getContextPath() %>';</script>
