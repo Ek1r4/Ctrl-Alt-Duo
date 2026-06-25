@@ -24,26 +24,24 @@
 }
 
 /* =========================================
-   COLONNA SINISTRA: GALLERIA IMMAGINI
+   COLONNA SINISTRA: MODELLO 3D
    ========================================= */
-.product-gallery {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    background-color: #fcfcfc;
+/* Contenitore per dare respiro al modello */
+.container-3d {
+    width: 100%;
+    max-width: 600px; /* Grandezza massima */
+    margin: 0 auto;
+    background-color: #f8f5f0; /* Il grigio/beige chiaro che usi per le card */
     border-radius: 8px;
-    padding: 20px;
-    border: 1px solid #f0f0f0;
-    
-    align-self: start;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.05); /* Ombra interna per dare l'effetto "studio fotografico" */
+    overflow: hidden;
 }
 
-.product-main-image {
+/* Dimensioni del viewer */
+model-viewer {
     width: 100%;
-    max-width: 500px;
-    height: auto;
-    object-fit: contain;
-    mix-blend-mode: multiply; /* Aiuta a fondere i bordi bianchi delle foto collo sfondo */
+    height: 500px;
+    outline: none; /* Rimuove il bordo blu quando ci clicchi sopra */
 }
 
 /* =========================================

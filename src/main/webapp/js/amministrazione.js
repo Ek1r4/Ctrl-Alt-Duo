@@ -11,7 +11,15 @@ document.addEventListener('DOMContentLoaded', () => {
         sections.forEach(s => s.classList.remove('active'));
         
         document.querySelector('.tab-btn[data-target="prodotti"]').classList.add('active');
-        document.getElementById('prodotti').classList.add('active');
+        document.getElementById('prodotti').classList.add('active'); }
+		
+	else if (triggerTab === 'superadmin') {
+		// Forza l'apertura della scheda Prodotti
+		btns.forEach(b => b.classList.remove('active'));
+		sections.forEach(s => s.classList.remove('active'));
+		        
+		document.querySelector('.tab-btn[data-target="superadmin"]').classList.add('active');
+		document.getElementById('superadmin').classList.add('active');
     }
 
     if (btns.length > 0 && sections.length > 0) {
@@ -240,7 +248,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		            },
 		            username: () => {
 		                if (!inputUsername.value.trim().match(/^[a-zA-Z0-9_]+$/)) {
-		                    mostraErroreAdmin("username", "Solo lettere, numeri e underscore.");
+		                    mostraErroreAdmin("username", "Solo lettere, numeri e _.");
 		                    return false;
 		                }
 		                nascondiErroreAdmin("username"); return true;
@@ -302,4 +310,87 @@ document.addEventListener('DOMContentLoaded', () => {
 		            }
 		        });
 		    }
+			
+			// ==========================================
+			    // 6. ACCORDION TABELLA PRODOTTI (MOBILE)
+			    // ==========================================
+			    const righeProdotti = document.querySelectorAll('#prodotti .data-table tbody tr');
+			    
+			    righeProdotti.forEach(riga => {
+			        riga.addEventListener('click', function(e) {
+			            // Ignora l'apertura/chiusura se sto cliccando su un bottone (modifica o elimina)
+			            if (e.target.closest('button') || e.target.closest('form')) {
+			                return;
+			            }
+			            
+			            // Chiude dinamicamente tutte le altre righe per tenere lo schermo pulito
+			            righeProdotti.forEach(r => { 
+			                if(r !== this) r.classList.remove('open'); 
+			            });
+			            
+			            // Alterna lo stato della riga toccata
+			            this.classList.toggle('open');
+			        });
+			    });
+				
+				// ==========================================
+				    // 7. CONFERMA ELIMINAZIONE (MODALE CUSTOM)
+				    // ==========================================
+				    const deleteButtons = document.querySelectorAll('.btn-icon.delete');
+				    const deleteModal = document.getElementById('delete-confirm-modal');
+				    const deleteMessage = document.getElementById('delete-confirm-message');
+				    const btnConfirmDelete = document.getElementById('btn-confirm-delete');
+				    const btnCancelDelete = document.getElementById('btn-cancel-delete');
+				    
+				    let formDaInviare = null; // Memorizza quale form stiamo per inviare
+
+				    if (deleteButtons.length > 0 && deleteModal) {
+				        
+				        // Quando clicchi il cestino...
+				        deleteButtons.forEach(btn => {
+				            btn.addEventListener('click', function(e) {
+				                e.preventDefault(); // 1. Ferma l'invio immediato al server
+				                
+				                formDaInviare = this.closest('form'); // 2. Salva il form di quel rigo
+				                
+				                // 3. Controlla l'icona per sapere cosa stai eliminando
+				                const isAdminDelete = this.querySelector('.fa-user-times') !== null;
+				                
+				                // 4. Scrive il messaggio personalizzato nel modale
+				                if (isAdminDelete) {
+				                    deleteMessage.innerHTML = "Sei sicuro di voler revocare l'accesso a questo <strong>Admin</strong>?<br>L'azione è irreversibile.";
+				                } else {
+				                    deleteMessage.innerHTML = "Sei sicuro di voler eliminare definitivamente questo <strong>Prodotto</strong> dal catalogo?";
+				                }
+				                
+				                // 5. Fa comparire il modale a schermo
+				                deleteModal.classList.add('active');
+				            });
+				        });
+
+				        // Se l'utente clicca su "Annulla"
+				        if (btnCancelDelete) {
+				            btnCancelDelete.addEventListener('click', () => {
+				                deleteModal.classList.remove('active');
+				                formDaInviare = null; // Azzera la memoria
+				            });
+				        }
+
+				        // Se l'utente clicca su "Procedi"
+				        if (btnConfirmDelete) {
+				            btnConfirmDelete.addEventListener('click', () => {
+				                if (formDaInviare) {
+				                    formDaInviare.submit(); // Invia davvero la POST alla Servlet!
+				                }
+				            });
+				        }
+
+				        // Se clicca fuori dal modale per chiuderlo
+				        deleteModal.addEventListener('click', (e) => {
+				            if (e.target === deleteModal) {
+				                deleteModal.classList.remove('active');
+				                formDaInviare = null;
+				            }
+				        });
+				    }
 });

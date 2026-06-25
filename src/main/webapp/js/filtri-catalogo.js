@@ -84,4 +84,64 @@ document.addEventListener("DOMContentLoaded", () => {
             })
             .catch(error => console.error("Errore AJAX:", error));
     }
+	
+	// ==========================================
+	    // MODALE CONFERMA ELIMINAZIONE (VETRINA/CARRELLO)
+	    // ==========================================
+	    
+	    // Cerca tutti i bottoni di eliminazione nella vetrina (Assicurati che la classe sia giusta!)
+	    const deleteButtons = document.querySelectorAll('.btn-delete-product'); 
+	    
+	    const deleteModal = document.getElementById('delete-confirm-modal');
+	    const deleteMessage = document.getElementById('delete-confirm-message');
+	    const btnConfirmDelete = document.getElementById('btn-confirm-delete');
+	    const btnCancelDelete = document.getElementById('btn-cancel-delete');
+	    
+	    let formDaInviare = null; // Memorizza quale form stiamo per inviare
+
+	    if (deleteButtons.length > 0 && deleteModal) {
+	        
+	        // Quando clicchi un cestino...
+	        deleteButtons.forEach(btn => {
+	            btn.addEventListener('click', function(e) {
+	                e.preventDefault(); // Blocca l'invio immediato
+	                
+	                formDaInviare = this.closest('form'); // Salva il form collegato a quel bottone
+	                
+	                // Scrive il messaggio personalizzato
+	                deleteMessage.innerHTML = "Sei sicuro di voler rimuovere questo <strong>Prodotto</strong>?";
+	                
+	                // Fa comparire il modale a schermo
+	                deleteModal.classList.add('active');
+	            });
+	        });
+
+	        // Funzione per chiudere il modale e resettare la memoria
+	        const chiudiModale = () => {
+	            deleteModal.classList.remove('active');
+	            formDaInviare = null;
+	        };
+
+	        // Se l'utente clicca su "Annulla"
+	        if (btnCancelDelete) {
+	            btnCancelDelete.addEventListener('click', chiudiModale);
+	        }
+
+	        // Se l'utente clicca fuori dal modale per chiuderlo
+	        deleteModal.addEventListener('click', (e) => {
+	            if (e.target === deleteModal) {
+	                chiudiModale();
+	            }
+	        });
+
+	        // Se l'utente clicca su "Procedi"
+	        if (btnConfirmDelete) {
+	            btnConfirmDelete.addEventListener('click', () => {
+	                if (formDaInviare) {
+	                    formDaInviare.submit(); // Invia la richiesta al server!
+	                }
+	            });
+	        }
+	    }
+	
 });

@@ -35,11 +35,8 @@
     text-align: center;
 }
 
-.sidebar-header h2 {
-    margin: 0 0 10px 0;
-    font-family: var(--font-titoli);
-    letter-spacing: 2px;
-    color: var(--panna-carta);
+.sidebar-header a {
+	text-decoration: none;
 }
 
 .role-badge {
@@ -84,6 +81,8 @@
 .sidebar-footer {
     padding: 20px;
     border-top: 1px solid rgba(248, 245, 240, 0.1);
+    display: flex;
+    justify-content: space-between;
 }
 
 .btn-logout {
@@ -95,6 +94,18 @@
 }
 
 .btn-logout:hover {
+    color: var(--panna-carta);
+}
+
+.btn-home {
+    color: var(--verde-ottanio);
+    text-decoration: none;
+    font-family: var(--font-testi);
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+.btn-home:hover {
     color: var(--panna-carta);
 }
 
@@ -144,6 +155,10 @@
     letter-spacing: 1px;
     border-bottom: 2px solid rgba(0, 0, 0, 0.05);
     padding-bottom: 10px;
+}
+
+.mb-20 .btn-cta {
+	margin: 0;
 }
 
 .profile-details p {
@@ -306,6 +321,55 @@
 .dashboard-section .password-display-row {
 	justify-content: flex-start;
 	gap: 2vw;
+}
+
+/* =========================================
+   STILE AREE UPLOAD FILE
+   ========================================= */
+.custom-file-input {
+    border: 2px dashed rgba(0,0,0,0.15); /* Bordo tratteggiato elegante */
+    padding: 15px;
+    text-align: center;
+    background-color: rgba(248, 245, 240, 0.4);
+    border-radius: 6px;
+    margin-bottom: 15px;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.custom-file-input:hover {
+    background-color: rgba(248, 245, 240, 0.8);
+    border-color: var(--verde-ottanio); /* Si illumina al passaggio del mouse */
+}
+
+.custom-file-input legend {
+    font-weight: bold;
+    color: var(--grigio-taupe);
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+}
+
+/* Allarga il bottone Sfoglia e lo centra */
+.custom-file-input input[type="file"] {
+    width: 100%;
+    cursor: pointer;
+    font-family: var(--font-principale);
+    color: var(--antracite-scuro);
+}
+
+/* Stile speciale per il bottone nativo "Sfoglia/Scegli file" del browser */
+.custom-file-input input[type="file"]::file-selector-button {
+    background-color: var(--grigio-taupe);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    margin-right: 15px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.custom-file-input input[type="file"]::file-selector-button:hover {
+    background-color: var(--verde-ottanio);
 }
 
 /* =========================================
@@ -481,4 +545,264 @@ fieldset.custom-input.full-width {
 #edit-product-modal .btn-cta {
     margin-top: 15px;
     width: 100%;
+}
+
+
+
+/* =========================================
+   RESPONSIVE DESIGN (Smartphone e Tablet)
+   ========================================= */
+@media screen and (max-width: 1024px) {
+    
+    /* 1. Layout Generale a colonna */
+    .admin-layout {
+        flex-direction: column;
+    }
+
+    /* 2. La Sidebar diventa un Header fisso in alto (Sticky) */
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: sticky;
+        top: 0;
+        border-right: none;
+        border-bottom: 4px solid var(--marrone-cuoio);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        z-index: 1000; /* Sta sopra al resto mentre scorri */
+    }
+
+    .sidebar-header {
+        display: flex;
+        align-items: center;
+        padding: 15px 20px;
+        border-bottom: none;
+    }
+
+    .sidebar-header h2 { margin: 0; font-size: 1.4rem; }
+
+    /* Fa spazio per il tasto "Esci" posizionato a destra */
+    .role-badge {
+        margin-left: 10px;
+        margin-right: auto;
+        font-size: 0.7rem;
+        padding: 4px 8px;
+    }
+
+    /* 3. Tasto Esci integrato in alto a destra */
+    .sidebar-footer {
+        padding: 0;
+        border-top: none;
+        position: absolute;
+        top: 15px;
+        right: 20px;
+    }
+    
+    .sidebar-footer .btn-logout span {
+        display: none; /* Nasconde la parola "Esci", lascia solo l'icona per fare spazio */
+    }
+
+    /* 4. Menu di navigazione a scorrimento orizzontale (Swipe) */
+    .sidebar-nav {
+        flex-direction: row;
+        padding: 0;
+        overflow-x: auto;
+        border-top: 1px solid rgba(248, 245, 240, 0.1);
+        scrollbar-width: none; /* Nasconde la barra brutta su Firefox */
+    }
+    .sidebar-nav::-webkit-scrollbar { display: none; } /* Nasconde su Chrome/Safari */
+
+    .tab-btn {
+        flex: 0 0 auto; /* Evita che il bottone si rimpicciolisca */
+        padding: 15px 20px;
+        border-left: none;
+        border-bottom: 3px solid transparent;
+        text-align: center;
+    }
+
+    .tab-btn:hover, .tab-btn.active {
+        border-left-color: transparent;
+        border-bottom-color: var(--verde-ottanio);
+        background-color: rgba(248, 245, 240, 0.05);
+    }
+
+    /* 5. Area Contenuto: prende tutto lo schermo */
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+        padding: 15px;
+    }
+
+    /* 6. Form: da doppia colonna a colonna singola */
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    /* Form orizzontali (es. creazione admin) diventano verticali */
+    .filter-form, .row-form {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .btn-submit { margin-top: 10px; }
+
+    /* 7. Tabelle: Ordini/Admin a scorrimento, Prodotti a Fisarmonica */
+    .rect-card {
+        padding: 20px 15px;
+    }
+
+    /* Regola base per le altre tabelle (Swipe orizzontale) */
+    .data-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+        width: 100%;
+    }
+
+    /* --- INIZIO OVERRIDE ACCORDION SOLO PER PRODOTTI --- */
+    #prodotti .data-table, #prodotti .data-table tbody, #prodotti .data-table tr {
+        display: block;
+        overflow: visible;
+        white-space: normal;
+    }
+    
+    /* Nascondiamo l'intestazione classica della tabella */
+    #prodotti .data-table thead { display: none; }
+
+    /* Stile della "Card" chiusa (la riga della tabella) */
+    #prodotti .data-table tbody tr {
+        background-color: #ffffff;
+        border: 1px solid rgba(0,0,0,0.1);
+        border-radius: 4px;
+        margin-bottom: 15px;
+        padding: 12px 15px;
+        position: relative;
+        cursor: pointer;
+        display: flex;
+        flex-wrap: wrap;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+    }
+
+    /* Esclude il messaggio "Nessun prodotto" dalle regole grafiche */
+    #prodotti .data-table tbody tr:has(td[colspan]) {
+        justify-content: center;
+        cursor: default;
+    }
+    #prodotti .data-table tbody tr:has(td[colspan])::after { display: none; }
+
+    /* Freccina a destra in stile Profilo */
+    #prodotti .data-table tbody tr::after {
+        content: '\f107'; /* Icona freccia giù FontAwesome */
+        font-family: 'Font Awesome 5 Free', 'Font Awesome 6 Free';
+        font-weight: 900;
+        position: absolute;
+        right: 15px;
+        top: 20px;
+        color: var(--verde-ottanio);
+        transition: transform 0.3s ease;
+    }
+
+    /* Quando la riga ha la classe 'open', gira la freccia */
+    #prodotti .data-table tbody tr.open::after {
+        transform: rotate(180deg);
+    }
+
+    /* --- GESTIONE CELLE (TD) NASCOSTE DI DEFAULT --- */
+    #prodotti .data-table td {
+        display: none; /* Nasconde tutto */
+        width: 100%;
+        padding: 8px 0;
+        border-bottom: 1px dashed rgba(0,0,0,0.1);
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.95rem;
+    }
+    #prodotti .data-table td:last-child { border-bottom: none; }
+
+    /* Rigeneriamo le intestazioni usando i pseudo-elementi (visto che Thead è nascosto) */
+    #prodotti .data-table td:nth-child(2)::before { content: "Tipo:"; font-weight: bold; color: var(--grigio-taupe); font-size: 0.8rem; text-transform: uppercase; }
+    #prodotti .data-table td:nth-child(5)::before { content: "Prezzo:"; font-weight: bold; color: var(--grigio-taupe); font-size: 0.8rem; text-transform: uppercase; }
+    #prodotti .data-table td:nth-child(6)::before { content: "Stock:"; font-weight: bold; color: var(--grigio-taupe); font-size: 0.8rem; text-transform: uppercase; }
+    #prodotti .data-table td:nth-child(7)::before { content: "Azioni:"; font-weight: bold; color: var(--grigio-taupe); font-size: 0.8rem; text-transform: uppercase; }
+
+    /* Layout per i bottoni delle Azioni */
+    #prodotti .data-table td:nth-child(7) { justify-content: flex-start; gap: 15px; }
+    #prodotti .data-table td:nth-child(7)::before { margin-right: auto; }
+
+    /* --- ELEMENTI SEMPRE VISIBILI (Header della singola card) --- */
+    /* 1. Seriale (Si prende l'intera prima riga) */
+    #prodotti .data-table td:nth-child(1) {
+        display: flex;
+        width: 100%;
+        border-bottom: none;
+        padding-bottom: 2px;
+        font-family: var(--font-tecnico);
+        font-size: 0.85rem;
+        color: var(--grigio-taupe);
+    }
+
+    /* 3. Marchio (Sta a sinistra) */
+    #prodotti .data-table td:nth-child(3) {
+        display: flex;
+        width: auto;
+        border-bottom: none;
+        padding-top: 0;
+        font-weight: bold;
+        color: var(--antracite-scuro);
+    }
+
+    /* 4. Modello (Sta subito a destra del Marchio) */
+    #prodotti .data-table td:nth-child(4) {
+        display: flex;
+        width: auto;
+        border-bottom: none;
+        padding-top: 0;
+        margin-left: 5px;
+        color: var(--marrone-cuoio);
+    }
+
+    /* --- APERTURA: MOSTRA I CAMPI NASCOSTI --- */
+    #prodotti .data-table tbody tr.open td {
+        display: flex;
+    }
+
+    /* 8. Modale (Adattata allo schermo piccolo) */
+    .modal-film-override {
+        margin: 10px;
+        padding: 40px 15px 15px 15px !important;
+        max-height: 95vh !important;
+    }
+    
+    .btn-close-modal {
+        top: 10px;
+        right: 15px;
+    }
+    
+    /* 3. Tasti Logout e Home in alto a destra (Solo Icone) */
+    .sidebar-footer {
+        padding: 0;
+        border-top: none;
+        position: absolute;
+        top: 25px; /* Regola se necessario per allinearlo al titolo */
+        right: 20px;
+        display: flex;
+        gap: 20px; /* Spazio tra l'icona Home e l'icona Logout */
+    }
+    
+    .sidebar-footer a {
+        font-size: 0 !important; /* Schiaccia e nasconde il testo "Logout" e "Home" */
+        text-decoration: none;
+    }
+
+    .sidebar-footer a i {
+        font-size: 1.5rem !important; /* Fa riapparire ESCLUSIVAMENTE le icone */
+        margin: 0;
+        transition: transform 0.2s ease;
+    }
+    
+    /* Effetto opzionale al tocco */
+    .sidebar-footer a:active i {
+        transform: scale(0.9);
+    }
 }

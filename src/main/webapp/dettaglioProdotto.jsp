@@ -34,7 +34,18 @@
     <main class="product-container">
         
         <div class="product-gallery">
-            <img src="<%= request.getContextPath() %><%= p.getModelUrl() %>" alt="<%= p.getNome() %>" class="product-main-image">
+        	<div class="container-3d">
+    		<model-viewer
+        		src="<%= request.getContextPath() %><%= p.getModelUrl() %>"
+        		alt="Modello 3D interattivo di <%= p.getMarchio() %> <%= p.getNome() %>" 
+        		camera-controls 
+        		auto-rotate 
+        		rotation-per-second="30deg"
+        		shadow-intensity="1" 
+        		environment-image="neutral"
+        		exposure="1.2">
+    		</model-viewer>
+			</div>
         </div>
 
         <div class="product-info">
@@ -198,5 +209,6 @@
     <%@ include file="/WEB-INF/components/footer.jsp" %>
 
     <script src="<%= request.getContextPath() %>/js/dettaglio-prodotto.js"></script>
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
 </body>
 </html>

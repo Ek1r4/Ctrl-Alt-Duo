@@ -16,7 +16,7 @@
                 <form action="<%= request.getContextPath() %>/ProdottoServlet" method="POST" class="admin-delete-form">
                     <input type="hidden" name="action" value="delete">
                     <input type="hidden" name="idProdotto" value="<%= p.getId() %>">
-                    <button type="submit" class="btn-delete-product" title="Elimina Prodotto" onclick="return confirm('Sei sicuro?');">
+                    <button type="submit" class="btn-delete-product" title="Elimina Prodotto">
                         <i class="fas fa-trash-alt"></i>
                     </button>
                 </form>

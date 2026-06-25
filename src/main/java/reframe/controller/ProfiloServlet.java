@@ -60,13 +60,13 @@ public class ProfiloServlet extends HttpServlet {
         if (utenteLoggato.getIsAdmin() > 0) {
             // È un admin, gli mostro la sua dashboard personalizzata
             request.getRequestDispatcher("/admin/pannelloAdmin.jsp").forward(request, response);
+            return;
         } else {
             // È un utente normale, gli mostro il profilo classico
             request.getRequestDispatcher("/common/profilo.jsp").forward(request, response);
+            return;
         }
-        
-        // 4. INVIAMO TUTTO ALLA JSP
-        request.getRequestDispatcher("/common/profilo.jsp").forward(request, response);
+
     }
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
     {

@@ -106,7 +106,7 @@ public class UtenteDAO
 		// (Ritorna TRUE se l'inserimento avviene con successo, FALSE in caso di errore)
 		public boolean doSaveAdmin(Utente nuovoUtente) throws SQLException
 		{
-			String query = "INSERT INTO Utente (Username, Email, Password, Nome, Cognome, isAdmin) VALUES (?, ?, ?, ?, ?, ?)";
+			String query = "INSERT INTO Utente (Username, Email, Password, Nome, Cognome, isAdmin, Telefono) VALUES (?, ?, ?, ?, ?, ?, ?)";
 			
 			Connection conn = null;
 			PreparedStatement ps = null;
@@ -123,7 +123,8 @@ public class UtenteDAO
 					ps.setString(3, nuovoUtente.getPassword());
 					ps.setString(4, nuovoUtente.getNome());
 					ps.setString(5, nuovoUtente.getCognome());
-					ps.setInt(6, 2);
+					ps.setInt(6, 1);
+					ps.setString(7, "0000000000");
 					
 					int row = ps.executeUpdate();
 					return row > 0;

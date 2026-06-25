@@ -1,6 +1,23 @@
-@import url("variables.css");
-@import url("global.css");
+/* Palette di colori */
+:root {
+  --panna-carta: #F8F4EA; 
+  --antracite-scuro: #2A2A2A; 
+  --marrone-cuoio: #6F4E37; 
+  --verde-ottanio: #2C5551; 
+  --rosso-ruggine: #A93F35; 
+  --beige-scuro: #D2C8B4; 
+  --grigio-taupe: #7A756D; 
+}
 
+body {
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    background-color: var(--panna-carta);
+    margin: 0;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
 
 /* Centratura */
 .auth-wrapper {
@@ -60,6 +77,10 @@
 }
 
 h1.form-title {
+    font-size: 38px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    color: var(--antracite-scuro);
     margin-top: 10px;
     margin-bottom: 40px;
 }
@@ -121,6 +142,33 @@ fieldset.custom-input input {
 }
 /* Solo per Registrazione FINE*/
 
+/* CTA e Link*/
+.btn-cta {
+    display: block;
+    width: 100%;
+    background-color: transparent;
+    color: var(--verde-ottanio);
+    font-size: 22px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    padding: 15px 0;
+    margin-top: 30px;
+    cursor: pointer;
+    border-radius: 12px;
+    
+    /* Doppio bordo */
+    border: 2px solid var(--verde-ottanio);
+    box-shadow: inset 0 0 0 3px var(--panna-carta), inset 0 0 0 5px var(--verde-ottanio);
+    transition: all 0.2s ease;
+    
+    /* Per farlo funzionare anche per link */
+    text-align: center;
+    text-decoration: none;
+}
+
+.btn-cta:hover {
+    background-color: var(--beige-scuro);
+}
 
 .form-link {
     display: inline-block;
@@ -130,23 +178,7 @@ fieldset.custom-input input {
     font-size: 14px;
 }
 
-/* =========================================
-   CLASSI DI UTILITÀ PER LE PAGINE DI ERRORE
-   ========================================= */
-
-/* Colore del testo per i titoli di errore (403, 404, 500) */
-.text-rust {
-    color: var(--rosso-ruggine);
-}
-
-/* icone SVG di errore */
-.icon-rust {
-    width: 3rem; 
-    height: 3rem;
-    stroke: var(--rosso-ruggine);
-    stroke-width: 2px; 
-}
-/* cambiare il nome e i riferimenti in error-text!!!!!!! */
+/* Solo per Accesso Negato INIZIO */
 .denied-text {
 	font-size: 16px;
 	color: var(--antracite-scuro);
@@ -154,75 +186,6 @@ fieldset.custom-input input {
 	margin-bottom: 40px;
 	padding: 0 20px;
 }
-
-/* =========================================
-   MODALE CONFERMA ELIMINAZIONE (PROFILO)
-   ========================================= */
-/* Sfondo scuro che copre tutto */
-.admin-modal-overlay {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
-    display: none; /* Nascosto di default */
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    backdrop-filter: blur(3px);
-}
-
-/* Quando JS aggiunge la classe .active, compare! */
-.admin-modal-overlay.active {
-    display: flex;
-}
-
-/* Stile del box centrale */
-.confirm-modal-box {
-    background: #f8f5f0;
-    max-width: 400px !important;
-    padding: 40px 25px 25px 25px !important;
-    text-align: center;
-    border-radius: 8px;
-    position: relative;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-}
-
-.confirm-message {
-    margin: 15px 0 25px 0;
-    color: var(--grigio-taupe, #555);
-    font-size: 1.05rem;
-}
-
-/* Bottoni in riga */
-.confirm-actions {
-    display: flex;
-    gap: 10px;
-    width: 100%;
-    justify-content: center;
-}
-
-.confirm-actions .btn-cta {
-    flex: 1; 
-    margin: 0;
-    padding: 10px 5px !important; 
-    font-size: 0.85rem !important; 
-    min-width: 0 !important; 
-    height: auto !important; 
-}
-
-/* Colori Bottoni Modale */
-.danger-btn {
-    background-color: var(--rosso-ruggine, #c84b31) !important;
-    color: #ffffff !important;
-    border: none !important;
-}
-.danger-btn:hover { background-color: #9c2e2a !important; }
-
-.cancel-btn {
-    background-color: #eaeaea !important;
-    color: #222 !important;
-    border: none !important;
-}
-.cancel-btn:hover { background-color: #d4d4d4 !important; }
 
 @media screen and (max-width: 768px) {
     .denied-text {
@@ -237,49 +200,6 @@ fieldset.custom-input input {
 }
 /* Solo per Accesso Negato FINE */
 
-/* VALIDAZIONE JS */
-.error-text { 
-    color: var(--rosso-ruggine); 
-    font-size: 14px; 
-    font-family: var(--font-testi);
-    margin-top: 5px; 
-    display: none; 
-}
-
-.error-text.visible { 
-    display: block; 
-}
-
-.btn-cta:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-/* Notifiche di conferma per utente */
-.notification-banner {
-    width: 100%;               
-    max-width: 350px;          
-    margin: 0 auto 20px auto; 
-    padding: 15px;
-    border-radius: 8px;        
-    text-align: center;
-    font-weight: bold;
-    box-sizing: border-box;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-.success-banner {
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
-}
-
-.error-banner {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-}
-
 /* Box errore */
 .error-box {
     background-color: #fce8e6;
@@ -293,15 +213,12 @@ fieldset.custom-input input {
 }
 .error-box ul { margin: 0; padding-left: 20px; }
 
-/* Footer per form*/
-.site-footer-minimal {
+/* Footer */
+.site-footer {
     text-align: center;
     font-style: italic;
-    margin-bottom: 15px;
-    margin-top: 30px;
+    margin-top: 25px;
     font-size: 12px;
     color: var(--grigio-taupe);
     letter-spacing: 0.5px;
 }
-
-/* da cambiare nomi delle classi per renderle più generali e commenti più esplicativi  !!!!!!!!!!!!!!*/

@@ -60,7 +60,7 @@
                 	
                 <% } else { %>
                 
-                    <a href="${pageContext.request.contextPath}/common/profilo.jsp" class="icon-link" title="Area Personale">
+                    <a href="${pageContext.request.contextPath}/ProfiloServlet" class="icon-link" title="Area Personale">
                         <i class="far fa-user-circle"></i>
                         <span class="icon-label">Il Mio Profilo</span> 
                     </a>

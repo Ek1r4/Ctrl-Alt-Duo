@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/global.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/header.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/vetrina.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/form.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 
@@ -100,6 +101,7 @@
                 </div>
             </div>
         </div>
+        
     </main>
 
     <%@ include file="/WEB-INF/components/footer.jsp" %>
@@ -109,6 +111,19 @@
         const contextPath = '<%= request.getContextPath() %>';
     </script>
     <script src="<%= request.getContextPath() %>/js/filtri-catalogo.js"></script>
+    
+            <div id="delete-confirm-modal" class="admin-modal-overlay">
+            <div class="film-container modal-film-override confirm-modal-box">
+                
+                <h3 class="form-title" style="margin-bottom: 5px;">Conferma Azione</h3>
+                <p id="delete-confirm-message" class="confirm-message"></p>
+                
+                <div class="confirm-actions">
+                    <button type="button" id="btn-cancel-delete" class="btn-cta cancel-btn">Annulla</button>
+                    <button type="button" id="btn-confirm-delete" class="btn-cta danger-btn">Procedi</button>
+                </div>
+            </div>
+        </div>
     
 </body>
 </html>

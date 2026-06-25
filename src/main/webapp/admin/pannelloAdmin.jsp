@@ -27,14 +27,33 @@
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/amministrazione.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/user-area.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/form.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/header.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body class="admin-layout">
 
-	<input type="hidden" id="triggerTab" value="<%= request.getParameter("success") != null || request.getParameter("errore") != null ? "prodotti" : "" %>">
+	<%
+        String checkSuccess = request.getParameter("success");
+        String targetTab = "";
+        
+        // Se il successo riguarda gli admin, apri la scheda SuperAdmin
+        if ("adminCreato".equals(checkSuccess) || "adminEliminato".equals(checkSuccess)) {
+            targetTab = "superadmin";
+        } 
+        // Altrimenti, se c'è un qualsiasi altro successo (es. prodotto) o errore, vai al Catalogo
+        else if (checkSuccess != null || request.getParameter("errore") != null) {
+            targetTab = "prodotti";
+        }
+    %>
+    <input type="hidden" id="triggerTab" value="<%= targetTab %>">
     <aside class="sidebar">
         <div class="sidebar-header">
-            <h2><i class="fas fa-camera-retro"></i> REFRAME</h2>
+            <a href="${pageContext.request.contextPath}/index.jsp" class="header-logo">
+            <img src="${pageContext.request.contextPath}/assets/logoReFrame.png" alt="Logo ReFrame" class="logo-img"> 
+            <div class="logo-text">
+                <span class="logo-title">REFRAME</span>
+            </div>
+        </a><br>
             <span class="role-badge"><%= isSuperAdmin ? "Super Admin" : "Admin" %></span>
         </div>
         <nav class="sidebar-nav">
@@ -48,7 +67,8 @@
             <% } %>
         </nav>
         <div class="sidebar-footer">
-            <a href="<%= request.getContextPath() %>/LogoutServlet" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Esci</a>
+            <a href="<%= request.getContextPath() %>/LogoutServlet" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            <a href="<%= request.getContextPath() %>/index.jsp" class="btn-home"><i class="fas fa-home"></i> Home</a>
         </div>
     </aside>
 
@@ -115,10 +135,11 @@
 
         <section id="aggiungi" class="dashboard-section">
             <div class="film-container">
-                <h1 class="form-title">Inserisci Nuovo Articolo</h1>
+                <h1 class="form-title">Inserisci Nuovo Prodotto</h1>
                 
-                <form action="<%= request.getContextPath() %>/ProdottoServlet" method="POST">
-                    <input type="hidden" name="action" value="add"> 
+                <!-- ATTENZIONE: Aggiunto enctype e cambiata la action verso la nuova Servlet -->
+                <form action="<%= request.getContextPath() %>/PannelloAdminServlet" method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="action" value="aggiungiProdotto"> 
                     
                     <div class="form-grid">
                         <fieldset class="custom-input">
@@ -168,6 +189,17 @@
                         <fieldset class="custom-input full-width dynamic-field add-field-collezione">
                             <legend>Condizione Collezionistica</legend>
                             <input type="text" name="condizioneCollezionistica" placeholder="es. Mint, Grade A...">
+                        </fieldset>
+
+                        <!-- NUOVI CAMPI UPLOAD FILE (Immagine e Modello 3D) -->
+                        <fieldset class="custom-file-input full-width">
+                            <legend>Immagine Copertina (.jpg, .png)</legend>
+                            <input type="file" name="immagineCopertina" accept="image/*" required>
+                        </fieldset>
+                        
+                        <fieldset class="custom-file-input full-width">
+                            <legend>Modello 3D (.glb, .gltf)</legend>
+                            <input type="file" name="modello3D" accept=".glb,.gltf" required>
                         </fieldset>
                     </div>
                     
@@ -230,25 +262,13 @@
         <section id="superadmin" class="dashboard-section">
             <div class="rect-card mb-20">
                 <h3>Crea nuovo profilo Admin</h3>
-                <%
-            	List<String> errors = (List<String>) request.getAttribute("errors");
-                if (errors != null && !errors.isEmpty()) {
-            	%>
-               		<div class="error-box">
-                    	<ul>
-                            <li><%= errors.get(0) %></li>
-                    	</ul>
-                	</div>
-            	<%
-                	}
-            	%>
                 <form action="<%= request.getContextPath() %>/PannelloAdminServlet" method="POST" class="admin-form row-form">
                 	<input type="text" name="username" id="username" placeholder="Username" autocomplete="off" required>
                     <input type="text" name="nome" id="nome" placeholder="Nome" required>
                     <input type="text" name="cognome" id="cognome" placeholder="Cognome" required>
                     <input type="email" name="adminEmail" id="email" placeholder="Email aziendale" autocomplete="off" required>
                     <input type="password" name="adminPassword" id="password" placeholder="Password provvisoria" autocomplete="off" required>
-                    <button type="submit" class="btn-submit">Crea Account</button>
+                    <button type="submit" class="btn-cta">Crea Account</button>
                 </form>
             </div>
 
@@ -272,7 +292,7 @@
                             <td><%= adm.getIsAdmin() == 2 ? "Super Admin" : "Admin" %></td>
                             <td>
                                 <% if(adm.getUsername() != adminLoggato.getUsername()) { %>
-                                <form action="<%= request.getContextPath() %>/EliminaAdminServlet" method="POST" class="inline-form">
+                                <form action="<%= request.getContextPath() %>/PannelloAdminServlet" method="POST" class="inline-form">
                                     <input type="hidden" name="userAdmin" value="<%= adm.getUsername() %>">
                                     <button type="submit" class="btn-icon delete" title="Revoca Accesso"><i class="fas fa-user-times"></i></button>
                                 </form>
@@ -357,6 +377,19 @@
                     
                     <button type="submit" class="btn-cta">Salva Modifiche</button>
                 </form>
+                </div>
+            </div>
+        </div>
+        
+        <div id="delete-confirm-modal" class="admin-modal-overlay">
+            <div class="film-container modal-film-override confirm-modal-box">
+                
+                <h3 class="form-title" style="margin-bottom: 5px;">Conferma Azione</h3>
+                <p id="delete-confirm-message" class="confirm-message"></p>
+                
+                <div class="confirm-actions">
+                    <button type="button" id="btn-cancel-delete" class="btn-cta cancel-btn">Annulla</button>
+                    <button type="button" id="btn-confirm-delete" class="btn-cta danger-btn">Procedi</button>
                 </div>
             </div>
         </div>
