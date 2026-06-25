@@ -421,3 +421,73 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 });
+function openOrderModal(id) {
+    const modale = document.getElementById('modal-' + id);
+    if (modale) {
+        modale.classList.remove('hidden');
+        document.body.style.overflow = 'hidden'; // Blocca lo scroll della pagina dietro
+    }
+}
+
+// 3. Logica di chiusura Modali Ordini
+function closeOrderModal(id) {
+    const modale = document.getElementById('modal-' + id);
+    if (modale) {
+        modale.classList.add('hidden');
+        document.body.style.overflow = 'auto'; // Riattiva lo scroll
+    }
+}
+
+// 4. Chiudi il modale se l'utente clicca fuori (sullo sfondo scuro)
+window.addEventListener('click', function(event) {
+    if (event.target.classList.contains('order-modal-overlay')) {
+        event.target.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+});
+// 1. Funzione per filtrare lo storico ordini in tempo reale
+function filtraOrdini() {
+    const inputElement = document.getElementById("searchHistory");
+    if (!inputElement) return;
+    
+    const input = inputElement.value.toUpperCase();
+    const righe = document.querySelectorAll(".history-content .order-row");
+    const messaggioVuoto = document.getElementById("noSearchResults");
+    
+    let righeVisibili = 0;
+
+    righe.forEach(riga => {
+        // Legge tutto il testo della riga
+        const testoRiga = riga.innerText.toUpperCase();
+        
+        // Controlla se c'è un match
+        if (testoRiga.indexOf(input) > -1) {
+            riga.style.display = "flex"; 
+            righeVisibili++; // Contiamo quante righe restano visibili
+        } else {
+            riga.style.display = "none";
+        }
+    });
+
+    // Se abbiamo righe in totale, ma nessuna è visibile, mostriamo il messaggio di errore
+    if (messaggioVuoto) {
+        if (righe.length > 0 && righeVisibili === 0) {
+            messaggioVuoto.classList.remove("hidden");
+        } else {
+            messaggioVuoto.classList.add("hidden");
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

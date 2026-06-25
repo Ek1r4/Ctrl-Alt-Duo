@@ -9,9 +9,6 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh; 
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh; 
 }
 
 *, *::before, *::after {
@@ -100,5 +97,36 @@ h1, h2, h3, h4, h5, h6 {
 
 .toast-notification i {
     font-size: 24px;
-    color: var(--verde-ottanio); /* Verde successo */
+    color: var(--verde-ottanio); 
 }
+
+
+/* =========================================
+   SCROLLBAR CUSTOM 
+   ========================================= */
+
+
+
+::-webkit-scrollbar {
+    width: 8px; 
+}
+
+::-webkit-scrollbar-track {
+    background-color: #000000ed; 
+    border: none !important;
+    box-shadow: none !important;
+}
+::-webkit-scrollbar-thumb {
+    background-color: var(--grigio-taupe); 
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: var(--marrone-cuoio); 
+}
+
+
+
+
+
+
+

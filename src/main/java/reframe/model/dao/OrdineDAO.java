@@ -141,4 +141,55 @@ public class OrdineDAO {
         }
         return ordine;
     }
+    
+    /**
+     * Recupera tutti gli ordini (con i relativi dettagli) di un utente specifico, 
+     * ordinati dal più recente al più vecchio.
+     */
+    public java.util.List<Ordine> getOrdiniCompletiByUtente(String username) throws SQLException {
+        java.util.List<Ordine> lista = new java.util.ArrayList<>();
+        String queryOrdini = "SELECT * FROM Ordine WHERE ID_Utente = ? ORDER BY Data_ordine DESC";
+        String queryDettagli = "SELECT * FROM Ordine_Prodotto WHERE ID_Ordine = ?";
+
+        Connection conn = null;
+        PreparedStatement psOrdini = null;
+        PreparedStatement psDettagli = null;
+
+        try {
+            conn = ConnessioneDB.getConnection();
+            psOrdini = conn.prepareStatement(queryOrdini);
+            psOrdini.setString(1, username);
+            
+            try (ResultSet rsOrdini = psOrdini.executeQuery()) {
+                while (rsOrdini.next()) {
+                    Ordine ord = new Ordine();
+                    ord.setIdOrdine(rsOrdini.getString("ID_ordine"));
+                    ord.setDataOrdine(rsOrdini.getDate("Data_ordine"));
+                    ord.setTotale(rsOrdini.getDouble("Totale"));
+                    ord.setStato(rsOrdini.getString("Stato"));
+
+                    // Recupera i prodotti per questo specifico ordine
+                    psDettagli = conn.prepareStatement(queryDettagli);
+                    psDettagli.setString(1, ord.getIdOrdine());
+                    try (ResultSet rsDettagli = psDettagli.executeQuery()) {
+                        while (rsDettagli.next()) {
+                            DettaglioOrdine dett = new DettaglioOrdine();
+                            dett.setNomeProdottoAcquisto(rsDettagli.getString("Nome_prodotto_acquisto"));
+                            dett.setQuantitaAcquisto(rsDettagli.getInt("Quantita_acquisto"));
+                            dett.setPrezzoAcquisto(rsDettagli.getDouble("Prezzo_acquisto"));
+                            dett.setIvaAcquisto(rsDettagli.getInt("IVA_acquisto"));
+                            ord.addDettaglio(dett);
+                        }
+                    }
+                    psDettagli.close();
+                    lista.add(ord);
+                }
+            }
+        } finally {
+            if (psDettagli != null) psDettagli.close();
+            if (psOrdini != null) psOrdini.close();
+            if (conn != null) conn.close();
+        }
+        return lista;
+    }
 }

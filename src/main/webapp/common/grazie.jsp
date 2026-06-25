@@ -62,15 +62,6 @@
     <jsp:include page="../WEB-INF/components/footer.jsp" />
     
     
-    <!-- Iframe nascosto per il caricamento della fattura -->
-    <iframe id="iframeFattura" style="position: absolute; width: 0; height: 0; border: none; visibility: hidden;"></iframe>
-
-    <script>
-        function stampaFatturaNascosta(idOrdine) {
-            const iframe = document.getElementById('iframeFattura');
-            // Imposta l'URL della Servlet: l'iframe caricherà la pagina in background
-            iframe.src = '${pageContext.request.contextPath}/Fattura?id=' + idOrdine;
-        }
-    </script>
+    
 </body>
 </html>
