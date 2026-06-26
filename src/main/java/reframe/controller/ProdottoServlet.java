@@ -99,63 +99,7 @@ public class ProdottoServlet extends HttpServlet {
             }
             return; 
         }
-        
-        
-     // ==========================================
-        // AZIONE: AGGIUNGI PRODOTTO
-        // ==========================================
-        if ("add".equals(action)) {
-            try {
-                // Recupero i dati base
-                String idProdotto = request.getParameter("idProdotto");
-                String seriale = request.getParameter("seriale");
-                String marchio = request.getParameter("marchio");
-                String nome = request.getParameter("nome");
-                String prezzoStr = request.getParameter("prezzo");
-                String tipo = request.getParameter("tipo");
-                String descrizione = request.getParameter("descrizione");
-                
-                // Recupero i nuovi campi specifici
-                String stato = request.getParameter("stato");
-                String scattiStr = request.getParameter("numeroScatti");
-                String condizione = request.getParameter("condizioneCollezionistica");
-                
-                double prezzo = Double.parseDouble(prezzoStr);
-                String stockStr = request.getParameter("stock");
-                int stock = (stockStr != null && !stockStr.isEmpty()) ? Integer.parseInt(stockStr) : 1;
-
-                // Creazione del bean e salvataggio
-                Prodotto nuovoProdotto = new Prodotto();
-                nuovoProdotto.setId(idProdotto);
-                nuovoProdotto.setSeriale(seriale);
-                nuovoProdotto.setMarchio(marchio);
-                nuovoProdotto.setNome(nome);
-                nuovoProdotto.setPrezzo(prezzo);
-                nuovoProdotto.setTipo(tipo);
-                nuovoProdotto.setDescrizione(descrizione);
-                nuovoProdotto.setInStock(stock);
-                
-                // 5. Assegnazione condizionale in base al Tipo
-                if ("Usato".equalsIgnoreCase(tipo)) {
-                    nuovoProdotto.setStato(stato);
-                    if (scattiStr != null && !scattiStr.trim().isEmpty()) {
-                        nuovoProdotto.setNumeroScatti(Integer.parseInt(scattiStr));
-                    }
-                } else if ("Collezione".equalsIgnoreCase(tipo)) {
-                    nuovoProdotto.setCondizioneCollezionistica(condizione);
-                }
-                
-                dao.insertProdotto(nuovoProdotto); 
-                
-                response.sendRedirect(request.getContextPath() + "/PannelloAdminServlet?success=aggiunto");
-                
-            } catch (Exception e) {
-                e.printStackTrace();
-                response.sendRedirect(request.getContextPath() + "/PannelloAdminServlet?errore=Dati_non_validi");
-            }
-            return;
-        }
-        
+    
      // ==========================================
         // AZIONE: MODIFICA PRODOTTO
         // ==========================================

@@ -22,7 +22,7 @@
     
     <%
 		Utente utenteDettaglio = (Utente) session.getAttribute("utente");
-		boolean isAdmin = (utenteDettaglio != null && utenteDettaglio.getIsAdmin() == 1);
+    	boolean isAdmin = (utenteDettaglio != null && utenteDettaglio.getIsAdmin() > 0);
      %>
 
     <%
@@ -182,8 +182,15 @@
             
             <h1 class="form-title">Modifica Prodotto</h1>
             
-            <form action="<%= request.getContextPath() %>/AdminModificaProdottoServlet" method="POST">
+            <form action="<%= request.getContextPath() %>/ProdottoServlet" method="POST">
+                <input type="hidden" name="action" value="edit">
                 <input type="hidden" name="idProdotto" value="<%= p.getId() %>">
+                
+                <input type="hidden" name="stock" value="<%= p.getInStock() %>">
+                <input type="hidden" name="tipo" value="<%= p.getTipo() %>">
+                <input type="hidden" name="stato" value="<%= p.getStato() != null ? p.getStato() : "" %>">
+                <input type="hidden" name="numeroScatti" value="<%= p.getNumeroScatti() %>">
+                <input type="hidden" name="condizioneCollezionistica" value="<%= p.getCondizioneCollezionistica() != null ? p.getCondizioneCollezionistica() : "" %>">
                 
                 <fieldset class="custom-input">
                     <legend>Nome Prodotto</legend>
