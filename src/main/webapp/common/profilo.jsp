@@ -2,6 +2,8 @@
 <%@ page import="reframe.model.beans.Utente" %>
 <%@ page import="reframe.model.beans.Spedizione" %>
 <%@ page import="reframe.model.beans.Pagamento" %>
+<%@ page import="reframe.model.beans.Ordine" %>
+<%@ page import="reframe.model.beans.DettaglioOrdine" %>
 <%@ page import="java.util.List" %>
 
 <%
@@ -12,6 +14,7 @@
     }
     List<Spedizione> listaSpedizioni = (List<Spedizione>) request.getAttribute("listaSpedizioni");
     List<Pagamento> listaPagamenti = (List<Pagamento>) request.getAttribute("listaPagamenti");
+    List<Ordine> listaOrdini = (List<Ordine>) request.getAttribute("listaOrdini");
 %>
 <!DOCTYPE html>
 <html lang="it">
@@ -28,8 +31,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-	<%@ include file="/WEB-INF/components/header.jsp" %>
-	
+    <%@ include file="/WEB-INF/components/header.jsp" %>
+    
     <div class="profile-page-container">
         
         <div class="profile-column scrollable-column">
@@ -109,9 +112,10 @@
                     <% if (listaPagamenti != null && !listaPagamenti.isEmpty()) {
                         for (Pagamento pag : listaPagamenti) {
                             String numCarta = pag.getNumeroCarta();
-                            String cartaMascherata = "****" + (numCarta != null && numCarta.length() >= 4 ? numCarta.substring(numCarta.length() - 4) : numCarta); %>
+                            String cartaMascherata = "****" + (numCarta != null && numCarta.length() >= 4 ? numCarta.substring(numCarta.length() - 4) : numCarta);
+                    %>
                             <div class="info-row-item" data-item-id="<%= pag.getIdPagamento() %>" data-type="payment">
-                                <div class="item-details" style="display: flex; width: 100%; justify-content: space-between; padding-right: 15px;">
+                                <div class="item-details item-details-flex">
                                     <p><%= pag.getCircuito() %> <%= cartaMascherata %></p>
                                     <p class="sub-text"><%= pag.getDataScadenza() %></p>
                                 </div>
@@ -124,110 +128,106 @@
             </div>
 
             <div class="profile-card">
-                <div class="card-header">
-                    <h2>HISTORY</h2>
+                <div class="card-header history-header-wrap">
+                    <h2><i class="fas fa-history"></i> HISTORY</h2>
+                    
+                    <div class="search-history-container">
+                        <fieldset class="custom-input search-history-fieldset">
+                            <input type="text" id="searchHistory" class="search-history-input" placeholder="Cerca ordine n°..." onkeyup="filtraOrdini()">
+                        </fieldset>
+                    </div>
                 </div>
-                <div class="history-content"></div>
+  
+                <div class="history-content scrollable-content">
+                    
+                    <div id="noSearchResults" class="hidden empty-message empty-history-container compact">
+                        <i class="fas fa-search empty-history-icon small"></i>
+                        <p>Nessun ordine corrisponde alla tua ricerca.</p>
+                    </div>
+
+                    <% if (listaOrdini != null && !listaOrdini.isEmpty()) {
+                        for (Ordine ord : listaOrdini) { %>
+                            <div class="info-row-item order-row order-row-item" onclick="openOrderModal('<%= ord.getIdOrdine() %>')">
+                                <div class="item-details item-details-flex">
+                                    <p><strong>#<%= ord.getIdOrdine() %></strong></p>
+                                    <p class="sub-text"><%= ord.getDataOrdine() %> &bull; <strong class="order-state-text"><%= ord.getStato() %></strong></p>
+                                </div>
+                                <button class="btn-edit" title="Vedi Dettagli"><i class="fas fa-eye"></i></button>
+                            </div>
+                    <% } } else { %>
+                        <div class="empty-message empty-history-container">
+                            <i class="fas fa-box-open empty-history-icon"></i>
+                            <p>Non hai ancora effettuato alcun acquisto.</p>
+                            <a href="${pageContext.request.contextPath}/index.jsp" class="btn-cta btn-explore">Esplora la Vetrina</a>
+                        </div>
+                    <% } %>
+                </div>
             </div>
 
         </div> 
 
-		<div class="profile-column fixed-column">
-            
-            <div class="profile-card general-info-card">
-                
-                <div class="card-header profile-card-header">
-                    <h2><i class="fas fa-user"></i> <%= utenteLoggato.getUsername() %></h2>
-                    <div>
-                        <button id="btnEditProfile" class="btn-edit-profile" title="Modifica Profilo">
-                            <i class="fas fa-pencil-alt"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="user-details-grid">
-                    <div class="detail-block">
-                        <p><span class="profile-label">NOME:</span> <%= utenteLoggato.getNome() %></p>
-                    </div>
-                    
-                    <div class="detail-block">
-                        <p><span class="profile-label">COGNOME:</span> <%= utenteLoggato.getCognome() %></p>
-                    </div>
-                    
-                    <div class="detail-block">
-                        <p><span class="profile-label">EMAIL:</span> <%= utenteLoggato.getEmail() %></p>
-                    </div>
-                    
-                    <div class="password-display-row">
-                    	<p><span class="profile-label">PASSWORD:</span> <span class="tech-text">&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;</span></p>
-                    	<button id="btnPasswordToggle" class="btn-edit" title="Cambia Password">
-                        	<i class="fas fa-key"></i>
-                    	</button>
-                	</div>
-                    
-                    <div class="detail-block">
-                        <p id="txtTelefono"><%= utenteLoggato.getTelefono() != null ? utenteLoggato.getTelefono() : "Non specificato" %></p>
-                        <input type="text" id="inputTelefono" class="edit-input hidden" value="<%= utenteLoggato.getTelefono() != null ? utenteLoggato.getTelefono() : "" %>">
-                        <span id="errorTelefono" class="error-text"></span>
-                    </div>
-
-                    <div class="detail-block">
-                        <p><span class="profile-label">BIO</span></p>
-                        <p id="txtBio"><%= (utenteLoggato.getBio() != null && !utenteLoggato.getBio().trim().isEmpty()) ? utenteLoggato.getBio() : "Nessuna biografia inserita." %></p>
-                        <textarea id="textareaBio" class="edit-input hidden" rows="6"><%= utenteLoggato.getBio() != null ? utenteLoggato.getBio() : "" %></textarea>
-                        <span id="errorBio" class="error-text"></span>
-                    </div>
-                </div>
-
-                <div id="editActions" class="edit-actions hidden">
-                    <button id="btnCancelProfile" class="btn-cta cancel-btn form-btn">Annulla</button>
-                    <button id="btnSaveProfile" class="btn-cta form-btn">Salva</button>
-                </div>
-
-                <div id="formPasswordContainer" class="hidden form-container password-form-container">
-                    <form action="<%= request.getContextPath() %>/ProfiloServlet" method="POST">
-                        <input type="hidden" name="action" value="cambioPassword">
-                        
-                        <div class="form-grid">
-                            <div class="full-width">
-                                <fieldset class="custom-input">
-                                    <legend>Vecchia Password</legend>
-                                    <input type="password" id="inputVecchiaPassword" name="vecchiaPassword" required>
-                                </fieldset>
-                                <span id="hintVecchiaPassword" class="error-text"></span>
-                            </div>
-                            
-                            <div class="full-width">
-                                <fieldset class="custom-input">
-                                    <legend>Nuova Password</legend>
-                                    <input type="password" id="inputNuovaPassword" name="nuovaPassword" required placeholder="Minimo 8 caratteri">
-                                </fieldset>
-                                <span id="hintNuovaPassword" class="error-text">Minimo 8 caratteri: 1 Maiusc, 1 min, 1 num, 1 speciale.</span>
-                            </div>
-
-                            <div class="full-width">
-                                <fieldset class="custom-input">
-                                    <legend>Conferma Password</legend>
-                                    <input type="password" id="inputConfermaPassword" name="confermaPassword" required>
-                                </fieldset>
-                                <span id="hintConfermaPassword" class="error-text">Le password non coincidono.</span>
-                            </div>
-                        </div>
-
-                        <div class="form-actions">
-                            <button type="button" id="btnCancelPassword" class="btn-cta cancel-btn form-btn">Annulla</button>
-                            <button type="submit" class="btn-cta form-btn">Aggiorna</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-		</div>
+		<%@ include file="/WEB-INF/components/anagrafia.jsp" %>
  
 	</div>
+	
+	<div id="delete-confirm-modal" class="admin-modal-overlay">
+            <div class="film-container modal-film-override confirm-modal-box">
+                
+                <h3 class="form-title" style="margin-bottom: 5px;">Conferma Azione</h3>
+                <p id="delete-confirm-message" class="confirm-message"></p>
+                
+                <div class="confirm-actions">
+                    <button type="button" id="btn-cancel-delete" class="btn-cta cancel-btn">Annulla</button>
+                    <button type="button" id="btn-confirm-delete" class="btn-cta danger-btn">Procedi</button>
+                </div>
+            </div>
+        </div>
+	
 			<footer class="site-footer-minimal">
             	&copy; 2026 ReFrame
     		</footer>
-	
+	<% if (listaOrdini != null) {
+        for (Ordine ord : listaOrdini) { %>
+        <div id="modal-<%= ord.getIdOrdine() %>" class="order-modal-overlay hidden">
+            <div class="film-container order-modal-content">
+                <button class="close-modal-btn" onclick="closeOrderModal('<%= ord.getIdOrdine() %>')"><i class="fas fa-times"></i></button>
+                
+                <h2 class="form-title modal-form-title">ORDINE #<%= ord.getIdOrdine() %></h2>
+
+                <div class="ticket-selections-analog">
+                    <span class="selection-label-analog">Dettagli Transazione</span>
+                    <p class="ticket-row"><strong>Data Acquisto:</strong> <%= ord.getDataOrdine() %></p>
+                    <p class="ticket-row"><strong>Stato:</strong> <%= ord.getStato() %></p>
+                    <p class="ticket-total"><strong>Totale Pagato:</strong> € <%= String.format("%.2f", ord.getTotale()) %></p>
+                </div>
+
+                <div class="ticket-selections-analog ticket-items-box">
+                    <span class="selection-label-analog">Articoli Acquistati</span>
+                    
+                    <div class="modal-items-scroll">
+                        <% if (ord.getDettagli() != null && !ord.getDettagli().isEmpty()) {
+                             for (DettaglioOrdine dett : ord.getDettagli()) { %>
+                            <div class="single-modal-item">
+                                <span class="modal-item-name">
+                                    <%= dett.getQuantitaAcquisto() %>x <%= dett.getNomeProdottoAcquisto() %>
+                                </span>
+                                <strong>€ <%= String.format("%.2f", dett.getTotaleRiga()) %></strong>
+                            </div>
+                        <%   } 
+                           } else { %>
+                            <p class="modal-error-text">Dettagli ordine non trovati.</p>
+                        <% } %>
+                    </div>
+                </div>
+
+                <div class="modal-footer-box">
+                    <jsp:include page="/WEB-INF/components/btn-fattura.jsp">
+                        <jsp:param name="idOrdine" value="<%= ord.getIdOrdine() %>" />
+                    </jsp:include>
+                </div>
+            </div>
+        </div>
+    <% } } %>
     <script>const contestoReFrame = '<%= request.getContextPath() %>';</script>
     <script src="<%= request.getContextPath() %>/js/profilo.js"></script>
 </body>

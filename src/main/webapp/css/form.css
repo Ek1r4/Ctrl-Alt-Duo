@@ -155,6 +155,75 @@ fieldset.custom-input input {
 	padding: 0 20px;
 }
 
+/* =========================================
+   MODALE CONFERMA ELIMINAZIONE (PROFILO)
+   ========================================= */
+/* Sfondo scuro che copre tutto */
+.admin-modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: none; /* Nascosto di default */
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    backdrop-filter: blur(3px);
+}
+
+/* Quando JS aggiunge la classe .active, compare! */
+.admin-modal-overlay.active {
+    display: flex;
+}
+
+/* Stile del box centrale */
+.confirm-modal-box {
+    background: #f8f5f0;
+    max-width: 400px !important;
+    padding: 40px 25px 25px 25px !important;
+    text-align: center;
+    border-radius: 8px;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.confirm-message {
+    margin: 15px 0 25px 0;
+    color: var(--grigio-taupe, #555);
+    font-size: 1.05rem;
+}
+
+/* Bottoni in riga */
+.confirm-actions {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    justify-content: center;
+}
+
+.confirm-actions .btn-cta {
+    flex: 1; 
+    margin: 0;
+    padding: 10px 5px !important; 
+    font-size: 0.85rem !important; 
+    min-width: 0 !important; 
+    height: auto !important; 
+}
+
+/* Colori Bottoni Modale */
+.danger-btn {
+    background-color: var(--rosso-ruggine, #c84b31) !important;
+    color: #ffffff !important;
+    border: none !important;
+}
+.danger-btn:hover { background-color: #9c2e2a !important; }
+
+.cancel-btn {
+    background-color: #eaeaea !important;
+    color: #222 !important;
+    border: none !important;
+}
+.cancel-btn:hover { background-color: #d4d4d4 !important; }
+
 @media screen and (max-width: 768px) {
     .denied-text {
         font-size: 14px;
@@ -233,6 +302,90 @@ fieldset.custom-input input {
     font-size: 12px;
     color: var(--grigio-taupe);
     letter-spacing: 0.5px;
+}
+
+/* =========================================
+   ESTENSIONI FORM.CSS PER IL TICKET
+   ========================================= */
+
+/* 1. Applica le regole dell'input anche a textarea e select */
+fieldset.custom-input textarea,
+fieldset.custom-input select {
+    width: 100%;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 16px;
+    color: var(--antracite-scuro);
+    padding: 5px 0;
+    font-family: inherit;
+    resize: vertical; /* Permette di espandere la textarea */
+}
+
+/* Eredita i font ingranditi per la pellicola '.large' */
+.film-container.large fieldset.custom-input textarea,
+.film-container.large fieldset.custom-input select {
+    font-size: 18px;
+    padding: 8px 0;
+	align-items:center;
+}
+
+
+/* 2. Modifiche per la Select (Menu a tendina) */
+fieldset.custom-input select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+    
+}
+
+/* Colore opzioni su sfondo panna-carta */
+fieldset.custom-input select option {
+    background-color: var(--panna-carta);
+    color: var(--antracite-scuro);
+}
+.select-wrapper-analog {
+    position: relative;
+    width: 100%;
+}
+
+.select-arrow-analog {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--grigio-taupe);
+    pointer-events: none;
+}
+
+/* 3. Stile per il riepilogo dati adattato al tema chiaro */
+.ticket-selections-analog {
+    background-color: rgba(0, 0, 0, 0.02);
+    border: 1px dashed var(--grigio-taupe);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 25px;
+    text-align: left;
+}
+
+.selection-label-analog {
+    display: block;
+    font-size: 13px;
+    color: var(--grigio-taupe);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+.sel-tag-analog {
+    display: inline-block;
+    background-color: var(--verde-ottanio);
+    color: var(--panna-carta);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 14px;
+    margin-right: 8px;
+    margin-bottom: 8px;
 }
 
 /* da cambiare nomi delle classi per renderle più generali e commenti più esplicativi  !!!!!!!!!!!!!!*/

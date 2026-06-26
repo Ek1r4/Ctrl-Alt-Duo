@@ -6,11 +6,9 @@ body {
     color: var(--antracite-scuro);
     margin: 0;
     line-height: 1.6;
-    
-    /* --- NUOVE REGOLE PER IL FOOTER A FONDO PAGINA --- */
     display: flex;
     flex-direction: column;
-    min-height: 100vh; /* Dice al body di essere alto ALMENO quanto tutto lo schermo */
+    min-height: 100vh; 
 }
 
 *, *::before, *::after {
@@ -23,10 +21,9 @@ h1, h2, h3, h4, h5, h6 {
     margin-top: 0;
     letter-spacing: -0.02em; /* Stringe leggermente i caratteri per renderli più "massicci" */
 }
-/* CTA e Link*/
+/* CTA e Link */
 .btn-cta {
     display: inline-block;
-   /* width: 100%; */
     background-color: var(--panna-carta);
     color: var(--verde-ottanio);
     font-size: 22px;
@@ -39,22 +36,28 @@ h1, h2, h3, h4, h5, h6 {
     align-content: center;
     border-radius: 12px;
     
-    /* Doppio bordo */
     border: 2px solid var(--verde-ottanio);
-    box-shadow: inset 0 0 0 3px var(--panna-carta), inset 0 0 0 5px var(--verde-ottanio);
-    transition: all 0.2s ease;
+    box-shadow: 
+        inset 0 0 0 3px var(--panna-carta), 
+        inset 0 0 0 5px var(--verde-ottanio),
+        0 0 0 rgba(0, 0, 0, 0);
     
-    /* Per farlo funzionare anche per link */
+    transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+    
     text-align: center;
     text-decoration: none;
 }
 
 .btn-cta:hover {
+    opacity: 1;
     background-color: var(--verde-ottanio);
     color: var(--panna-carta);
-    /* Invertiamo i colori delle ombre interne: 
-       il primo livello si fonde col verde, il secondo crea il filetto panna */
-    box-shadow: inset 0 0 0 3px var(--verde-ottanio), inset 0 0 0 5px var(--panna-carta);
+    
+    box-shadow: 
+        inset 0 0 0 3px var(--verde-ottanio), 
+        inset 0 0 0 5px var(--panna-carta),
+        0 10px 24px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px); 
 }
 
 .testo-tecnico {
@@ -94,5 +97,36 @@ h1, h2, h3, h4, h5, h6 {
 
 .toast-notification i {
     font-size: 24px;
-    color: var(--verde-ottanio); /* Verde successo */
+    color: var(--verde-ottanio); 
 }
+
+
+/* =========================================
+   SCROLLBAR CUSTOM 
+   ========================================= */
+
+
+
+::-webkit-scrollbar {
+    width: 8px; 
+}
+
+::-webkit-scrollbar-track {
+    background-color: #000000ed; 
+    border: none !important;
+    box-shadow: none !important;
+}
+::-webkit-scrollbar-thumb {
+    background-color: var(--grigio-taupe); 
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: var(--marrone-cuoio); 
+}
+
+
+
+
+
+
+

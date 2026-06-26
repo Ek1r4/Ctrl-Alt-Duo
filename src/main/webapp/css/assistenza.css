@@ -1,1 +1,471 @@
-@charset "UTF-8";
+/* Container principale della pagina */
+.assistenza-main {
+    background-color: var(--panna-carta);
+    color: var(-antracite-scuro);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 6rem 2rem 4rem;
+    font-family: inherit;
+}
+
+.assistenza-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 700px;
+    margin-top: 2rem;
+}
+
+/* Titoli */
+.assistenza-title {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: 300;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 2rem;
+    line-height: 1.5;
+}
+
+.assistenza-title .text-accent {
+    color: var(--marrone-cuoio);
+}
+
+/* Search bar */
+.assistenza-search-box {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    border: 2px solid var(--beige-scuro); /* Bordo bianco */
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
+    margin-bottom: 2rem;
+    background: transparent;
+}
+
+.assistenza-search-box input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--antracite-scuro);
+    padding: 0.8rem 1rem;
+    font-size: 1.1rem;
+    font-family: var(--font-testi);
+    outline: none;
+}
+
+.assistenza-search-box input::placeholder {
+    color: var(--grigio-taupe);
+}
+
+.search-icon, .clear-icon {
+    font-size: 1.2rem;
+    color: var(--antracite-scuro);
+    cursor: pointer;
+}
+
+/* Bottoni 4 categorie */
+.quick-search-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--antracite-scuro);
+    border: 2px solid var(--antracite-scuro);
+    padding: 0.6rem 2rem;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-outline:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Container CTA in fondo */
+.assistenza-cta-container {
+    margin-top: 4rem;
+    margin-bottom: 2rem;
+}
+/* Barra di navigazione superiore dello step (Indietro / Salta) */
+.step-nav {
+    width: 100%;
+    max-width: 700px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2vh;
+}
+
+.btn-step-nav {
+    background: transparent;
+    color: var(--grigio-taupe);
+    border: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+}
+
+.btn-step-nav:hover {
+    opacity: 1;
+}
+/* Container principale dell'accordion */
+.assistenza-accordion-container {
+    width: 100%;
+    margin: 4vh 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Struttura del singolo blocco Ordine */
+.ordine-item {
+    width: 100%;
+    border: 2px solid var(--beige-scuro); /* Bordo bianco geometrico come mockup */
+    border-radius: 4px;
+    background-color: transparent;
+    overflow: hidden;
+}
+
+/* Header dell'ordine (la riga cliccabile) */
+.ordine-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 1.5rem;
+    gap: 10vw;
+    cursor: pointer;
+    user-select: none;
+    list-style: none; /* Rimuove la freccia nativa su Chrome/Firefox */
+}
+
+.ordine-header::-webkit-details-marker {
+    display: none; /* Rimuove la freccia nativa su Safari */
+}
+
+/* Informazioni a sinistra (ID e Data) */
+.ordine-meta {
+    display: flex;
+    gap: 1.5rem;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+}
+
+.ordine-id {
+    font-weight: 600;
+}
+
+.ordine-date {
+    color:var(--grigio-taupe);
+}
+
+/* Elementi di controllo a destra (Testo + Icona) */
+.ordine-trigger {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.ordine-status {
+    font-size: 0.9rem;
+    color: var(--grigio-taupe);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.arrow-icon {
+    transition: transform 0.3s ease;
+    color: var(--grigio-taupe);
+}
+
+/* Rotazione della freccia quando l'accordion è aperto */
+.ordine-item[open] .arrow-icon {
+    transform: rotate(180deg);
+}
+
+/* Box interno contenente i prodotti dell'ordine */
+.ordine-products {
+    padding: 0 1.5rem 1.5rem 1.5rem;
+    border-top: 1px dashed color-mix(in srgb, var(--beige-scuro) 70%, transparent);
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.prodotto-qta {
+    color: var(--verde-ottanio); /* Colore accent per risaltare i dettagli numerici */
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+/* Link di navigazione sul fondo */
+.assistenza-link-container {
+    margin-top: 2vh;
+    text-align: center;
+}
+
+.assistenza-sublink {
+    color: var(--grigio-taupe);
+    font-size: 0.95rem;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    transition: color 0.3s ease;
+}
+
+.assistenza-sublink:hover {
+    color: var(--verde-ottanio);
+}
+
+/* Allineamento lato sinistro (Checkbox + Info Ordine) */
+.ordine-meta-left {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+/* Custom Checkbox Minimalista */
+.custom-cb-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+}
+
+.custom-cb-wrapper input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.custom-cb {
+    height: 20px;
+    width: 20px;
+    background-color: transparent;
+    border: 2px solid var(--beige-scuro);
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+/* Stato attivo del Checkbox */
+.custom-cb-wrapper input:checked ~ .custom-cb {
+    background-color: var(--verde-ottanio); /* Colore accent per la spunta */
+    border-color: var(--verde-ottanio);
+}
+
+/* Aggiunta dell'icona spunta in SVG via CSS quando attivo */
+.custom-cb-wrapper input:checked ~ .custom-cb::after {
+    content: "";
+    width: 5px;
+    height: 10px;
+    border: solid var(--panna-carta);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    margin-bottom: 2px;
+}
+
+/* Adattamento riga prodotto per far spazio al checkbox */
+.prodotto-row {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem; /* Spazio tra checkbox e nome */
+    padding-top: 1rem;
+    font-size: 1rem;
+}
+
+.prodotto-nome {
+    flex: 1; /* Spinge la quantità verso destra */
+}
+
+/* Tasto a comparsa (Floating Submit) */
+.floating-submit-container{
+    position: fixed;
+    bottom: -100px; /* Nascosto di default */
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 1rem;
+    
+    transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 100;
+}
+/* 1. Stato base sovrascritto */
+.floating-submit-container .btn-cta {
+    background-color: var(--verde-ottanio);
+    color: var(--panna-carta);
+    border: 2px solid var(--verde-ottanio);
+    
+    /* Inset preparato ma trasparente + Ombre esterne di base */
+    box-shadow: 
+        inset 0 0 0 2px transparent,
+        0 4px 6px rgba(0, 0, 0, 0.1), 
+        0 15px 35px rgba(0, 0, 0, 0.2);
+}
+
+/* 2. Stato hover specifico */
+.floating-submit-container .btn-cta:hover {
+    /* Manteniamo i colori intatti */
+    background-color: var(--verde-ottanio);
+    color: var(--panna-carta);
+    
+    /* 1. La linea interna diventa color panna-carta
+      2. Le ombre esterne si espandono e diventano più scure per enfatizzare il distacco
+    */
+    box-shadow: 
+        inset 0 0 0 2px var(--panna-carta), 
+        0 12px 24px rgba(0, 0, 0, 0.15), 
+        0 25px 50px rgba(0, 0, 0, 0.3);
+    
+    /* Il bottone si innalza di 3 pixel verso l'alto */
+    transform: translateY(-3px);
+}
+
+/* Classe aggiunta via JS per mostrarlo */
+.floating-submit-container.visible {
+    bottom: 2rem;
+}
+
+
+
+
+
+
+
+
+
+.auth-wrapper > div{
+	width: 100%; 
+	max-width: 80vw; 
+	display: flex;
+	    flex-direction: column; 
+	margin-top:10vh;
+}
+
+.film-container.large{
+	max-width:60vw;
+}
+.form-title span{
+	color:var(--verde-ottanio);
+}
+
+
+
+
+/* ===================================================
+   RESPONSIVE: TABLET E SMARTPHONE (max-width: 768px)
+   =================================================== */
+@media (max-width: 1025px) {
+    
+    /* 1. Riduzione dei margini globali per sfruttare lo schermo */
+    .assistenza-main {
+        padding: 4rem 1rem 3rem; /* Margini laterali ridotti a 1rem */
+    }
+
+    /* 2. Titolo più compatto */
+    .assistenza-title {
+        font-size: 1.8rem;
+        margin-bottom: 1.5rem;
+    }
+
+    /* 3. Header Ordine: riorganizza gli spazi */
+    .ordine-header {
+        padding: 1rem;
+        align-items: center; 
+    }
+
+    /* Incolonna ID e Data uno sotto l'altro */
+    .ordine-meta {
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+
+    .ordine-meta-left {
+        gap: 1rem; /* Meno spazio tra checkbox e testi */
+    }
+
+    .ordine-id {
+        font-size: 1rem;
+    }
+
+    .ordine-date {
+        font-size: 0.85rem;
+    }
+
+    /* 4. Riga Prodotto: font più piccoli e gestione a capo */
+    .prodotto-row {
+        gap: 1rem;
+        padding-top: 0.8rem;
+        align-items: flex-start; /* Se il nome va a capo, la quantità resta allineata in alto */
+    }
+
+    .prodotto-nome {
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+
+    .prodotto-qta {
+        font-size: 0.85rem;
+        white-space: nowrap; /* Evita che "Q.tà: 1" si spezzi su due righe */
+        margin-top: 2px; /* Allinea visivamente con la prima riga del testo */
+    }
+
+    /* 5. Adattamento del tasto a comparsa sul fondo */
+    .floating-submit-container {
+        padding: 1rem;
+    }
+
+    .floating-submit-container .btn-cta {
+        width: 100%;
+        max-width: 350px; /* Non lo fa diventare larghissimo su tablet */
+        font-size: 18px;
+        padding: 12px;
+    }
+    .film-container.large{
+		max-width:80vw;
+	}
+}
+
+/* ===================================================
+   RESPONSIVE: SMARTPHONE PICCOLI (max-width: 480px)
+   =================================================== */
+@media (max-width: 480px) {
+    
+    .assistenza-title {
+        font-size: 1.5rem;
+    }
+
+    /* Nasconde il testo "Visualizza Prodotti" per evitare sovrapposizioni, lascia solo l'icona della freccia */
+    .ordine-status {
+        display: none;
+    }
+
+    /* Mantiene la freccia centrata nonostante il testo sia scomparso */
+    .ordine-trigger {
+        justify-content: flex-end;
+    }
+    .film-container.large{
+		max-width:100vw;
+	}
+}

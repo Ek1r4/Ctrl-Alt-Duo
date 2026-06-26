@@ -20,10 +20,9 @@
             <div class="footer-col links-col">
                 <h3 class="footer-title">COLLEZIONI</h3>
                 <ul class="footer-nav">
-                    <li><a href="#">Nuove</a></li>
-                    <li><a href="#">Ricondizionate</a></li>
-                    <li><a href="#">Collezionismo</a></li>
-                    <li><a href="#">Accessori</a></li>
+                    <li><a href="${pageContext.request.contextPath}/ProdottoServlet?tipo=Nuovo">Nuove</a></li>
+                    <li><a href="${pageContext.request.contextPath}/ProdottoServlet?tipo=Usato">Ricondizionate</a></li>
+                    <li><a href="${pageContext.request.contextPath}/ProdottoServlet?tipo=Collezione">Collezionismo</a></li>
                 </ul>
             </div>
 

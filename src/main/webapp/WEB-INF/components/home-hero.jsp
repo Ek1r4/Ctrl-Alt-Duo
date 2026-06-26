@@ -16,8 +16,8 @@
             </p>
             
             <div class="hero-buttons">
-                <a href="#ricondizionate" class="btn btn-cta">ESPLORA LE RICONDIZIONATE</a>
-                <a href="#nuovo" class="btn btn-cta">SCOPRI IL NUOVO</a>
+                <a href="${pageContext.request.contextPath}/ProdottoServlet?tipo=Usato" class="btn btn-cta">ESPLORA LE RICONDIZIONATE</a>
+                <a href="${pageContext.request.contextPath}/ProdottoServlet?tipo=Nuovo" class="btn btn-cta">SCOPRI IL NUOVO</a>
             </div>
         </div>
         
