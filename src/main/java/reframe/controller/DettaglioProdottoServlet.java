@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import reframe.model.beans.Prodotto;
 import reframe.model.dao.ProdottoDAO;
+import reframe.model.dao.RecensioniDAO;
 
 @WebServlet("/DettaglioProdottoServlet")
 public class DettaglioProdottoServlet extends HttpServlet {
@@ -34,6 +35,14 @@ public class DettaglioProdottoServlet extends HttpServlet {
                 // In caso di errore SQL, il prodotto rimarrà null e la JSP mostrerà il messaggio "Prodotto non trovato"
             }
         }
+        
+        RecensioniDAO recDao = new RecensioniDAO();
+     // Passa le recensioni alla request usando il nome esatto che il fragment JSP si aspetta di leggere
+        try {
+			request.setAttribute("recensioniProdotto", recDao.doRetrieveByProdotto(idProdotto));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
         
         // 4. Inoltriamo alla pagina del dettaglio
         request.getRequestDispatcher("/dettaglioProdotto.jsp").forward(request, response);

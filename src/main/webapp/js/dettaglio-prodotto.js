@@ -47,4 +47,65 @@ document.addEventListener('DOMContentLoaded', function() {
 	            }
 	        });
 	    }
+
+		    // ==========================================
+		    // MODALE CONFERMA ELIMINAZIONE (RECENSIONI)
+		    // ==========================================
+		    
+		    // Cerca tutti i cestini delle recensioni
+		    const deleteReviewBtns = document.querySelectorAll('.btn-delete-review'); 
+		    
+		    // Elementi del modale (già presenti in dettaglioProdotto.jsp)
+		    const deleteModal = document.getElementById('delete-confirm-modal');
+		    const deleteMessage = document.getElementById('delete-confirm-message');
+		    const btnConfirmDelete = document.getElementById('btn-confirm-delete');
+		    const btnCancelDelete = document.getElementById('btn-cancel-delete');
+		    
+		    let formRecensioneDaInviare = null; // Memoria temporanea
+
+		    if (deleteReviewBtns.length > 0 && deleteModal) {
+		        
+		        // Quando l'admin clicca il cestino...
+		        deleteReviewBtns.forEach(btn => {
+		            btn.addEventListener('click', function(e) {
+		                e.preventDefault(); // Blocca l'invio immediato del form
+		                
+		                formRecensioneDaInviare = this.closest('form'); // Salva il form specifico di quella recensione
+		                
+		                // Personalizza il testo del modale
+		                deleteMessage.innerHTML = "Sei sicuro di voler rimuovere definitivamente questa <strong>Recensione</strong>?";
+		                
+		                // Fa apparire il modale
+		                deleteModal.classList.add('active');
+		            });
+		        });
+
+		        // Funzione per chiudere e resettare
+		        const chiudiModale = () => {
+		            deleteModal.classList.remove('active');
+		            formRecensioneDaInviare = null;
+		        };
+
+		        // Click su "Annulla"
+		        if (btnCancelDelete) {
+		            btnCancelDelete.addEventListener('click', chiudiModale);
+		        }
+
+		        // Click fuori dalla finestra (sullo sfondo scuro)
+		        deleteModal.addEventListener('click', (e) => {
+		            if (e.target === deleteModal) {
+		                chiudiModale();
+		            }
+		        });
+
+		        // Click su "Procedi"
+		        if (btnConfirmDelete) {
+		            btnConfirmDelete.addEventListener('click', () => {
+		                // Se c'è un form salvato in memoria, sparalo al server!
+		                if (formRecensioneDaInviare) {
+		                    formRecensioneDaInviare.submit(); 
+		                }
+		            });
+		        }
+		    }
 });

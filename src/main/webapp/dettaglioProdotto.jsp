@@ -153,6 +153,7 @@
             </div>
 
         </div>
+        <%@ include file="/WEB-INF/components/recensioni.jsp" %>
     </main>
     <% 
         } else { 
@@ -215,6 +216,21 @@
 	
     <%@ include file="/WEB-INF/components/footer.jsp" %>
 
+	<div id="delete-confirm-modal" class="admin-modal-overlay">
+        <div class="film-container modal-film-override confirm-modal-box">
+        
+            <h3 class="form-title" style="margin-bottom: 5px;">Conferma Azione</h3>
+            <p id="delete-confirm-message" class="confirm-message"></p>
+            
+            <div class="confirm-actions">
+                <button type="button" id="btn-cancel-delete" class="btn-cta cancel-btn">Annulla</button>
+                <button type="button" id="btn-confirm-delete" class="btn-cta danger-btn">Procedi</button>
+            </div>
+        </div>
+    </div>
+    
+    
+	
     <script src="<%= request.getContextPath() %>/js/dettaglio-prodotto.js"></script>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
 </body>
