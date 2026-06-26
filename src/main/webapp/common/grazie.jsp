@@ -14,29 +14,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grazie per l'acquisto | ReFrame</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/global.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/form.css">
-    <style>
-        .ordine-recap { background-color: rgba(0,0,0,0.02); border: 1px solid var(--grigio-taupe); padding: 1.5rem; text-align: left; margin: 2rem auto; border-radius: 4px; max-width: 350px;}
-        .ordine-recap p { margin: 0.5rem 0; color: var(--antracite-scuro); }
-        .btn-home { background-color: transparent; color: var(--antracite-scuro); border: 2px solid var(--antracite-scuro); padding: 15px 30px; font-size: 1.1rem; font-weight: bold; text-transform: uppercase; text-decoration: none; display: inline-block; margin-top: 2rem; transition: all 0.3s; }
-        .btn-home:hover { background-color: var(--antracite-scuro); color: var(--panna-carta); }
-    </style>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/checkout.css">
 </head>
 <body>
     <jsp:include page="../WEB-INF/components/header.jsp" />
 
-    <div class="auth-wrapper" style="margin: 5vh auto;">
-        <div class="film-container" style="max-width: 550px;">
+    <div class="auth-wrapper grazie-wrapper">
+        <div class="film-container grazie-container">
             
             <div class="camera-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="rgb(61, 116, 111)" stroke-linecap="round" stroke-linejoin="round" style="width: 50px; height: 50px; stroke-width: 2;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="rgb(61, 116, 111)" stroke-linecap="round" stroke-linejoin="round" class="grazie-icon-svg">
                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                     <polyline points="22 4 12 14.01 9 11.01"></polyline>
                 </svg>
             </div>
     
-            <h1 class="form-title" style="color: var(--verde-ottanio);">ACQUISTO COMPLETATO</h1>
-            <p style="font-weight: bold; color: var(--antracite-scuro); margin-top: -10px;">Soggetto perfettamente a fuoco.</p>
+            <h1 class="form-title grazie-title">ACQUISTO COMPLETATO</h1>
+            <p class="grazie-subtitle">Soggetto perfettamente a fuoco.</p>
             
             <div class="ordine-recap">
                 <p><strong>N° Ordine:</strong> <%= ordine.getIdOrdine() %></p>
@@ -60,8 +56,6 @@
     </div>
 
     <jsp:include page="../WEB-INF/components/footer.jsp" />
-    
-    
     
 </body>
 </html>

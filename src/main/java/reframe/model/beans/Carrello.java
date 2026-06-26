@@ -44,11 +44,34 @@ public class Carrello {
         }
     }
 
-    // Calcola il totale del carrello
-    public double getTotale() {
+ // 1. Calcola SOLO il totale dei prodotti (Subtotale)
+    public double getSubtotaleProdotti() {
         double totale = 0;
         for (CarrelloItem item : items) {
             totale += item.getPrezzoTotale();
+        }
+        return totale;
+    }
+
+    // 2. Costo fisso di spedizione (0 se il carrello è vuoto)
+    public double getCostoSpedizione() {
+        if (items.isEmpty()) return 0.0;
+        return 5.00; // Costo fisso 5 Euro
+    }
+
+    // 3. Totale complessivo da pagare (Prodotti + Spedizione)
+    public double getTotaleComplessivo() {
+        return getSubtotaleProdotti() + getCostoSpedizione();
+    }
+    
+    // N.B. Per compatibilità con i codici precedenti, se hai ancora getTotale() in giro, mantienilo facendogli restituire il totale complessivo:
+    public double getTotale() {
+        return getTotaleComplessivo();
+    }
+    public int getTotaleArticoli() {
+        int totale = 0;
+        for (CarrelloItem item : this.items) { // Assicurati che 'this.items' sia il nome della tua lista
+            totale += item.getQuantita();
         }
         return totale;
     }

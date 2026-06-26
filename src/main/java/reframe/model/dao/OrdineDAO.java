@@ -8,20 +8,23 @@ import reframe.utils.ConnessioneDB;
 
 public class OrdineDAO {
 
-    /**
+	/**
      * Inserisce un nuovo ordine completo (Testata + Dettagli) 
-     * utilizzando una Transazione SQL per garantire l'integrità dei dati.
+     * e scala lo stock dei prodotti, tutto in una singola Transazione SQL.
      */
     public void insertOrdineCompleto(Ordine ordine) throws SQLException {
         // Query per la tabella Ordine
-        String queryOrdine = "INSERT INTO Ordine (ID_ordine, URL_fattura, Data_ordine, Totale, Garanzia, Stato, ID_Utente, ID_Pagamento, ID_Spedizione) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String queryOrdine = "INSERT INTO Ordine (ID_ordine, Data_ordine, Totale, Garanzia, Stato, ID_Utente, ID_Pagamento, ID_Spedizione) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         
-        // Query per la tabella Ordine_Prodotto (con campi IVA e Prezzo bloccati come da checklist)
+        // Query per la tabella Ordine_Prodotto
         String queryDettaglio = "INSERT INTO Ordine_Prodotto (ID_Ordine, ID_Prodotto, Prezzo_acquisto, Quantita_acquisto, Nome_prodotto_acquisto, IVA_acquisto) VALUES (?, ?, ?, ?, ?, ?)";
+        
+        String queryUpdateStock = "UPDATE Prodotto SET In_stock = In_stock - ? WHERE ID_prodotto = ?";
         
         Connection conn = null;
         PreparedStatement psOrdine = null;
         PreparedStatement psDettaglio = null;
+        PreparedStatement psUpdateStock = null;
         
         try {
             conn = ConnessioneDB.getConnection();
@@ -32,35 +35,41 @@ public class OrdineDAO {
             // 2. INSERIMENTO TESTATA ORDINE
             psOrdine = conn.prepareStatement(queryOrdine);
             psOrdine.setString(1, ordine.getIdOrdine());
-            psOrdine.setString(2, ordine.getUrlFattura());
-            psOrdine.setDate(3, ordine.getDataOrdine());
-            psOrdine.setDouble(4, ordine.getTotale());
-            psOrdine.setBoolean(5, ordine.isGaranzia());
-            psOrdine.setString(6, ordine.getStato());
-            psOrdine.setString(7, ordine.getIdUtente());
-            psOrdine.setInt(8, ordine.getIdPagamento());
-            psOrdine.setInt(9, ordine.getIdSpedizione());
+            psOrdine.setDate(2, ordine.getDataOrdine());
+            psOrdine.setDouble(3, ordine.getTotale());
+            psOrdine.setBoolean(4, ordine.isGaranzia());
+            psOrdine.setString(5, ordine.getStato());
+            psOrdine.setString(6, ordine.getIdUtente());
+            psOrdine.setInt(7, ordine.getIdPagamento());
+            psOrdine.setInt(8, ordine.getIdSpedizione());
             
             psOrdine.executeUpdate();
             
-            // 3. INSERIMENTO DETTAGLI ORDINE (Ciclo sui prodotti acquistati)
+            // 3. INSERIMENTO DETTAGLI ORDINE E AGGIORNAMENTO STOCK
             psDettaglio = conn.prepareStatement(queryDettaglio);
+            psUpdateStock = conn.prepareStatement(queryUpdateStock);
+            
             for (DettaglioOrdine dettaglio : ordine.getDettagli()) {
-                psDettaglio.setString(1, ordine.getIdOrdine()); // Colleghiamo la riga all'ordine padre
+                // A) Inserisce il dettaglio
+                psDettaglio.setString(1, ordine.getIdOrdine()); 
                 psDettaglio.setString(2, dettaglio.getIdProdotto());
-                psDettaglio.setDouble(3, dettaglio.getPrezzoAcquisto()); // Integrità storica mantenuta!
+                psDettaglio.setDouble(3, dettaglio.getPrezzoAcquisto()); 
                 psDettaglio.setInt(4, dettaglio.getQuantitaAcquisto());
                 psDettaglio.setString(5, dettaglio.getNomeProdottoAcquisto());
-                psDettaglio.setInt(6, dettaglio.getIvaAcquisto());       // Integrità storica mantenuta!
-                
+                psDettaglio.setInt(6, dettaglio.getIvaAcquisto());       
                 psDettaglio.executeUpdate();
+                
+                // B) Sottrae la quantità appena acquistata dallo stock del Prodotto
+                psUpdateStock.setInt(1, dettaglio.getQuantitaAcquisto());
+                psUpdateStock.setString(2, dettaglio.getIdProdotto());
+                psUpdateStock.executeUpdate();
             }
             
             // 4. CONFERMA TRANSAZIONE: Se arriviamo qui, tutto è andato bene!
             conn.commit();
             
         } catch (SQLException e) {
-            // ERRORE: Annulliamo tutto quello che è stato fatto finora
+            // ERRORE: Annulliamo tutto (Rollback) per evitare dati a metà
             if (conn != null) {
                 try {
                     conn.rollback();
@@ -69,23 +78,23 @@ public class OrdineDAO {
                     ex.printStackTrace();
                 }
             }
-            throw e; // Rilanciamo l'eccezione per farla gestire al Controller
+            throw e; // Rilanciamo l'eccezione per farla catturare dalla Servlet
             
         } finally {
-            // Chiusura sicura delle risorse e ripristino dell'autocommit
+            // Chiusura sicura delle risorse
             try {
+                if (psUpdateStock != null) psUpdateStock.close();
                 if (psDettaglio != null) psDettaglio.close();
                 if (psOrdine != null) psOrdine.close();
                 if (conn != null) {
-                    conn.setAutoCommit(true); // Ripristiniamo il comportamento di default
-                    conn.close();             // Rimettiamo la connessione nel Pool
+                    conn.setAutoCommit(true); 
+                    conn.close();             
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
     }
-    
  // Recupera l'ordine e tutti i suoi prodotti per stampare la fattura
     public Ordine fetchOrdineById(String idOrdine) throws SQLException {
         String queryOrdine = "SELECT * FROM Ordine WHERE ID_ordine = ?";
@@ -108,7 +117,6 @@ public class OrdineDAO {
             if (rsOrdine.next()) {
                 ordine = new Ordine();
                 ordine.setIdOrdine(rsOrdine.getString("ID_ordine"));
-                ordine.setUrlFattura(rsOrdine.getString("URL_fattura"));
                 ordine.setDataOrdine(rsOrdine.getDate("Data_ordine"));
                 ordine.setTotale(rsOrdine.getDouble("Totale"));
                 ordine.setGaranzia(rsOrdine.getBoolean("Garanzia"));

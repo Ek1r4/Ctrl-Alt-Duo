@@ -14,43 +14,31 @@
     <meta charset="UTF-8">
     <title>Fattura <%= ordine.getIdOrdine() %> | ReFrame</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/global.css">
-    <style>
-        .invoice-box { max-width: 800px; margin: 2rem auto; padding: 2rem; border: 2px solid var(--antracite-scuro); background: var(--panna-carta); font-family: var(--font-tecnico); }
-        .invoice-header { display: flex; justify-content: space-between; border-bottom: 2px solid var(--antracite-scuro); padding-bottom: 1rem; margin-bottom: 2rem; }
-        .invoice-table { width: 100%; border-collapse: collapse; margin-top: 1rem; border: 1px solid var(--antracite-scuro); }
-        .invoice-table th, .invoice-table td { border: 1px solid var(--grigio-taupe); padding: 0.8rem; text-align: left; }
-        .invoice-table th { background: rgba(0,0,0,0.05); }
-        
-        /* IL MIRACOLO DELLA CHECKLIST: Si attiva solo quando si stampa/salva in PDF */
-        @media print {
-            .no-print, header, footer, .btn-print { display: none !important; }
-            body { background: #fff; margin: 0; padding: 0; }
-            .invoice-box {  max-width: 100%; }
-        }
-    </style>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/fattura.css">
 </head>
 <body>
     <div class="no-print">
         <jsp:include page="../WEB-INF/components/header.jsp" />
     </div>
 
-
     <main class="invoice-box">
         <div class="invoice-header">
-            <div>
-                <h2 style="margin:0;">REFRAME</h2>
+            <div class="invoice-header-left">
+                <h2>REFRAME</h2>
                 <p>E-commerce Fotografia Analogica</p>
             </div>
-            <div style="text-align: right;">
-                <h1 style="margin:0;">FATTURA</h1>
-                <p><strong>N°:</strong> <%= ordine.getIdOrdine() %><br>
-                   <strong>Data:</strong> <%= ordine.getDataOrdine() %></p>
+            <div class="invoice-header-right">
+                <h1>FATTURA</h1>
+                <p>
+                    <strong>N°:</strong> <%= ordine.getIdOrdine() %><br>
+                    <strong>Data:</strong> <%= ordine.getDataOrdine() %>
+                </p>
             </div>
         </div>
 
-        <div style="margin-bottom: 2rem; display: flex; align-items: baseline; justify-content: space-between;">
-            <h3 style="margin: 0;">Destinatario:</h3>
-            <p style="margin: 0;"><%= ordine.getIdUtente() %></p>
+        <div class="invoice-recipient">
+            <h3>Destinatario:</h3>
+            <p><%= ordine.getIdUtente() %></p>
         </div>
 
         <table class="invoice-table">
@@ -75,18 +63,17 @@
                 <% } %>
             </tbody>
         </table>
-
-        <div style="text-align: right; margin-top: 2rem; font-size: 1.2rem; font-weight: bold;">
+        
+        <div class="invoice-subtotals">
+            Subtotale Prodotti: € <%= String.format("%.2f", ordine.getTotale() - 5.00) %><br>
+            Spedizione Standard: € 5.00
+        </div>
+        
+        <div class="invoice-grand-total">
             TOTALE (IVA INCL.): € <%= String.format("%.2f", ordine.getTotale()) %>
         </div>
     </main>
     
-    
-    <script>
-        // Triggera automaticamente la stampa/salvataggio appena la pagina è caricata nell'iframe
-        window.onload = function() {
-            window.print();
-        };
-    </script>
+    <script src="${pageContext.request.contextPath}/js/fattura.js"></script>
 </body>
 </html>
