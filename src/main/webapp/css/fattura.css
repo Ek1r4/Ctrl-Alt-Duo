@@ -1,0 +1,126 @@
+/* =========================================
+   FATTURA E STAMPA (fattura.jsp)
+   ========================================= */
+
+.invoice-box { 
+    max-width: 800px; 
+    margin: 2rem auto; 
+    padding: 2rem; 
+    border: 2px solid var(--antracite-scuro); 
+    background: var(--panna-carta); 
+    font-family: var(--font-tecnico); 
+}
+
+/* Header Fattura */
+.invoice-header { 
+    display: flex; 
+    justify-content: space-between; 
+    border-bottom: 2px solid var(--antracite-scuro); 
+    padding-bottom: 1rem; 
+    margin-bottom: 2rem; 
+}
+
+.invoice-header-left h2 { 
+    margin: 0; 
+}
+
+.invoice-header-right { 
+    text-align: right; 
+}
+
+.invoice-header-right h1 { 
+    margin: 0; 
+}
+
+/* Sezione Destinatario */
+.invoice-recipient { 
+    margin-bottom: 2rem; 
+    display: flex; 
+    align-items: baseline; 
+    justify-content: space-between; 
+}
+
+.invoice-recipient h3, 
+.invoice-recipient p { 
+    margin: 0; 
+}
+
+/* Tabella Prodotti */
+.invoice-table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    margin-top: 1rem; 
+    border: 1px solid var(--antracite-scuro); 
+}
+
+.invoice-table th, 
+.invoice-table td { 
+    border: 1px solid var(--grigio-taupe); 
+    padding: 0.8rem; 
+    text-align: left; 
+}
+
+.invoice-table th { 
+    background: rgba(0,0,0,0.05); 
+}
+
+/* Totali */
+.invoice-subtotals { 
+    text-align: right; 
+    margin-top: 1rem; 
+    font-size: 1.1rem; 
+}
+
+.invoice-grand-total { 
+    text-align: right; 
+    margin-top: 2rem; 
+    font-size: 1.2rem; 
+    font-weight: bold; 
+}
+
+/* --- REGOLE DI STAMPA --- */
+@media print {
+    .no-print, header, footer, .btn-print { 
+        display: none !important; 
+    }
+    body { 
+        background: #fff; 
+        margin: 0; 
+        padding: 0; 
+    }
+}
+
+/* --- COMPONENTE BOTTONE FATTURA (btn-fattura.jsp) --- */
+.btn-fattura-wrapper {
+    margin-top: 1.5rem;
+}
+
+.btn-fattura-scarica {
+    font-size: 1rem;
+    margin-top: 0;
+}
+
+.btn-fattura-icon {
+    width: 18px;
+    height: 18px;
+    vertical-align: middle;
+    margin-right: 8px;
+}
+
+.btn-fattura-disabled {
+    background-color: transparent;
+    color: var(--grigio-taupe);
+    cursor: not-allowed;
+    padding: 12px 24px;
+    font-weight: bold;
+    text-transform: uppercase;
+    border: 2px dashed var(--grigio-taupe);
+}
+
+.iframe-fattura-hidden {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border: none;
+    visibility: hidden;
+}

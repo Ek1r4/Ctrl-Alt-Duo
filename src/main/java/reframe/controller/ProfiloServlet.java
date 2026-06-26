@@ -14,6 +14,8 @@ import reframe.model.dao.UtenteDAO;
 import reframe.model.dao.PagamentoDAO;
 import reframe.model.dao.SpedizioneDAO;
 import reframe.utils.HashingPassword;
+import reframe.model.dao.OrdineDAO;
+import reframe.model.beans.Ordine;
 
 @WebServlet("/ProfiloServlet")
 public class ProfiloServlet extends HttpServlet {
@@ -22,6 +24,7 @@ public class ProfiloServlet extends HttpServlet {
     private UtenteDAO utenteDAO;
     private PagamentoDAO pagamentoDAO;
     private SpedizioneDAO spedizioneDAO;
+    private OrdineDAO ordineDAO;
 
     @Override
     public void init() throws ServletException {
@@ -29,6 +32,7 @@ public class ProfiloServlet extends HttpServlet {
         this.utenteDAO = new UtenteDAO();
         this.pagamentoDAO = new PagamentoDAO();
         this.spedizioneDAO = new SpedizioneDAO();
+        this.ordineDAO = new OrdineDAO();
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -45,16 +49,19 @@ public class ProfiloServlet extends HttpServlet {
             // 2. RECUPERIAMO I DATI DAL DB TRAMITE I TUOI DAO
             List<Spedizione> listaSpedizioni = spedizioneDAO.doRetrieveByUtente(utenteLoggato.getUsername()); 
             List<Pagamento> listaPagamenti = pagamentoDAO.doRetrieveByUtente(utenteLoggato.getUsername());
+            List<Ordine> listaOrdini = ordineDAO.getOrdiniCompletiByUtente(utenteLoggato.getUsername());
             
             // 3. METTIAMO LE LISTE NELLA REQUEST
             request.setAttribute("listaSpedizioni", listaSpedizioni);
             request.setAttribute("listaPagamenti", listaPagamenti);
+            request.setAttribute("listaOrdini", listaOrdini);
             
         } catch (SQLException e) {
             e.printStackTrace();
             // In caso di errore passiamo comunque liste vuote per evitare crash
             request.setAttribute("listaSpedizioni", new java.util.ArrayList<>());
             request.setAttribute("listaPagamenti", new java.util.ArrayList<>());
+            request.setAttribute("listaOrdini", new java.util.ArrayList<>());
         }
         
         // 4. INVIAMO TUTTO ALLA JSP
