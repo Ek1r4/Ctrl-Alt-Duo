@@ -53,7 +53,7 @@ public class UtenteDAO
 		utente.setCognome(rs.getString("Cognome"));
 		utente.setBio(rs.getString("Bio"));
 		utente.setTelefono(rs.getString("Telefono"));
-		utente.setAdmin(rs.getBoolean("isAdmin"));
+		utente.setIsAdmin(rs.getInt("isAdmin"));
 		
 		return utente;
 	}
@@ -101,6 +101,50 @@ public class UtenteDAO
 		
 		return false;
 	}
+	
+	// CREATE: Salva un nuovo admin nel database
+		// (Ritorna TRUE se l'inserimento avviene con successo, FALSE in caso di errore)
+		public boolean doSaveAdmin(Utente nuovoUtente) throws SQLException
+		{
+			String query = "INSERT INTO Utente (Username, Email, Password, Nome, Cognome, isAdmin, Telefono) VALUES (?, ?, ?, ?, ?, ?, ?)";
+			
+			Connection conn = null;
+			PreparedStatement ps = null;
+			
+			try
+			{
+				conn = ConnessioneDB.getConnection(); 
+				ps = conn.prepareStatement(query); 
+				
+				if(!VerificaEmail(nuovoUtente.getEmail()))
+				{
+					ps.setString(1, nuovoUtente.getUsername());
+					ps.setString(2, nuovoUtente.getEmail());
+					ps.setString(3, nuovoUtente.getPassword());
+					ps.setString(4, nuovoUtente.getNome());
+					ps.setString(5, nuovoUtente.getCognome());
+					ps.setInt(6, 1);
+					ps.setString(7, "0000000000");
+					
+					int row = ps.executeUpdate();
+					return row > 0;
+				}
+				
+			} catch(SQLException e) { /* Errore nella console */ e.printStackTrace();
+				return false;
+			}
+			
+			finally { 
+				try 
+				{
+					if (ps != null) ps.close(); 
+				} catch (SQLException e) { e.printStackTrace(); }
+				
+				if (conn != null) { ConnessioneDB.releaseConnection(conn); } 
+			}
+			
+			return false;
+		}
 	
 	// READ (Singolo): Recupera tutte le info di un utente specifico tramite il suo Username
 	public Utente doRetrieveByKey(String Username) throws SQLException
@@ -188,6 +232,44 @@ public class UtenteDAO
 		
 		return lista;
 	}
+	
+	// READ (Lista Admin): Recupera TUTTI gli amministratori (Admin e Super Admin) registrati
+		public List<Utente> doRetrieveAllAdmins() throws SQLException
+		{
+			// Seleziona solo chi ha permessi di amministrazione (isAdmin > 0)
+			String query = "SELECT * FROM Utente WHERE isAdmin > 0 ORDER BY isAdmin DESC, Username ASC";
+			
+			Connection conn = null;
+			PreparedStatement ps = null;
+			
+			List<Utente> listaAdmins = new ArrayList<>();
+
+			try
+			{
+				conn = ConnessioneDB.getConnection();
+				ps = conn.prepareStatement(query);
+				
+				ResultSet rs = ps.executeQuery();
+				
+				while(rs.next())
+				{
+					Utente u = estraiUtente(rs);
+					listaAdmins.add(u);	
+				}
+				
+			} catch (SQLException e) { /* Errore in console */ e.printStackTrace(); }
+			
+			finally { 
+				try 
+				{
+					if (ps != null) ps.close(); 
+				} catch (SQLException e) { e.printStackTrace(); }
+				
+				if (conn != null) { ConnessioneDB.releaseConnection(conn); } 
+			}
+			
+			return listaAdmins;
+		}
 	
 	// UPDATE: Modifica l'anagrafica completa di un utente esistente
 	// (Ritorna TRUE se la modifica avviene con successo, FALSE in caso di errore)

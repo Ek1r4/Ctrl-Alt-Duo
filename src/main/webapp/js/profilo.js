@@ -274,68 +274,117 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
 
-    // --- 5. CANCELLAZIONE RISORSE TRAMITE AJAX (CESTINO) ---
-    const deleteButtons = document.querySelectorAll(".btn-delete");
-    
-    deleteButtons.forEach(button => {
-        button.addEventListener("click", async function() {
-            const rowItem = button.closest(".info-row-item");
-            const itemId = rowItem.getAttribute("data-item-id");
-            const itemType = rowItem.getAttribute("data-type");
+	// --- 5. CANCELLAZIONE RISORSE TRAMITE AJAX (CESTINO + MODALE) ---
+	    const deleteButtons = document.querySelectorAll(".btn-delete");
+	    const deleteModal = document.getElementById('delete-confirm-modal');
+	    const deleteMessage = document.getElementById('delete-confirm-message');
+	    const btnConfirmDelete = document.getElementById('btn-confirm-delete');
+	    const btnCancelDelete = document.getElementById('btn-cancel-delete');
+	    
+	    let elementoDaEliminare = null; // Variabile per "ricordare" cosa stiamo eliminando
 
-            if (confirm("Sei sicuro di voler eliminare definitivamente questo elemento?")) {
-                
-                button.disabled = true;
-                button.style.opacity = "0.5";
-                button.style.cursor = "not-allowed";
+	    if (deleteButtons.length > 0 && deleteModal) {
+	        
+	        // Quando l'utente clicca il cestino sull'indirizzo o sul pagamento
+	        deleteButtons.forEach(button => {
+	            button.addEventListener("click", function() {
+	                const rowItem = button.closest(".info-row-item");
+	                const itemId = rowItem.getAttribute("data-item-id");
+	                const itemType = rowItem.getAttribute("data-type");
 
-                try {
-                    const formData = new URLSearchParams();
-                    formData.append("action", "eliminaRisorsa"); 
-                    formData.append("id", itemId);
-                    formData.append("type", itemType);
+	                // Salviamo tutti i dati necessari per la chiamata AJAX
+	                elementoDaEliminare = { button, rowItem, itemId, itemType };
 
-                    const response = await fetch(contestoReFrame + "/ProfiloServlet", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                        body: formData.toString()
-                    });
+	                // Personalizziamo il messaggio
+	                if (itemType === "shipping") {
+	                    deleteMessage.innerHTML = "Sei sicuro di voler eliminare questo <strong>indirizzo di spedizione</strong>?<br>Non potrai usarlo per i prossimi ordini.";
+	                } else {
+	                    deleteMessage.innerHTML = "Sei sicuro di voler eliminare questo <strong>metodo di pagamento</strong>?<br>Dovrai reinserirlo al prossimo acquisto.";
+	                }
 
-                    if (response.url.includes("success=eliminazione")) {
-                        rowItem.style.opacity = "0";
-                        setTimeout(() => { 
-                            const parentContainer = rowItem.parentElement;
-                            rowItem.remove(); 
-                            
-                            const remainingItems = parentContainer.querySelectorAll(".info-row-item");
-                            if (remainingItems.length === 0) {
-                                const emptyMsg = document.createElement("p");
-                                emptyMsg.className = "empty-message";
-                                emptyMsg.textContent = itemType === "shipping" 
-                                    ? "Nessun indirizzo di spedizione salvato." 
-                                    : "Nessun metodo di pagamento salvato.";
-                                parentContainer.appendChild(emptyMsg);
-                            }
-                            
-                            showToast(itemType === "shipping" ? "Indirizzo rimosso!" : "Metodo di pagamento rimosso!");
+	                // Mostriamo il modale
+	                deleteModal.classList.add('active');
+	            });
+	        });
 
-                        }, 300);
-                    } 
-                    else {
-                        alert("Si è verificato un errore durante l'eliminazione.");
-                        button.disabled = false;
-                        button.style.opacity = "1";
-                        button.style.cursor = "pointer";
-                    }
-                } catch (error) {
-                    console.error("Errore AJAX:", error);
-                    button.disabled = false;
-                    button.style.opacity = "1";
-                    button.style.cursor = "pointer";
-                }
-            }
-        });
-    });
+	        // 2. Se clicca su Annulla (o fuori dal modale)
+	        const chiudiModale = () => {
+	            deleteModal.classList.remove('active');
+	            elementoDaEliminare = null; // Svuotiamo la memoria
+	        };
+
+	        if (btnCancelDelete) btnCancelDelete.addEventListener('click', chiudiModale);
+	        deleteModal.addEventListener('click', (e) => {
+	            if (e.target === deleteModal) chiudiModale();
+	        });
+
+	        // 3. Se clicca su Procedi (Parte la chiamata AJAX!)
+	        if (btnConfirmDelete) {
+	            btnConfirmDelete.addEventListener('click', async () => {
+	                if (!elementoDaEliminare) return;
+
+	                // Estraiamo i dati salvati prima
+	                const { button, rowItem, itemId, itemType } = elementoDaEliminare;
+	                
+	                // Chiudiamo subito il modale
+	                deleteModal.classList.remove('active');
+
+	                // Effetto visivo di caricamento sul cestino originale
+	                button.disabled = true;
+	                button.style.opacity = "0.5";
+	                button.style.cursor = "not-allowed";
+
+	                try {
+	                    const formData = new URLSearchParams();
+	                    formData.append("action", "eliminaRisorsa"); 
+	                    formData.append("id", itemId);
+	                    formData.append("type", itemType);
+
+	                    const response = await fetch(contestoReFrame + "/ProfiloServlet", {
+	                        method: "POST",
+	                        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+	                        body: formData.toString()
+	                    });
+
+	                    if (response.url.includes("success=eliminazione")) {
+	                        rowItem.style.opacity = "0";
+	                        setTimeout(() => { 
+	                            const parentContainer = rowItem.parentElement;
+	                            rowItem.remove(); 
+	                            
+	                            // Se era l'ultimo elemento, mostriamo il messaggio "Nessun indirizzo salvato"
+	                            const remainingItems = parentContainer.querySelectorAll(".info-row-item");
+	                            if (remainingItems.length === 0) {
+	                                const emptyMsg = document.createElement("p");
+	                                emptyMsg.className = "empty-message";
+	                                emptyMsg.textContent = itemType === "shipping" 
+	                                    ? "Nessun indirizzo di spedizione salvato." 
+	                                    : "Nessun metodo di pagamento salvato.";
+	                                parentContainer.appendChild(emptyMsg);
+	                            }
+	                            
+	                            showToast(itemType === "shipping" ? "Indirizzo rimosso!" : "Metodo di pagamento rimosso!");
+
+	                        }, 300);
+	                    } 
+	                    else {
+	                        alert("Si è verificato un errore durante l'eliminazione.");
+	                        button.disabled = false;
+	                        button.style.opacity = "1";
+	                        button.style.cursor = "pointer";
+	                    }
+	                } catch (error) {
+	                    console.error("Errore AJAX:", error);
+	                    button.disabled = false;
+	                    button.style.opacity = "1";
+	                    button.style.cursor = "pointer";
+	                } finally {
+	                    // Puliamo la variabile per la prossima volta
+	                    elementoDaEliminare = null;
+	                }
+	            });
+	        }
+	    }
     
     // --- 6. GESTIONE FORM AGGIUNTA RISORSE E RESET ---
     const resetFormState = (formContainer) => {

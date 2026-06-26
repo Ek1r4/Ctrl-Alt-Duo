@@ -21,28 +21,7 @@
     <div class="header-container">
         
         <a href="${pageContext.request.contextPath}/index.jsp" class="header-logo">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" class="logo-icon" width="40" height="40" fill="currentColor">
-                <path d="M 10 45 L 10 10 L 55 10 L 43 22 L 22 22 L 22 57 Z" />
-                <path d="M 65 10 L 110 10 L 110 40 L 120 40 L 104 60 L 88 40 L 98 40 L 98 22 L 53 22 Z" />
-                <path d="M 110 75 L 110 110 L 65 110 L 77 98 L 98 98 L 98 63 Z" />
-                <path d="M 55 110 L 10 110 L 10 80 L 0 80 L 16 60 L 32 80 L 22 80 L 22 98 L 67 98 Z" />
-
-                <path d="M 60 26 A 34 34 0 1 1 59.9 26 Z M 60 36 A 24 24 0 1 0 60.1 36 Z" />
-
-                <mask id="aperture-mask">
-                    <circle cx="60" cy="60" r="24" fill="white" />
-                    <g stroke="black" stroke-width="2.5" fill="none" stroke-linecap="round">
-                        <path d="M 60 36 Q 45 48 50 66" />
-                        <path d="M 60 36 Q 45 48 50 66" transform="rotate(60 60 60)" />
-                        <path d="M 60 36 Q 45 48 50 66" transform="rotate(120 60 60)" />
-                        <path d="M 60 36 Q 45 48 50 66" transform="rotate(180 60 60)" />
-                        <path d="M 60 36 Q 45 48 50 66" transform="rotate(240 60 60)" />
-                        <path d="M 60 36 Q 45 48 50 66" transform="rotate(300 60 60)" />
-                    </g>
-                    <circle cx="60" cy="60" r="5" fill="black" />
-                </mask>
-                <circle cx="60" cy="60" r="24" mask="url(#aperture-mask)" />
-            </svg> 
+            <img src="${pageContext.request.contextPath}/assets/logoReFrame.png" alt="Logo ReFrame" class="logo-img"> 
             <div class="logo-text">
                 <span class="logo-title">REFRAME</span>
             </div>
@@ -50,29 +29,32 @@
 
         <nav class="header-nav">
             <ul class="nav-links">
-                <li><a href="#">RICONDIZIONATE</a></li>
-                <li><a href="#">NUOVE</a></li>
-                <li><a href="#">COLLEZIONISMO</a></li>
+                <li><a href="${pageContext.request.contextPath}/ProdottoServlet?tipo=Usato">RICONDIZIONATE</a></li>
+				<li><a href="${pageContext.request.contextPath}/ProdottoServlet?tipo=Nuovo">NUOVE</a></li>
+				<li><a href="${pageContext.request.contextPath}/ProdottoServlet?tipo=Collezione">COLLEZIONISMO</a></li>
             </ul>
         </nav>
         
         <div class="header-search">
-            <input type="text" class="search-input" placeholder="Cerca prodotti...">
-            <button type="button" class="search-btn" title="Cerca">
-                <i class="fas fa-search"></i>
-            </button>
-        </div>
-
-        <button class="hamburger-btn" id="mobileMenuBtn">
+        <form action="<%= request.getContextPath() %>/ProdottoServlet" method="GET" class="header-search-form">
+    		<input type="text" name="search" class="search-input" placeholder="Cerca..." 
+          		 value="<%= request.getParameter("search") != null ? request.getParameter("search") : "" %>">
+    		<button type="submit" class="search-btn">
+        		<i class="fas fa-search"></i>
+    		</button>
+		</form>
+		</div>
+		
+		<button class="hamburger-btn" id="mobileMenuBtn">
             <i class="fas fa-bars"></i>
         </button>
 
         <div class="header-icons">
             
             <ul class="nav-links mobile-only-links">
-                <li><a href="#">RICONDIZIONATE</a></li>
-                <li><a href="#">NUOVE</a></li>
-                <li><a href="#">COLLEZIONISMO</a></li>
+                <li><a href="${pageContext.request.contextPath}/ProdottoServlet?tipo=Usato">RICONDIZIONATE</a></li>
+				<li><a href="${pageContext.request.contextPath}/ProdottoServlet?tipo=Nuovo">NUOVE</a></li>
+				<li><a href="${pageContext.request.contextPath}/ProdottoServlet?tipo=Collezione">COLLEZIONISMO</a></li>
             </ul>
 
             <div class="cart-wrapper">
@@ -128,10 +110,33 @@
                 <% } %>
             </div>
             
-            <% if (session.getAttribute("utente") != null) { %>
-                <a href="${pageContext.request.contextPath}/common/profilo.jsp" class="icon-link" title="Area Personale">
-                    <i class="far fa-user-circle"></i>
-                    <span class="icon-label">Il Mio Profilo</span> </a>
+            <% if (session.getAttribute("utente") != null) { 
+            	reframe.model.beans.Utente userMenu = (reframe.model.beans.Utente) session.getAttribute("utente");
+            %>
+                <% if (userMenu.getIsAdmin() > 0) { %>
+                
+                    <a href="${pageContext.request.contextPath}/admin/profiloAdmin.jsp" class="icon-link" title="Area Personale Admin">
+                        <i class="fas fa-headset"></i>
+                        <span class="icon-label">Assistenza</span> 
+                    </a>
+                    
+                    <a href="${pageContext.request.contextPath}/PannelloAdminServlet" class="icon-link" title="Pannello di Gestione">
+                    	<i class="fas fa-sliders-h"></i> <span class="icon-label">Gestione</span>
+                	</a>
+                	
+                <% } else { %>
+                
+                    <a href="${pageContext.request.contextPath}/ProfiloServlet" class="icon-link" title="Area Personale">
+                        <i class="far fa-user-circle"></i>
+                        <span class="icon-label">Il Mio Profilo</span> 
+                    </a>
+                    
+                    <a href="${pageContext.request.contextPath}/carrello.jsp" class="icon-link cart-link" title="Carrello">
+                		<i class="fas fa-shopping-cart"></i>
+                		<span class="icon-label">Carrello</span> <span class="cart-badge"></span>
+            		</a>
+            		
+                <% } %>
                 <a href="${pageContext.request.contextPath}/LogoutServlet" class="icon-link logout-link" title="Esci">
                     <i class="fas fa-sign-out-alt"></i>
                     <span class="icon-label">Esci</span> </a>

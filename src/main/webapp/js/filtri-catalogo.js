@@ -1,0 +1,147 @@
+document.addEventListener("DOMContentLoaded", () => {
+    const checkboxes = document.querySelectorAll('.filter-label input[type="checkbox"]');
+    const searchInput = document.querySelector('.catalog-search-input');
+    const searchBtn = document.querySelector('.catalog-search-btn');
+    const btnReset = document.getElementById('btn-reset-filtri');
+
+    let debounceTimer; // Variabile per tenere traccia del timer
+
+    // 1. Ascoltatore per i checkbox (istantaneo)
+    checkboxes.forEach(chk => {
+        chk.addEventListener('change', applicaFiltri);
+    });
+
+    // 2. Ascoltatore per la barra di ricerca (CON DEBOUNCE)
+    if (searchInput) {
+        searchInput.addEventListener('input', () => {
+            clearTimeout(debounceTimer); // Cancella il timer precedente se l'utente sta ancora scrivendo
+            debounceTimer = setTimeout(() => {
+                applicaFiltri(); // Esegue la ricerca solo dopo 300ms di inattività
+            }, 300); 
+        });
+    }
+    
+    // Ascoltatore per il click sull'icona della lente
+    if (searchBtn) {
+        searchBtn.addEventListener('click', applicaFiltri);
+    }
+
+    // 3. Ascoltatore per la gomma (reset totale)
+    if (btnReset) {
+        btnReset.addEventListener('click', () => {
+            checkboxes.forEach(chk => chk.checked = false);
+            if (searchInput) searchInput.value = '';
+            applicaFiltri();
+        });
+    }
+	
+	// ==========================================
+	    // GESTIONE APERTURA/CHIUSURA FILTRI SU MOBILE
+	    // ==========================================
+	    const btnToggleFilters = document.getElementById('btn-toggle-filters');
+	    const btnCloseFilters = document.getElementById('btn-close-filters');
+	    const sidebar = document.querySelector('.catalog-sidebar');
+
+	    if (btnToggleFilters && sidebar) {
+	        btnToggleFilters.addEventListener('click', () => {
+	            sidebar.classList.add('open');
+	        });
+	    }
+
+	    if (btnCloseFilters && sidebar) {
+	        btnCloseFilters.addEventListener('click', () => {
+	            sidebar.classList.remove('open');
+	        });
+	    }
+
+    function applicaFiltri() {
+        const marche = Array.from(document.querySelectorAll('input[name="marca"]:checked')).map(cb => cb.value);
+        const prezzi = Array.from(document.querySelectorAll('input[name="prezzo"]:checked')).map(cb => cb.value);
+        const searchText = searchInput ? searchInput.value.trim() : '';
+
+        const params = new URLSearchParams();
+        params.append("ajax", "true");
+        marche.forEach(m => params.append("marca", m));
+        prezzi.forEach(p => params.append("prezzo", p));
+        
+        if (searchText) {
+            params.append("search", searchText);
+        }
+		
+		const urlParams = new URLSearchParams(window.location.search);
+		        const tipoCorrente = urlParams.get('tipo');
+		        if (tipoCorrente) {
+		            params.append("tipo", tipoCorrente);
+		        }
+
+        fetch(contextPath + "/ProdottoServlet?" + params.toString())
+            .then(response => {
+                if (!response.ok) throw new Error("Errore rete");
+                return response.text(); 
+            })
+            .then(html => {
+                document.getElementById('grid-container').innerHTML = html;
+            })
+            .catch(error => console.error("Errore AJAX:", error));
+    }
+	
+	// ==========================================
+	    // MODALE CONFERMA ELIMINAZIONE (VETRINA/CARRELLO)
+	    // ==========================================
+	    
+	    // Cerca tutti i bottoni di eliminazione nella vetrina (Assicurati che la classe sia giusta!)
+	    const deleteButtons = document.querySelectorAll('.btn-delete-product'); 
+	    
+	    const deleteModal = document.getElementById('delete-confirm-modal');
+	    const deleteMessage = document.getElementById('delete-confirm-message');
+	    const btnConfirmDelete = document.getElementById('btn-confirm-delete');
+	    const btnCancelDelete = document.getElementById('btn-cancel-delete');
+	    
+	    let formDaInviare = null; // Memorizza quale form stiamo per inviare
+
+	    if (deleteButtons.length > 0 && deleteModal) {
+	        
+	        // Quando clicchi un cestino...
+	        deleteButtons.forEach(btn => {
+	            btn.addEventListener('click', function(e) {
+	                e.preventDefault(); // Blocca l'invio immediato
+	                
+	                formDaInviare = this.closest('form'); // Salva il form collegato a quel bottone
+	                
+	                // Scrive il messaggio personalizzato
+	                deleteMessage.innerHTML = "Sei sicuro di voler rimuovere questo <strong>Prodotto</strong>?";
+	                
+	                // Fa comparire il modale a schermo
+	                deleteModal.classList.add('active');
+	            });
+	        });
+
+	        // Funzione per chiudere il modale e resettare la memoria
+	        const chiudiModale = () => {
+	            deleteModal.classList.remove('active');
+	            formDaInviare = null;
+	        };
+
+	        // Se l'utente clicca su "Annulla"
+	        if (btnCancelDelete) {
+	            btnCancelDelete.addEventListener('click', chiudiModale);
+	        }
+
+	        // Se l'utente clicca fuori dal modale per chiuderlo
+	        deleteModal.addEventListener('click', (e) => {
+	            if (e.target === deleteModal) {
+	                chiudiModale();
+	            }
+	        });
+
+	        // Se l'utente clicca su "Procedi"
+	        if (btnConfirmDelete) {
+	            btnConfirmDelete.addEventListener('click', () => {
+	                if (formDaInviare) {
+	                    formDaInviare.submit(); // Invia la richiesta al server!
+	                }
+	            });
+	        }
+	    }
+	
+});

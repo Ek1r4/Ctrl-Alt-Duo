@@ -37,18 +37,23 @@
     padding: 0 20px;
 }
 
+.header-container a {
+	text-decoration: none;
+}
+
 /* --- Logo --- */
 .header-logo {
     display: flex;
     align-items: center;
-    gap: 15px;
-    text-decoration: none;
-    color: var(--panna-carta);
+    gap: 0.5rem;
+    font-family: var(--font-titoli);
+    font-size: 1.5rem;
+    letter-spacing: 2px;
+    color: var(--marrone-cuoio);
 }
-
-.logo-icon {
-    font-size: 32px;
-    color: var(--marrone-cuoio); 
+.header-logo .logo-img {
+    height: 32px; 
+    object-fit: contain;
 }
 
 .logo-text {
@@ -61,15 +66,7 @@
     font-weight: 900;
     letter-spacing: 2px;
     line-height: 1;
-}
-
-.logo-subtitle {
-    font-family: var(--font-tecnico); 
-    font-size: 10px;
-    color: var(--beige-scuro);
-    letter-spacing: 1px;
-    margin-top: 3px;
-    text-transform: uppercase;
+    color: var(--panna-carta);
 }
 
 /* --- Navigazione --- */

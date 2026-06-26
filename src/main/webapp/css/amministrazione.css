@@ -1,1 +1,808 @@
-@charset "UTF-8";
+@import url("variables.css");
+@import url("global.css");
+
+/* =========================================
+   LAYOUT DASHBOARD - STILE REFRAME
+   ========================================= */
+
+.admin-layout {
+    display: flex;
+    min-height: 100vh;
+    margin: 0;
+    /* Sfondo panna-carta di ReFrame */
+    background-color: var(--panna-carta, #f8f5f0);
+    font-family: var(--font-testi);
+    color: var(--antracite-scuro);
+}
+
+/* Sidebar Fissa (Tema Scuro) */
+.sidebar {
+    width: 260px;
+    background-color: var(--antracite-scuro);
+    color: var(--panna-carta);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    height: 100vh;
+    z-index: 100;
+    /* Tocco vintage: bordo spesso color cuoio a destra */
+    border-right: 4px solid var(--marrone-cuoio); 
+}
+
+.sidebar-header {
+    padding: 30px 20px;
+    border-bottom: 1px solid rgba(248, 245, 240, 0.1); 
+    text-align: center;
+}
+
+.sidebar-header a {
+	text-decoration: none;
+}
+
+.role-badge {
+    background-color: var(--verde-ottanio);
+    color: white;
+    padding: 5px 12px;
+    border-radius: 2px; 
+    font-size: 0.8rem;
+    font-family: var(--font-tecnico);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    padding: 20px 0;
+    flex-grow: 1;
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    color: var(--grigio-taupe);
+    padding: 18px 25px;
+    text-align: left;
+    font-size: 1rem;
+    font-family: var(--font-testi);
+    cursor: pointer;
+    transition: 0.3s;
+    border-left: 4px solid transparent;
+}
+
+.tab-btn:hover, .tab-btn.active {
+    background-color: rgba(248, 245, 240, 0.05);
+    color: var(--panna-carta);
+    border-left-color: var(--verde-ottanio);
+}
+
+.tab-btn i { width: 25px; }
+
+.sidebar-footer {
+    padding: 20px;
+    border-top: 1px solid rgba(248, 245, 240, 0.1);
+    display: flex;
+    justify-content: space-between;
+}
+
+.btn-logout {
+    color: var(--rosso-ruggine);
+    text-decoration: none;
+    font-family: var(--font-testi);
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+.btn-logout:hover {
+    color: var(--panna-carta);
+}
+
+.btn-home {
+    color: var(--verde-ottanio);
+    text-decoration: none;
+    font-family: var(--font-testi);
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+.btn-home:hover {
+    color: var(--panna-carta);
+}
+
+/* =========================================
+   AREA CONTENUTI
+   ========================================= */
+.main-content {
+    margin-left: 260px;
+    padding: 40px;
+    flex-grow: 1;
+    width: calc(100% - 260px);
+}
+
+.dashboard-section {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.dashboard-section.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================
+   SEZIONI RETTANGOLARI (STILE POLAROID)
+   ========================================= */
+.rect-card {
+    background-color: #ffffff;
+    border-radius: 2px; /* Angoli spigolosi come le tue card */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08); /* Stessa ombra delle polaroid in vetrina */
+    padding: 30px;
+    border: 1px solid #ebebeb;
+}
+
+.mb-20 { margin-bottom: 20px; }
+
+.rect-card h3 {
+    margin-top: 0;
+    margin-bottom: 25px;
+    color: var(--marrone-cuoio); /* Titoli con il marrone del brand */
+    font-family: var(--font-titoli);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+    padding-bottom: 10px;
+}
+
+.mb-20 .btn-cta {
+	margin: 0;
+}
+
+.profile-details p {
+    margin: 10px 0;
+}
+
+/* =========================================
+   TABELLE DATI
+   ========================================= */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table th, .data-table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+.data-table th {
+    background-color: #fcfcfc;
+    color: var(--grigio-taupe);
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    font-family: var(--font-tecnico);
+    letter-spacing: 1px;
+}
+
+.actions { display: flex; gap: 15px; }
+
+.btn-icon {
+    background: transparent;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+/* Icone azioni stilizzate coi colori ReFrame */
+.btn-icon.edit { color: var(--grigio-taupe); }
+.btn-icon.edit:hover { color: var(--verde-ottanio); transform: scale(1.15) rotate(10deg); } /* Effetto matita dinamico */
+
+.btn-icon.delete { color: var(--grigio-taupe); }
+.btn-icon.delete:hover { color: var(--rosso-ruggine); transform: scale(1.15); }
+
+.btn-icon.update { color: var(--verde-ottanio); }
+.btn-icon.update:hover { color: var(--antracite-scuro); transform: scale(1.15); }
+
+/* =========================================
+   FORM INSERIMENTO E FILTRI (Stile ReFrame form.css)
+   ========================================= */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.input-group.full-width { grid-column: 1 / -1; }
+
+.input-group label {
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--antracite-scuro);
+    text-transform: uppercase; 
+    font-family: var(--font-tecnico);
+    letter-spacing: 0.5px;
+}
+
+/* Stesso bordo tratteggiato elegante che usi per il Login */
+.input-group input, .input-group select, .input-group textarea,
+.row-form input {
+    padding: 12px;
+    border: 1px dashed var(--grigio-taupe); 
+    border-radius: 2px;
+    font-family: var(--font-testi);
+    color: var(--antracite-scuro);
+    background: transparent;
+    transition: border-color 0.3s, background-color 0.3s;
+}
+
+.input-group input:focus, .input-group select:focus, .input-group textarea:focus,
+.row-form input:focus {
+    outline: none;
+    border: 1px solid var(--verde-ottanio); /* Diventa continuo verde al focus */
+}
+
+/* Bottone Call To Action */
+.btn-submit {
+    background-color: var(--antracite-scuro);
+    color: var(--panna-carta);
+    border: none;
+    padding: 12px 25px;
+    border-radius: 2px;
+    cursor: pointer;
+    font-weight: bold;
+    font-family: var(--font-testi);
+    transition: 0.3s;
+    text-transform: uppercase;
+    width: 100%;
+}
+
+.btn-submit:hover { 
+    background-color: var(--verde-ottanio); 
+}
+
+/* Form filtri orizzontale */
+.filter-form, .row-form {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+.filter-form input, .row-form input { flex: 1; }
+
+/* Modifica rapida stato ordine */
+.status-form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.status-form select {
+    padding: 6px;
+    border: 1px dashed var(--grigio-taupe);
+    border-radius: 2px;
+    font-family: var(--font-testi);
+}
+
+/* Badge Ordine stilizzato tramite "color-mix" per l'opacità */
+.status-badge.elaborazione {
+    color: var(--marrone-cuoio);
+    background-color: color-mix(in srgb, var(--marrone-cuoio) 15%, transparent);
+    padding: 4px 8px;
+    border-radius: 2px;
+    font-size: 0.85rem;
+    font-family: var(--font-tecnico);
+    font-weight: bold;
+}
+
+/* Classi di utilità */
+.inline-form {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+}
+
+.text-muted {
+    color: var(--grigio-taupe);
+    font-style: italic;
+    font-size: 0.9rem;
+}
+
+.dashboard-section .password-display-row {
+	justify-content: flex-start;
+	gap: 2vw;
+}
+
+/* =========================================
+   STILE AREE UPLOAD FILE
+   ========================================= */
+.custom-file-input {
+    border: 2px dashed rgba(0,0,0,0.15); /* Bordo tratteggiato elegante */
+    padding: 15px;
+    text-align: center;
+    background-color: rgba(248, 245, 240, 0.4);
+    border-radius: 6px;
+    margin-bottom: 15px;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.custom-file-input:hover {
+    background-color: rgba(248, 245, 240, 0.8);
+    border-color: var(--verde-ottanio); /* Si illumina al passaggio del mouse */
+}
+
+.custom-file-input legend {
+    font-weight: bold;
+    color: var(--grigio-taupe);
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+}
+
+/* Allarga il bottone Sfoglia e lo centra */
+.custom-file-input input[type="file"] {
+    width: 100%;
+    cursor: pointer;
+    font-family: var(--font-principale);
+    color: var(--antracite-scuro);
+}
+
+/* Stile speciale per il bottone nativo "Sfoglia/Scegli file" del browser */
+.custom-file-input input[type="file"]::file-selector-button {
+    background-color: var(--grigio-taupe);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    margin-right: 15px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.custom-file-input input[type="file"]::file-selector-button:hover {
+    background-color: var(--verde-ottanio);
+}
+
+/* =========================================
+   MODALE MODIFICA PRODOTTO
+   ========================================= */
+
+.admin-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(3px);
+    z-index: 10000;
+    justify-content: center;
+    align-items: center;
+}
+
+.admin-modal-overlay.active {
+    display: flex;
+}
+
+/* 1. Il contenitore a pellicola: fisso e con layout Flex */
+.modal-film-override {
+    max-width: 650px !important; 
+    max-height: 90vh !important; /* Non supera mai lo schermo */
+    padding: 50px 20px 20px 20px !important; /* Padding laterale ridotto (lo compensiamo sotto) */
+    animation: slideDownModal 0.3s ease-out forwards;
+    margin: 0 15px;
+    display: flex;               /* FONDAMENTALE */
+    flex-direction: column;      /* FONDAMENTALE */
+    overflow: visible !important; /* Rimuovi eventuali overflow-y: auto messi qui! */
+}
+
+/* 2. La nuova area interna: prende lo spazio che resta e scorre */
+.modal-body-scroll {
+    overflow-y: auto;
+    flex-grow: 1; 
+    padding: 0 20px; /* Mettiamo il padding laterale qui per non far accavallare la barra ai fori della pellicola */
+    
+    /* Stile elegante per la barra di scorrimento (opzionale ma consigliato) */
+    scrollbar-width: thin;
+    scrollbar-color: var(--verde-ottanio) transparent;
+}
+
+.modal-body-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modal-body-scroll::-webkit-scrollbar-thumb {
+    background-color: var(--verde-ottanio);
+    border-radius: 10px;
+}
+
+/* 3. L'icona in cima torna a volare libera sopra il bordo */
+.admin-modal-overlay .camera-icon {
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--panna-carta);
+    padding: 0 15px;
+    border-radius: 50%;
+    z-index: 10;
+    margin: 0;
+}
+
+@keyframes slideDownModal {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Posizionamento X di chiusura */
+.btn-close-modal {
+    position: absolute;
+    top: 15px;
+    right: 25px;
+    background: transparent;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: var(--grigio-taupe);
+    line-height: 1;
+    transition: color 0.2s;
+    z-index: 10;
+}
+
+.btn-close-modal:hover {
+    color: var(--rosso-ruggine);
+}
+
+/* Icona SVG della fotocamera */
+.icon-edit-modal {
+    width: 3rem; 
+    height: 3rem;
+    stroke: var(--antracite-scuro);
+    stroke-width: 1.5px;
+    fill: none;
+    display: block;
+}
+
+.admin-modal-overlay .camera-icon {
+    top: -30px;
+    background-color: var(--panna-carta);
+    padding: 0 15px;
+    border-radius: 30%;
+}
+
+/* Estensione dello stile custom-input per textarea, select e grid */
+fieldset.custom-input textarea.custom-textarea,
+fieldset.custom-input select.custom-select-film {
+    width: 100%;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 16px;
+    color: var(--antracite-scuro);
+    padding: 5px 0;
+    font-family: inherit;
+}
+
+fieldset.custom-input textarea.custom-textarea {
+    resize: vertical;
+}
+
+fieldset.custom-input.full-width {
+    grid-column: 1 / -1;
+}
+
+/* Logica dei campi condizionali (Usato / Collezione) */
+.dynamic-field {
+    display: none !important;
+}
+
+.dynamic-field.visible {
+    display: block !important;
+    animation: fadeIn 0.3s ease;
+}
+
+/* =========================================
+   SPAZIATURE FORM E MODALI (Pulizia Stili Inline)
+   ========================================= */
+
+/* Sezione Aggiungi Prodotto */
+#aggiungi .film-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px;
+}
+
+#aggiungi .form-title {
+    margin-bottom: 25px;
+}
+
+#aggiungi .full-width.custom-input {
+    margin-top: 15px;
+}
+
+#aggiungi .btn-cta {
+    margin-top: 25px;
+    width: 100%;
+}
+
+/* Finestra Modale Modifica Prodotto */
+#edit-product-modal .form-title {
+    margin-top: 10px;
+}
+
+#edit-product-modal .full-width.custom-input {
+    margin-top: 5px;
+}
+
+#edit-product-modal .btn-cta {
+    margin-top: 15px;
+    width: 100%;
+}
+
+
+
+/* =========================================
+   RESPONSIVE DESIGN (Smartphone e Tablet)
+   ========================================= */
+@media screen and (max-width: 1024px) {
+    
+    /* 1. Layout Generale a colonna */
+    .admin-layout {
+        flex-direction: column;
+    }
+
+    /* 2. La Sidebar diventa un Header fisso in alto (Sticky) */
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: sticky;
+        top: 0;
+        border-right: none;
+        border-bottom: 4px solid var(--marrone-cuoio);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        z-index: 1000; /* Sta sopra al resto mentre scorri */
+    }
+
+    .sidebar-header {
+        display: flex;
+        align-items: center;
+        padding: 15px 20px;
+        border-bottom: none;
+    }
+
+    .sidebar-header h2 { margin: 0; font-size: 1.4rem; }
+
+    /* Fa spazio per il tasto "Esci" posizionato a destra */
+    .role-badge {
+        margin-left: 10px;
+        margin-right: auto;
+        font-size: 0.7rem;
+        padding: 4px 8px;
+    }
+
+    /* 3. Tasto Esci integrato in alto a destra */
+    .sidebar-footer {
+        padding: 0;
+        border-top: none;
+        position: absolute;
+        top: 15px;
+        right: 20px;
+    }
+    
+    .sidebar-footer .btn-logout span {
+        display: none; /* Nasconde la parola "Esci", lascia solo l'icona per fare spazio */
+    }
+
+    /* 4. Menu di navigazione a scorrimento orizzontale (Swipe) */
+    .sidebar-nav {
+        flex-direction: row;
+        padding: 0;
+        overflow-x: auto;
+        border-top: 1px solid rgba(248, 245, 240, 0.1);
+        scrollbar-width: none; /* Nasconde la barra brutta su Firefox */
+    }
+    .sidebar-nav::-webkit-scrollbar { display: none; } /* Nasconde su Chrome/Safari */
+
+    .tab-btn {
+        flex: 0 0 auto; /* Evita che il bottone si rimpicciolisca */
+        padding: 15px 20px;
+        border-left: none;
+        border-bottom: 3px solid transparent;
+        text-align: center;
+    }
+
+    .tab-btn:hover, .tab-btn.active {
+        border-left-color: transparent;
+        border-bottom-color: var(--verde-ottanio);
+        background-color: rgba(248, 245, 240, 0.05);
+    }
+
+    /* 5. Area Contenuto: prende tutto lo schermo */
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+        padding: 15px;
+    }
+
+    /* 6. Form: da doppia colonna a colonna singola */
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    /* Form orizzontali (es. creazione admin) diventano verticali */
+    .filter-form, .row-form {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .btn-submit { margin-top: 10px; }
+
+    /* 7. Tabelle: Ordini/Admin a scorrimento, Prodotti a Fisarmonica */
+    .rect-card {
+        padding: 20px 15px;
+    }
+
+    /* Regola base per le altre tabelle (Swipe orizzontale) */
+    .data-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+        width: 100%;
+    }
+
+    /* --- INIZIO OVERRIDE ACCORDION SOLO PER PRODOTTI --- */
+    #prodotti .data-table, #prodotti .data-table tbody, #prodotti .data-table tr {
+        display: block;
+        overflow: visible;
+        white-space: normal;
+    }
+    
+    /* Nascondiamo l'intestazione classica della tabella */
+    #prodotti .data-table thead { display: none; }
+
+    /* Stile della "Card" chiusa (la riga della tabella) */
+    #prodotti .data-table tbody tr {
+        background-color: #ffffff;
+        border: 1px solid rgba(0,0,0,0.1);
+        border-radius: 4px;
+        margin-bottom: 15px;
+        padding: 12px 15px;
+        position: relative;
+        cursor: pointer;
+        display: flex;
+        flex-wrap: wrap;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+    }
+
+    /* Esclude il messaggio "Nessun prodotto" dalle regole grafiche */
+    #prodotti .data-table tbody tr:has(td[colspan]) {
+        justify-content: center;
+        cursor: default;
+    }
+    #prodotti .data-table tbody tr:has(td[colspan])::after { display: none; }
+
+    /* Freccina a destra in stile Profilo */
+    #prodotti .data-table tbody tr::after {
+        content: '\f107'; /* Icona freccia giù FontAwesome */
+        font-family: 'Font Awesome 5 Free', 'Font Awesome 6 Free';
+        font-weight: 900;
+        position: absolute;
+        right: 15px;
+        top: 20px;
+        color: var(--verde-ottanio);
+        transition: transform 0.3s ease;
+    }
+
+    /* Quando la riga ha la classe 'open', gira la freccia */
+    #prodotti .data-table tbody tr.open::after {
+        transform: rotate(180deg);
+    }
+
+    /* --- GESTIONE CELLE (TD) NASCOSTE DI DEFAULT --- */
+    #prodotti .data-table td {
+        display: none; /* Nasconde tutto */
+        width: 100%;
+        padding: 8px 0;
+        border-bottom: 1px dashed rgba(0,0,0,0.1);
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.95rem;
+    }
+    #prodotti .data-table td:last-child { border-bottom: none; }
+
+    /* Rigeneriamo le intestazioni usando i pseudo-elementi (visto che Thead è nascosto) */
+    #prodotti .data-table td:nth-child(2)::before { content: "Tipo:"; font-weight: bold; color: var(--grigio-taupe); font-size: 0.8rem; text-transform: uppercase; }
+    #prodotti .data-table td:nth-child(5)::before { content: "Prezzo:"; font-weight: bold; color: var(--grigio-taupe); font-size: 0.8rem; text-transform: uppercase; }
+    #prodotti .data-table td:nth-child(6)::before { content: "Stock:"; font-weight: bold; color: var(--grigio-taupe); font-size: 0.8rem; text-transform: uppercase; }
+    #prodotti .data-table td:nth-child(7)::before { content: "Azioni:"; font-weight: bold; color: var(--grigio-taupe); font-size: 0.8rem; text-transform: uppercase; }
+
+    /* Layout per i bottoni delle Azioni */
+    #prodotti .data-table td:nth-child(7) { justify-content: flex-start; gap: 15px; }
+    #prodotti .data-table td:nth-child(7)::before { margin-right: auto; }
+
+    /* --- ELEMENTI SEMPRE VISIBILI (Header della singola card) --- */
+    /* 1. Seriale (Si prende l'intera prima riga) */
+    #prodotti .data-table td:nth-child(1) {
+        display: flex;
+        width: 100%;
+        border-bottom: none;
+        padding-bottom: 2px;
+        font-family: var(--font-tecnico);
+        font-size: 0.85rem;
+        color: var(--grigio-taupe);
+    }
+
+    /* 3. Marchio (Sta a sinistra) */
+    #prodotti .data-table td:nth-child(3) {
+        display: flex;
+        width: auto;
+        border-bottom: none;
+        padding-top: 0;
+        font-weight: bold;
+        color: var(--antracite-scuro);
+    }
+
+    /* 4. Modello (Sta subito a destra del Marchio) */
+    #prodotti .data-table td:nth-child(4) {
+        display: flex;
+        width: auto;
+        border-bottom: none;
+        padding-top: 0;
+        margin-left: 5px;
+        color: var(--marrone-cuoio);
+    }
+
+    /* --- APERTURA: MOSTRA I CAMPI NASCOSTI --- */
+    #prodotti .data-table tbody tr.open td {
+        display: flex;
+    }
+
+    /* 8. Modale (Adattata allo schermo piccolo) */
+    .modal-film-override {
+        margin: 10px;
+        padding: 40px 15px 15px 15px !important;
+        max-height: 95vh !important;
+    }
+    
+    .btn-close-modal {
+        top: 10px;
+        right: 15px;
+    }
+    
+    /* 3. Tasti Logout e Home in alto a destra (Solo Icone) */
+    .sidebar-footer {
+        padding: 0;
+        border-top: none;
+        position: absolute;
+        top: 25px; /* Regola se necessario per allinearlo al titolo */
+        right: 20px;
+        display: flex;
+        gap: 20px; /* Spazio tra l'icona Home e l'icona Logout */
+    }
+    
+    .sidebar-footer a {
+        font-size: 0 !important; /* Schiaccia e nasconde il testo "Logout" e "Home" */
+        text-decoration: none;
+    }
+
+    .sidebar-footer a i {
+        font-size: 1.5rem !important; /* Fa riapparire ESCLUSIVAMENTE le icone */
+        margin: 0;
+        transition: transform 0.2s ease;
+    }
+    
+    /* Effetto opzionale al tocco */
+    .sidebar-footer a:active i {
+        transform: scale(0.9);
+    }
+}
