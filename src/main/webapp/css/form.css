@@ -304,4 +304,88 @@ fieldset.custom-input input {
     letter-spacing: 0.5px;
 }
 
+/* =========================================
+   ESTENSIONI FORM.CSS PER IL TICKET
+   ========================================= */
+
+/* 1. Applica le regole dell'input anche a textarea e select */
+fieldset.custom-input textarea,
+fieldset.custom-input select {
+    width: 100%;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 16px;
+    color: var(--antracite-scuro);
+    padding: 5px 0;
+    font-family: inherit;
+    resize: vertical; /* Permette di espandere la textarea */
+}
+
+/* Eredita i font ingranditi per la pellicola '.large' */
+.film-container.large fieldset.custom-input textarea,
+.film-container.large fieldset.custom-input select {
+    font-size: 18px;
+    padding: 8px 0;
+	align-items:center;
+}
+
+
+/* 2. Modifiche per la Select (Menu a tendina) */
+fieldset.custom-input select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+    
+}
+
+/* Colore opzioni su sfondo panna-carta */
+fieldset.custom-input select option {
+    background-color: var(--panna-carta);
+    color: var(--antracite-scuro);
+}
+.select-wrapper-analog {
+    position: relative;
+    width: 100%;
+}
+
+.select-arrow-analog {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--grigio-taupe);
+    pointer-events: none;
+}
+
+/* 3. Stile per il riepilogo dati adattato al tema chiaro */
+.ticket-selections-analog {
+    background-color: rgba(0, 0, 0, 0.02);
+    border: 1px dashed var(--grigio-taupe);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 25px;
+    text-align: left;
+}
+
+.selection-label-analog {
+    display: block;
+    font-size: 13px;
+    color: var(--grigio-taupe);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+.sel-tag-analog {
+    display: inline-block;
+    background-color: var(--verde-ottanio);
+    color: var(--panna-carta);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 14px;
+    margin-right: 8px;
+    margin-bottom: 8px;
+}
+
 /* da cambiare nomi delle classi per renderle più generali e commenti più esplicativi  !!!!!!!!!!!!!!*/

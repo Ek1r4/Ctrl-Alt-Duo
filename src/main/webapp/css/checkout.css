@@ -1,0 +1,72 @@
+/* Layout Checkout a due colonne */
+.checkout-page-layout { display: flex; gap: 40px; max-width: 1200px; margin: 3rem auto; padding: 0 20px; align-items: flex-start; }
+.checkout-form-column { flex: 1.5; }
+.checkout-receipt-column { flex: 1; position: sticky; top: 100px; }
+
+.section-title { font-size: 1.5rem; color: var(--marrone-cuoio); border-bottom: 3px solid var(--antracite-scuro); padding-bottom: 10px; margin-bottom: 25px; margin-top: 40px; }
+
+/* Box Selezionabili */
+.hidden-radio { display: none; }
+.selectable-box { border: 2px dashed var(--grigio-taupe); padding: 15px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s ease; background-color: transparent; }
+.selectable-box:hover { background-color: rgba(0,0,0,0.02); }
+.selectable-box p { margin: 0; color: var(--antracite-scuro); font-family: var(--font-testi); }
+.selectable-box .sub-text { color: var(--grigio-taupe); margin-top: 5px; font-size: 0.9rem; }
+
+.hidden-radio:checked + .selectable-box { border: 3px solid var(--verde-ottanio); background-color: var(--panna-carta); box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+.hidden-radio:checked + .selectable-box::after { content: '\f00c'; font-family: 'Font Awesome 6 Free'; font-weight: 900; color: var(--verde-ottanio); font-size: 1.5rem; }
+
+/* Form */
+.new-entry-form { border: 2px dashed var(--grigio-taupe); padding: 20px; margin-bottom: 25px; background: rgba(0,0,0,0.02); }
+.hidden { display: none !important; }
+
+/* =========================================
+   PAGINA DI RINGRAZIAMENTO (grazie.jsp)
+   ========================================= */
+
+/* Impaginazione */
+.grazie-wrapper { margin: 5vh auto; }
+.grazie-container { max-width: 550px; }
+.grazie-icon-svg { width: 50px; height: 50px; stroke-width: 2; }
+
+/* Tipografia */
+.grazie-title { color: var(--verde-ottanio); }
+.grazie-subtitle { font-weight: bold; color: var(--antracite-scuro); margin-top: -10px; }
+
+/* Box Riepilogo Ordine */
+.ordine-recap { 
+    background-color: rgba(0,0,0,0.02); 
+    border: 1px solid var(--grigio-taupe); 
+    padding: 1.5rem; 
+    text-align: left; 
+    margin: 2rem auto; 
+    border-radius: 4px; 
+    max-width: 350px;
+}
+.ordine-recap p { 
+    margin: 0.5rem 0; 
+    color: var(--antracite-scuro); 
+}
+
+/* Pulsante Torna alla Vetrina */
+.btn-home {
+    background-color: transparent;
+    color: var(--antracite-scuro);
+    border: 2px solid var(--antracite-scuro);
+    padding: 10px 15px;
+    font-size: 1rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 0rem;
+    transition: all 0.3s;
+}
+.btn-home:hover { 
+    background-color: var(--antracite-scuro); 
+    color: var(--panna-carta); 
+}
+
+@media (max-width: 768px) {
+    .checkout-page-layout { flex-direction: column;align-items: center; }
+    .checkout-receipt-column { width: 100%; position: static; order: -1; }
+}

@@ -1,4 +1,18 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="reframe.model.beans.Carrello" %>
+<%@ page import="reframe.model.beans.CarrelloItem" %>
+<% 
+   // Capiamo se siamo nella pagina carrello o checkout per nascondere la preview
+   String currentURI = request.getRequestURI();
+   boolean isCartOrCheckout = currentURI.endsWith("carrello.jsp") || currentURI.endsWith("checkout.jsp"); 
+   
+   // Calcoliamo la quantità per il badge istantaneamente lato Server
+   int qtaAttuale = 0;
+   Carrello c = (Carrello) session.getAttribute("carrello");
+   if(c != null) { qtaAttuale = c.getTotaleArticoli(); }
+%>
+
+<script>const contestoReFrame = '${pageContext.request.contextPath}';</script>
 
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/header.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -43,6 +57,58 @@
 				<li><a href="${pageContext.request.contextPath}/ProdottoServlet?tipo=Collezione">COLLEZIONISMO</a></li>
             </ul>
 
+            <div class="cart-wrapper">
+                <a href="${pageContext.request.contextPath}/common/carrello.jsp" class="icon-link cart-link" title="Carrello">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="icon-label">Carrello</span> 
+                    
+                    <span class="cart-badge" style="<%= qtaAttuale == 0 ? "display:none;" : "" %>"><%= qtaAttuale > 0 ? qtaAttuale : "" %></span>
+                </a>
+
+                <% if (!isCartOrCheckout) { %>
+                <div class="mini-cart-preview">
+                    
+                    <div class="mini-cart-header">
+                        <h4>IL TUO CARRELLO</h4>
+                    </div>
+                    
+                    <div class="mini-cart-items">
+                        <%
+                            Carrello mc = (Carrello) session.getAttribute("carrello");
+                            if (mc == null || mc.getItems().isEmpty()) {
+                        %>
+                            <p class="empty-mc">Nessun articolo presente.</p>
+                        <% } else {
+                            for (CarrelloItem mItem : mc.getItems()) {
+                        %>
+                            <div class="mc-item">
+                                <div class="mc-item-info">
+                                    <span class="mc-name"><%= mItem.getNome() %></span>
+                                    <span class="mc-qty">Quantità: <%= mItem.getQuantita() %></span>
+                                </div>
+                                <div class="mc-item-actions">
+                                    <span class="mc-price">€ <%= String.format("%.2f", mItem.getPrezzoTotale()) %></span>
+                                    <button type="button" class="mc-remove-btn" onclick="rimuoviDaMiniCart('<%= mItem.getIdProdotto() %>')" title="Rimuovi">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        <%  }
+                           } %>
+                    </div>
+                    
+                    <% if (mc != null && !mc.getItems().isEmpty()) { %>
+                    <div class="mini-cart-footer">
+                        <div class="mc-total">
+                            <span>TOTALE:</span>
+                            <span>€ <%= String.format("%.2f", mc.getTotale()) %></span>
+                        </div>
+                        <a href="${pageContext.request.contextPath}/common/checkout.jsp" class="btn-cta mc-checkout-btn">VAI AL CHECKOUT</a>
+                    </div>
+                    <% } %>
+                </div>
+                <% } %>
+            </div>
             
             <% if (session.getAttribute("utente") != null) { 
             	reframe.model.beans.Utente userMenu = (reframe.model.beans.Utente) session.getAttribute("utente");
@@ -81,19 +147,6 @@
         </div>
         
     </div>
-     
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-        const siteHeader = document.querySelector('.site-header');
-        
-        if (mobileMenuBtn && siteHeader) {
-            mobileMenuBtn.addEventListener('click', function() {
-                // Aggiunge o toglie la classe "menu-open" all'header
-                siteHeader.classList.toggle('menu-open');
-            });
-        }
-    });
-	</script>
-    
-    </header>
+</header>
+
+<script src="${pageContext.request.contextPath}/js/header.js"></script>

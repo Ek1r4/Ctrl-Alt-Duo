@@ -28,14 +28,29 @@
     padding-right: 15px;
 }
 
+.scrollable-column::-webkit-scrollbar {
+    width: 6px; 
+}
+
+.scrollable-column::-webkit-scrollbar-track {
+    background: var(--panna-carta);
+}
+
+.scrollable-column::-webkit-scrollbar-thumb {
+    background: var(--beige-scuro);
+     border-radius: 3px; 
+}
+
+.scrollable-column::-webkit-scrollbar-thumb:hover{
+     background: var(--marrone-cuoio); 
+}
 .fixed-column {
     flex: 1;
     position: sticky;
     top: 20px;
 }
 
-.scrollable-column::-webkit-scrollbar { width: 6px; }
-.scrollable-column::-webkit-scrollbar-thumb { background-color: var(--grigio-taupe); border-radius: 3px; }
+
 
 
 /* --- Design delle Card --- */
@@ -192,15 +207,6 @@
 
 .form-grid .full-width { grid-column: span 2; }
 
-fieldset.custom-input {
-    border: 1px dashed var(--grigio-taupe);
-    border-radius: 15px;
-    padding: 5px 15px 10px 15px;
-    margin: 0; 
-    text-align: left;
-    box-sizing: border-box;
-    width: 100%;
-}
 
 fieldset.custom-input legend {
     color: var(--grigio-taupe);
@@ -212,13 +218,6 @@ fieldset.custom-input legend {
 fieldset.custom-input input,
 fieldset.custom-input select,
 fieldset.custom-input textarea {
-    width: 100%;
-    border: none;
-    background: transparent;
-    outline: none;
-    font-size: 16px;
-    color: var(--antracite-scuro);
-    padding: 5px 0;
     font-family: var(--font-testi); 
     resize: vertical;
 }
@@ -312,7 +311,104 @@ fieldset.custom-input input[type="password"]::-ms-clear { display: none; }
     letter-spacing: 1px;
     box-sizing: border-box;
 }
+/* Nasconde la scrollbar mantenendo la funzionalità di scorrimento */
+.history-content {
+    -ms-overflow-style: none;  /* IE e Edge */
+    scrollbar-width: none;     /* Firefox */
+}
+.history-content::-webkit-scrollbar {
+    display: none;             /* Chrome, Safari, Opera */
+}
 
+ /* CSS per il Modale Overlay */
+        .order-modal-overlay {
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            background-color: color-mix(in srgb, var(--antracite-scuro) 65% ,transparent );
+            display: flex;
+            justify-content: center; 
+            align-items: center;
+            z-index: 9999; 
+            backdrop-filter: blur(4px);
+        }
+        .order-modal-content {
+            max-width: 500px;
+            padding: 40px 30px;
+            position: relative;
+            margin: 20px;
+            max-height: 90vh;
+            
+        }
+        .close-modal-btn {
+            position: absolute;
+            top: 1.5vh;
+    		right: 1vw;
+            background: none; 
+            border: none;
+            font-size: 26px; 
+            color: var(--rosso-ruggine);
+            cursor: pointer; 
+            transition: transform 0.2s;
+        }
+        .close-modal-btn:hover { transform: scale(1.2); }
+        .order-row:hover { background-color: rgba(0,0,0,0.03); }
+
+/* --- Scroll Interno Prodotti Modale --- */
+.modal-items-scroll {
+    max-height: 180px; /* Regola questo valore per decidere quanti prodotti mostrare prima di scrollare (es. ~4 prodotti) */
+    overflow-y: auto;
+    
+    /* Nasconde la scrollbar mantenendo lo scroll attivo */
+    -ms-overflow-style: none;  /* IE e Edge */
+    scrollbar-width: none;     /* Firefox */
+}
+
+.modal-items-scroll::-webkit-scrollbar {
+    display: none;             /* Chrome, Safari, Opera */
+}
+
+/* Rimuove l'ultimo bordo tratteggiato per evitare accavallamenti col bordo del box genitore */
+.modal-items-scroll .single-modal-item:last-child {
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+}
+
+/* --- Sezione History (Storico Ordini) --- */
+.history-header-wrap { flex-wrap: wrap; gap: 15px; }
+.search-history-container { flex-grow: 1; max-width: 250px; margin-left: auto; }
+.search-history-fieldset { margin-bottom: 0; padding: 5px 15px; }
+.search-history-input { font-size: 14px; }
+
+/* Aggiunta alle regole esistenti di history-content */
+.history-content { max-height: 400px; overflow-y: auto; } 
+
+.empty-history-container { text-align: center; padding: 30px 10px; }
+.empty-history-container.compact { padding: 20px; }
+.empty-history-icon { font-size: 30px; color: var(--grigio-taupe); margin-bottom: 15px; }
+.empty-history-icon.small { font-size: 24px; margin-bottom: 10px; }
+
+.order-row-item { cursor: pointer; transition: background 0.2s; }
+.item-details-flex { display: flex; width: 100%; justify-content: space-between; padding-right: 15px; }
+.order-state-text { color: var(--antracite-scuro); }
+.btn-explore { margin-top: 15px; display: inline-block; padding: 10px 20px; font-size: 14px; }
+
+
+/* --- Modale Dettaglio Ordine --- */
+.modal-form-title { margin-top: 0; margin-bottom: 20px; font-size: 24px; color: var(--antracite-scuro); }
+.ticket-selections-analog { margin-bottom: 15px; }
+.ticket-items-box { border: 1px dashed var(--grigio-taupe); border-radius: 12px; padding: 15px; margin-bottom: 15px; }
+
+.ticket-row { margin: 5px 0; }
+.ticket-total { color: var(--verde-ottanio); font-weight: bold; margin: 5px 0; }
+.selection-label-analog { display: block; color: var(--grigio-taupe); margin-bottom: 10px; text-transform: uppercase; font-size: 0.9rem; }
+
+.single-modal-item { display: flex; justify-content: space-between; border-bottom: 1px dashed var(--grigio-taupe); padding: 12px 0; }
+.modal-item-name { color: var(--antracite-scuro); text-align: left; }
+.modal-error-text { color: var(--rosso-ruggine); font-style: italic; }
+.modal-footer-box { margin-top: 25px; }
 /* --- Responsive: Tablet --- */
 @media (max-width: 1024px) {
     
@@ -424,10 +520,7 @@ fieldset.custom-input input[type="password"]::-ms-clear { display: none; }
         left: 20px; 
         justify-content: center;
     }
-}
 
-/* --- Responsive: Mobile --- */
-@media (max-width: 576px) {
     
     /* Ottimizzazione Spazi */
     .profile-page-container {
@@ -470,7 +563,16 @@ fieldset.custom-input input[type="password"]::-ms-clear { display: none; }
         gap: 15px;
         text-align: left;
     }
-
+    fieldset.custom-input{
+    	margin: 0;
+    }
+    .card-header.history-header-wrap::after{
+     top: 15%;
+    }
+    .search-history-container{max-width:80vw;}
+	.history-content .btn-edit{display:none;}
+	.history-content .item-details p.sub-text{ margin: 0;}
+	
     /* Allineamento Icone a Destra */
     .info-row-item > div:last-child {
         width: 100%;
@@ -494,4 +596,5 @@ fieldset.custom-input input[type="password"]::-ms-clear { display: none; }
         height: 35px;
         font-size: 16px;
     }
+    
 }

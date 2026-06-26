@@ -509,7 +509,7 @@
     font-size: 3.5rem;
     color: var(--marrone-cuoio, #3e2723);
     text-align: center;
-    margin: 0;
+    margin: 4vh 0 0 0;
 }
 
 /* Cards & Container */
