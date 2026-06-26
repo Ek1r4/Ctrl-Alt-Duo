@@ -384,7 +384,7 @@
         <div id="delete-confirm-modal" class="admin-modal-overlay">
             <div class="film-container modal-film-override confirm-modal-box">
                 
-                <h3 class="form-title" style="margin-bottom: 5px;">Conferma Azione</h3>
+                <h3 class="form-title">Conferma Azione</h3>
                 <p id="delete-confirm-message" class="confirm-message"></p>
                 
                 <div class="confirm-actions">

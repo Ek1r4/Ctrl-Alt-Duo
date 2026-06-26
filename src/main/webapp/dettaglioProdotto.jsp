@@ -207,7 +207,7 @@
                     <textarea id="edit-descrizione" name="descrizione" rows="4" class="custom-textarea" required><%= p.getDescrizione() %></textarea>
                 </fieldset>
                 
-                <button type="submit" class="btn-cta" style="margin-top: 15px;">Salva Modifiche</button>
+                <button type="submit" class="btn-cta">Salva Modifiche</button>
             </form>
         </div>
     </div>
