@@ -20,82 +20,10 @@
     %>
         <div class="empty-cart-container">
             <i class="fas fa-box-open empty-cart-icon"></i>
-            <h2>IL TUO CARRELLO È VUOTO</h2>
-            <div class="test-panel-container">
-                <p class="test-panel-title">Pannello di Test (Simulatore Vetrina):</p>
-                <div class="test-panel-buttons">
-                    <form action="${pageContext.request.contextPath}/Carrello" method="POST">
-                        <input type="hidden" name="action" value="add">
-                        <input type="hidden" name="id" value="NEW-21">
-                        <input type="hidden" name="quantita" value="1">
-                        <button type="submit" class="btn btn-test">+ Sony Alpha 7 IV</button>
-                    </form>
-                    <form action="${pageContext.request.contextPath}/Carrello" method="POST">
-                        <input type="hidden" name="action" value="add">
-                        <input type="hidden" name="id" value="NEW-11">
-                        <input type="hidden" name="quantita" value="1">
-                        <button type="submit" class="btn btn-test">+ Canon EOS R5</button>
-                    </form>
-                    <form action="${pageContext.request.contextPath}/Carrello" method="POST">
-                        <input type="hidden" name="action" value="add">
-                        <input type="hidden" name="id" value="REF-10">
-                        <input type="hidden" name="quantita" value="1">
-                        <button type="submit" class="btn btn-test">+ Minolta X-700</button>
-                    </form>
-                    <form action="${pageContext.request.contextPath}/Carrello" method="POST">
-                        <input type="hidden" name="action" value="add">
-                        <input type="hidden" name="id" value="PRD49791">
-                        <input type="hidden" name="quantita" value="1">
-                        <button type="submit" class="btn btn-test">+ Minolta X-700</button>
-                    </form>
-                    <form action="${pageContext.request.contextPath}/Carrello" method="POST">
-                        <input type="hidden" name="action" value="add">
-                        <input type="hidden" name="id" value="NEW-81">
-                        <input type="hidden" name="quantita" value="1">
-                        <button type="submit" class="btn btn-test">+ Minolta X-700</button>
-                    </form>
-                </div>
-            </div>
-            
+            <h2>IL TUO CARRELLO È VUOTO</h2>  
         </div>
     <% } else { %>
-    
-    <div class="test-panel-container">
-                <p class="test-panel-title">Pannello di Test (Simulatore Vetrina):</p>
-                <div class="test-panel-buttons">
-                    <form action="${pageContext.request.contextPath}/Carrello" method="POST">
-                        <input type="hidden" name="action" value="add">
-                        <input type="hidden" name="id" value="NEW-21">
-                        <input type="hidden" name="quantita" value="1">
-                        <button type="submit" class="btn btn-test">+ Sony Alpha 7 IV</button>
-                    </form>
-                    <form action="${pageContext.request.contextPath}/Carrello" method="POST">
-                        <input type="hidden" name="action" value="add">
-                        <input type="hidden" name="id" value="NEW-11">
-                        <input type="hidden" name="quantita" value="1">
-                        <button type="submit" class="btn btn-test">+ Canon EOS R5</button>
-                    </form>
-                    <form action="${pageContext.request.contextPath}/Carrello" method="POST">
-                        <input type="hidden" name="action" value="add">
-                        <input type="hidden" name="id" value="REF-10">
-                        <input type="hidden" name="quantita" value="1">
-                        <button type="submit" class="btn btn-test">+ Minolta X-700</button>
-                    </form>
-                    <form action="${pageContext.request.contextPath}/Carrello" method="POST">
-                        <input type="hidden" name="action" value="add">
-                        <input type="hidden" name="id" value="PRD49791">
-                        <input type="hidden" name="quantita" value="1">
-                        <button type="submit" class="btn btn-test">+ Minolta X-700</button>
-                    </form>
-                    <form action="${pageContext.request.contextPath}/Carrello" method="POST">
-                        <input type="hidden" name="action" value="add">
-                        <input type="hidden" name="id" value="NEW-81">
-                        <input type="hidden" name="quantita" value="1">
-                        <button type="submit" class="btn btn-test">+ Minolta X-700</button>
-                    </form>
-                </div>
-            </div>
-    
+
         <div class="cart-page-layout">
             <div class="cart-items-column">
                 <h1 class="cart-page-title">Carrello</h1>

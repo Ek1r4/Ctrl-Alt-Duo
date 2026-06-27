@@ -1,6 +1,8 @@
 package reframe.model.dao;
 
 import java.sql.*;
+import java.util.List;
+import java.util.ArrayList;
 
 import reframe.model.beans.DettaglioOrdine;
 import reframe.model.beans.Ordine;
@@ -154,8 +156,8 @@ public class OrdineDAO {
      * Recupera tutti gli ordini (con i relativi dettagli) di un utente specifico, 
      * ordinati dal più recente al più vecchio.
      */
-    public java.util.List<Ordine> getOrdiniCompletiByUtente(String username) throws SQLException {
-        java.util.List<Ordine> lista = new java.util.ArrayList<>();
+    public List<Ordine> getOrdiniCompletiByUtente(String username) throws SQLException {
+        List<Ordine> lista = new ArrayList<>();
         String queryOrdini = "SELECT * FROM Ordine WHERE ID_Utente = ? ORDER BY Data_ordine DESC";
         String queryDettagli = "SELECT * FROM Ordine_Prodotto WHERE ID_Ordine = ?";
 
@@ -199,5 +201,63 @@ public class OrdineDAO {
             if (conn != null) conn.close();
         }
         return lista;
+    }
+    
+    public List<Ordine> getOrdiniFiltrati(String emailCliente, java.sql.Date dataInizio, java.sql.Date dataFine) throws SQLException {
+        
+    	List<Ordine> lista = new ArrayList<>();
+        
+        // Costruzione dinamica della query
+        StringBuilder query = new StringBuilder("SELECT * FROM Ordine WHERE 1=1");
+        
+        if (emailCliente != null && !emailCliente.trim().isEmpty()) {
+            query.append(" AND ID_Utente LIKE ?");
+        }
+        if (dataInizio != null) {
+            query.append(" AND Data_ordine >= ?");
+        }
+        if (dataFine != null) {
+            query.append(" AND Data_ordine <= ?");
+        }
+        query.append(" ORDER BY Data_ordine DESC");
+
+        try (Connection conn = ConnessioneDB.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query.toString())) {
+            
+            int paramIndex = 1;
+            if (emailCliente != null && !emailCliente.trim().isEmpty()) {
+                ps.setString(paramIndex++, "%" + emailCliente + "%");
+            }
+            if (dataInizio != null) {
+                ps.setDate(paramIndex++, dataInizio);
+            }
+            if (dataFine != null) {
+                ps.setDate(paramIndex++, dataFine);
+            }
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Ordine ord = new Ordine();
+                    ord.setIdOrdine(rs.getString("ID_ordine"));
+                    ord.setDataOrdine(rs.getDate("Data_ordine"));
+                    ord.setTotale(rs.getDouble("Totale"));
+                    ord.setStato(rs.getString("Stato"));
+                    ord.setIdUtente(rs.getString("ID_Utente"));
+                    // (Opzionale: recuperare anche i dettagli interrogando Ordine_Prodotto come fatto in getOrdiniCompletiByUtente)
+                    lista.add(ord);
+                }
+            }
+        }
+        return lista;
+    }
+    
+    public void updateStato(String idOrdine, String nuovoStato) throws SQLException {
+        String query = "UPDATE Ordine SET Stato = ? WHERE ID_Ordine = ?";
+        try (Connection conn = ConnessioneDB.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setString(1, nuovoStato);
+            ps.setString(2, idOrdine);
+            ps.executeUpdate();
+        }
     }
 }

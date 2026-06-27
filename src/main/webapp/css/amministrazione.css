@@ -547,7 +547,201 @@ fieldset.custom-input.full-width {
     width: 100%;
 }
 
+/* Contenitore principale */
+.admin-panel-section {
+    background-color: #fbfaf8; /* Colore di sfondo caldo simile all'immagine */
+    padding: 40px;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
 
+/* Header e Layout Filtri */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.section-header h2 {
+    color: #7a5c4d; /* Marrone/ruggine come in "LISTA PRODOTTI" */
+    font-size: 1.25rem;
+    letter-spacing: 1.5px;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+/* Stile Form Filtri */
+.orders-filter-form {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.filter-input {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    background-color: #fff;
+    color: #555;
+    outline: none;
+}
+
+.filter-input:focus {
+    border-color: #7a5c4d;
+}
+
+.filter-btn {
+    padding: 8px 16px;
+    background-color: #fbfaf8;
+    color: #7a5c4d;
+    border: 1px solid #7a5c4d;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+    background-color: #7a5c4d;
+    color: #fff;
+}
+
+/* Tabella Stile Minimalista */
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: transparent;
+}
+
+.admin-table th {
+    text-align: left;
+    padding: 15px 10px;
+    border-bottom: 1px solid #e0e0e0;
+    color: #888;
+    font-family: 'Courier New', Courier, monospace; /* Stile macchina da scrivere */
+    font-size: 0.75rem;
+    font-weight: normal;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.admin-table td {
+    padding: 20px 10px;
+    border-bottom: 1px solid #f0f0f0;
+    color: #444;
+    font-size: 0.9rem;
+    vertical-align: middle;
+}
+
+/* Azioni e Select */
+.actions-form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.status-select {
+    padding: 6px;
+    border: 1px solid #eee;
+    border-radius: 3px;
+    color: #555;
+    font-size: 0.85rem;
+    background: transparent;
+    outline: none;
+}
+
+.action-btn {
+    background: none;
+    border: none;
+    color: #999;
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 0;
+    transition: color 0.2s ease;
+}
+
+.action-btn:hover {
+    color: #444; /* Colore più scuro all'hover, come nell'immagine */
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    color: #888;
+    font-style: italic;
+}
+
+/* =========================================
+   SEZIONE FILTRI E TABELLA ORDINI
+   ========================================= */
+
+/* Spaziatura tra il card dei filtri e la tabella */
+.mb-20 {
+    margin-bottom: 20px;
+}
+
+/* Layout del form di filtro in alto */
+.filter-form {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
+.filter-form .search-input {
+    flex: 1;
+    min-width: 250px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    outline: none;
+    color: black;
+}
+
+/* Contenitori per le date */
+.date-filter {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.date-filter label {
+    font-size: 0.9em;
+    color: var(--marrone-cuoio);
+    font-weight: bold;
+}
+
+.date-filter input[type="date"] {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    outline: none;
+    font-family: inherit;
+}
+
+/* Form per l'aggiornamento dello stato (interno alla tabella) */
+.status-form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.status-select {
+    padding: 6px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    outline: none;
+    background-color: #fff;
+    font-family: inherit;
+    font-size: 0.9em;
+}
 
 /* =========================================
    RESPONSIVE DESIGN (Smartphone e Tablet)

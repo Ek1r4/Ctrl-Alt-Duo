@@ -45,6 +45,10 @@ public class ProdottoServlet extends HttpServlet {
                 request.setAttribute("titoloVetrina", "Tutto il Catalogo");
             }
             
+            if (catalogo != null) {
+                catalogo.removeIf(p -> p.getInStock() <= 0);
+            }
+            
             request.setAttribute("listaProdotti", catalogo);
             
             List<String> marcheDisponibili = dao.fetchDistinctMarche(); 
