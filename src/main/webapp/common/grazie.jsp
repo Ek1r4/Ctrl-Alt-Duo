@@ -51,7 +51,7 @@
             
             <br>
 
-            <a href="${pageContext.request.contextPath}/index.jsp" class="btn-home">Torna alla Vetrina</a>
+            <a href="${pageContext.request.contextPath}/ProdottoServlet?search=" class="btn-home">Torna alla Vetrina</a>
         </div>
     </div>
 

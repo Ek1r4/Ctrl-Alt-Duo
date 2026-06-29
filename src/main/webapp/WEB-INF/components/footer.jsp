@@ -29,8 +29,8 @@
             <div class="footer-col links-col">
                 <h3 class="footer-title">INFO</h3>
                 <ul class="footer-nav">
+                    <li><a href="<%= request.getContextPath() %>/common/centroAssistenza.jsp" >Centro assistenza</a></li>
                     <li><a href="#">Privacy Policy</a></li>
-                    <li><a href="#">Cookie Policy</a></li>
                     <li><a href="#">Contatti</a></li>
                     <li><a href="#">Legal</a></li>
                     <li><a href="#">B2B</a></li>
@@ -54,3 +54,4 @@
         
     </div>
 </footer>
+<div class="toast-notification"></div>

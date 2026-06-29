@@ -81,7 +81,7 @@
                         <% } else {
                             for (CarrelloItem mItem : mc.getItems()) {
                         %>
-                            <div class="mc-item">
+                            <div class="mc-item" id="mc-item-<%= mItem.getIdProdotto() %>">
                                 <div class="mc-item-info">
                                     <span class="mc-name"><%= mItem.getNome() %></span>
                                     <span class="mc-qty">Quantità: <%= mItem.getQuantita() %></span>
@@ -101,7 +101,7 @@
                     <div class="mini-cart-footer">
                         <div class="mc-total">
                             <span>TOTALE:</span>
-                            <span>€ <%= String.format("%.2f", mc.getTotale()) %></span>
+                            <span id="mc-totale-complessivo">€ <%= String.format("%.2f", mc.getTotale()) %></span>
                         </div>
                         <a href="${pageContext.request.contextPath}/common/checkout.jsp" class="btn-cta mc-checkout-btn">VAI AL CHECKOUT</a>
                     </div>
@@ -131,10 +131,7 @@
                         <span class="icon-label">Il Mio Profilo</span> 
                     </a>
                     
-                    <a href="${pageContext.request.contextPath}/carrello.jsp" class="icon-link cart-link" title="Carrello">
-                		<i class="fas fa-shopping-cart"></i>
-                		<span class="icon-label">Carrello</span> <span class="cart-badge"></span>
-            		</a>
+                    
             		
                 <% } %>
                 <a href="${pageContext.request.contextPath}/LogoutServlet" class="icon-link logout-link" title="Esci">

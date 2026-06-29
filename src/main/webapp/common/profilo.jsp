@@ -167,9 +167,11 @@
         </div> 
 
 		<%@ include file="/WEB-INF/components/anagrafia.jsp" %>
- 
+ 		
 	</div>
-	
+	<a href="<%= request.getContextPath() %>/common/centroAssistenza.jsp" class="btn-cta" >
+        	Hai bisogno di aiuto? vai al nostro centro assistenza
+        </a>
 	<div id="delete-confirm-modal" class="admin-modal-overlay">
             <div class="film-container modal-film-override confirm-modal-box">
                 

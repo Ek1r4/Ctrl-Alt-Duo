@@ -38,19 +38,13 @@
             <div class="card-bottom-row">
     			<div class="product-price">€ <%= String.format("%.2f", p.getPrezzo()) %></div>
     
-    			<% 
-        			// Mostriamo il carrello SOLO se NON è admin (quindi lo vedono i clienti loggati e gli ospiti non registrati)
-        			if (!isAdmin) { 
-    			%>
-    	<form action="<%= request.getContextPath() %>/CarrelloServlet" method="POST" class="quick-add-form">
-        	<input type="hidden" name="action" value="add">
-        	<input type="hidden" name="idProdotto" value="<%= p.getId() %>">
-        	<input type="hidden" name="quantita" value="1">
-        	<button type="submit" class="btn-quick-add" title="Aggiungi al carrello">
+    			<% if (!isAdmin) { %>
+    	    <button type="button" class="btn-quick-add" title="Aggiungi al carrello" 
+    	            style="position: relative; z-index: 10;" 
+    	            onclick="event.preventDefault(); event.stopPropagation(); aggiungiVeloceAJAX('<%= p.getId() %>')">
             	<i class="fas fa-cart-plus"></i>
         	</button>
-    	</form>
-    		<% } %>
+    			<% } %>
 			</div>
             
         </div>

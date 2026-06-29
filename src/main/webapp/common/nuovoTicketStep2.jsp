@@ -1,10 +1,19 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="reframe.model.beans.Utente" %>
+<%
+    // Sicurezza: Controllo Login
+    Utente utente = (Utente) session.getAttribute("utente");
+    if (utente == null) {
+        response.sendRedirect(request.getContextPath() + "/login.jsp");
+        return;
+    }
+%>
 <!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nuovo Ticket - Step 2 - Ekira</title>
+    <title>Nuovo Ticket - Step 2 - ReFrame</title>
     
     <link rel="stylesheet" href="../css/global.css">
     <link rel="stylesheet" href="../css/variables.css">
@@ -35,7 +44,7 @@
                 <%
                     String[] ordiniSelezionati = request.getParameterValues("ordineSelezionato");
                     String[] prodottiSelezionati = request.getParameterValues("prodottiSelezionati");
-                    boolean ciSonoSelezioni = (ordiniSelezionati != null && ordiniSelezionati.length > 0) || 
+                    boolean ciSonoSelezioni = (ordiniSelezionati != null && ordiniSelezionati.length > 0) ||
                                               (prodottiSelezionati != null && prodottiSelezionati.length > 0);
                 %>
 
@@ -51,8 +60,8 @@
 
                         <% if(prodottiSelezionati != null) { 
                             for(String prodotto : prodottiSelezionati) { %>
-                                <span class="sel-tag-analog">Prodotto ID: <%= prodotto %></span>
-                                <input type="hidden" name="prodottiSelezionati" value="<%= prodotto %>">
+                                <span class="sel-tag-analog">Prodotto: <%= prodotto %></span>
+                                <input type="hidden" name="prodottiSelezionati" value="<%= prodotto.replace("\"", "&quot;") %>">
                         <%  } } %>
                     </div>
                 <% } %>
@@ -89,8 +98,7 @@
         </div>
     </main>
 
-    <div class="ticket-popup-overlay" id="popupConferma">
-        </div>
+    <div class="ticket-popup-overlay" id="popupConferma"></div>
 
     <jsp:include page="../WEB-INF/components/footer.jsp" />
 
@@ -102,6 +110,7 @@
             form.addEventListener("submit", function(e) {
                 e.preventDefault(); 
                 popup.classList.add("active");
+                // Qui potrai rimuovere preventDefault e lasciare che il form vada verso la Servlet!
             });
         });
     </script>

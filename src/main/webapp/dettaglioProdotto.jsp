@@ -75,7 +75,7 @@
 
             <form action="<%= request.getContextPath() %>/Carrello" method="POST" class="add-to-cart-form">
                 <input type="hidden" name="action" value="add">
-                <input type="hidden" name="idProdotto" value="<%= p.getId() %>">
+                <input type="hidden" name="id" value="<%= p.getId() %>">
                 
                 <div class="add-to-cart-section">
                     <div class="quantity-selector">
