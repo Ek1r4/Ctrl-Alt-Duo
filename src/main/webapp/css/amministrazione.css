@@ -461,16 +461,6 @@
     color: var(--rosso-ruggine);
 }
 
-/* Icona SVG della fotocamera */
-.icon-edit-modal {
-    width: 3rem; 
-    height: 3rem;
-    stroke: var(--antracite-scuro);
-    stroke-width: 1.5px;
-    fill: none;
-    display: block;
-}
-
 .admin-modal-overlay .camera-icon {
     top: -30px;
     background-color: var(--panna-carta);
@@ -741,6 +731,19 @@ fieldset.custom-input.full-width {
     background-color: #fff;
     font-family: inherit;
     font-size: 0.9em;
+}
+
+/* Badge per i prodotti con Soft-Delete */
+.badge-oscurato {
+    color: var(--rosso-ruggine);
+    font-size: 0.75rem;
+    font-weight: bold;
+    margin-left: 8px;
+}
+
+/* Bottone per ripristinare i prodotti */
+.btn-icon.restore {
+    color: var(--verde-ottanio);
 }
 
 /* =========================================

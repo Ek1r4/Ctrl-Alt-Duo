@@ -20,6 +20,9 @@ public class Prodotto implements Serializable {
     private String imageUrl;
     private String descrizione;
     private int inStock;
+    
+    // NUOVO CAMPO PER IL SOFT DELETE
+    private boolean isAttivo = true;
 
     public Prodotto() {
     }
@@ -42,6 +45,7 @@ public class Prodotto implements Serializable {
         this.imageUrl = imageUrl;
         this.descrizione = descrizione;
         this.inStock = inStock;
+        // isAttivo rimane true di default alla creazione
     }
 
     // --- GETTER E SETTER ---
@@ -88,6 +92,11 @@ public class Prodotto implements Serializable {
     public int getInStock() { return inStock; }
     public void setInStock(int inStock) { this.inStock = inStock; }
 
+    // --- NUOVI METODI PER SOFT DELETE ---
+    
+    public boolean isAttivo() { return isAttivo; }
+    public void setAttivo(boolean isAttivo) { this.isAttivo = isAttivo; }
+
     // --- OVERRIDE toString ---
     @Override
     public String toString() {
@@ -106,6 +115,7 @@ public class Prodotto implements Serializable {
                 ", imageUrl='" + imageUrl + '\'' +
                 ", descrizione='" + descrizione + '\'' +
                 ", inStock=" + inStock +
+                ", isAttivo=" + isAttivo + // AGGIUNTO QUI
                 '}';
     }
 }

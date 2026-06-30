@@ -17,7 +17,8 @@ import reframe.model.beans.Utente;
 import reframe.model.dao.ProdottoDAO; 
 import reframe.model.dao.UtenteDAO;
 import reframe.model.beans.Ordine;
-import reframe.model.dao.OrdineDAO; 
+import reframe.model.dao.OrdineDAO;
+import reframe.utils.HashingPassword;
 
 @WebServlet("/PannelloAdminServlet")
 @MultipartConfig(
@@ -218,7 +219,10 @@ public class PannelloAdminServlet extends HttpServlet {
                 Utente nuovoAdmin = new Utente();
                 nuovoAdmin.setUsername(username.trim());
                 nuovoAdmin.setEmail(email.trim());
-                nuovoAdmin.setPassword(password.trim());
+                
+                String passwordHashata = HashingPassword.hashPassword(password.trim());
+                nuovoAdmin.setPassword(passwordHashata);
+                
                 nuovoAdmin.setNome(nome.trim());
                 nuovoAdmin.setCognome(cognome.trim());
                 
@@ -234,5 +238,6 @@ public class PannelloAdminServlet extends HttpServlet {
                 return;
             }
         }
+        
     }
 }

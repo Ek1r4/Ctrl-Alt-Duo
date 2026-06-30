@@ -114,7 +114,12 @@
                             <td><%= p.getSeriale() %></td>
                             <td><%= p.getTipo() %></td>
                             <td><%= p.getMarchio() %></td>
-                            <td><%= p.getNome() %></td>
+                            <td>
+                                <%= p.getNome() %>
+                                <% if (!p.isAttivo()) { %>
+                                    <span class="badge-oscurato"><i class="fas fa-eye-slash"></i></span>
+                                <% } %>
+                            </td>
                             <td>€ <%= String.format("%.2f", p.getPrezzo()) %></td>
                             <td><%= p.getInStock() %></td>
                             <td class="actions">
@@ -132,10 +137,16 @@
                                 </button>
                                 
                                 <form action="<%= request.getContextPath() %>/ProdottoServlet" method="POST" class="inline-form">
-    								<input type="hidden" name="action" value="delete"> 
-    								<input type="hidden" name="idProdotto" value="<%= p.getId() %>">
-    								<button type="submit" class="btn-icon delete" title="Elimina"><i class="fas fa-trash-alt"></i></button>
-								</form>
+                                    <input type="hidden" name="idProdotto" value="<%= p.getId() %>">
+                                    
+                                    <% if (p.isAttivo()) { %>
+                                        <input type="hidden" name="action" value="delete"> 
+                                        <button type="submit" class="btn-icon delete" title="Oscura dal catalogo"><i class="fas fa-eye"></i></button>
+                                    <% } else { %>
+                                        <input type="hidden" name="action" value="ripristina"> 
+                                        <button type="submit" class="btn-icon update" title="Rendi di nuovo visibile" style="color: var(--verde-ottanio);"><i class="fas fa-eye-slash"></i></button>
+                                    <% } %>
+                                </form>
                             </td>
                         </tr>
                         <%  } 

@@ -24,11 +24,16 @@ public class ProdottoDAO {
         prodotto.setImageUrl(rs.getString("URL_Immagine_Copertina"));
         prodotto.setDescrizione(rs.getString("Descrizione"));
         prodotto.setInStock(rs.getInt("In_stock")); 
+        
+        // Mappatura del campo per il Soft Delete
+        prodotto.setAttivo(rs.getBoolean("isAttivo")); 
+        
         return prodotto;
     }
     
     public List<Prodotto> fetchProdottiByTipo(String tipo) throws SQLException {
-        String query = "SELECT * FROM Prodotto WHERE Tipo = ?";
+        // FILTRO SOFT DELETE: Mostra solo i prodotti attivi
+        String query = "SELECT * FROM Prodotto WHERE Tipo = ? AND isAttivo = true";
         List<Prodotto> prodottiTrovati = new ArrayList<>();
         Connection conn = null;
         PreparedStatement ps = null;
@@ -53,6 +58,7 @@ public class ProdottoDAO {
     }
     
     public Prodotto fetchProdottoById(String id) throws SQLException {
+        // NESSUN FILTRO SOFT DELETE: Serve per far funzionare i vecchi ordini e il pannello admin
         String query = "SELECT * FROM Prodotto WHERE ID_Prodotto = ?";
         Connection conn = null;
         PreparedStatement ps = null;
@@ -78,6 +84,7 @@ public class ProdottoDAO {
     }
     
     public List<Prodotto> fetchAllProdotti() throws SQLException {
+        // NESSUN FILTRO SOFT DELETE: L'Admin deve vedere tutto il catalogo
         String query = "SELECT * FROM Prodotto";
         List<Prodotto> prodotti = new ArrayList<>();
         Connection conn = null;
@@ -94,13 +101,13 @@ public class ProdottoDAO {
             }
         } finally {
             if (ps != null) ps.close();
-            if (conn != null) ConnessioneDB.releaseConnection(conn); // Allineato al Connection Pool
+            if (conn != null) ConnessioneDB.releaseConnection(conn);
         }
         return prodotti;
     }
 
     public void insertProdotto(Prodotto p) throws SQLException {
-        // Query modificata per includere esplicitamente la colonna IVA (14 parametri)
+        // Il campo isAttivo sarà automaticamente TRUE grazie al DEFAULT impostato nel database
         String query = "INSERT INTO Prodotto (ID_Prodotto, Marchio, Seriale, Prezzo, URL_Modello_3D, URL_Immagine_Copertina, Descrizione, In_stock, Nome, Tipo, Stato, Numero_scatti, Condizione_collezionistica, IVA) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         Connection conn = null;
         PreparedStatement ps = null;
@@ -127,16 +134,15 @@ public class ProdottoDAO {
                 ps.setInt(12, p.getNumeroScatti());
             }
             ps.setString(13, p.getCondizioneCollezionistica());
-            ps.setInt(14, p.getIva()); // Parametro IVA aggiunto
+            ps.setInt(14, p.getIva()); 
             
             ps.executeUpdate();
         } finally {
             if (ps != null) ps.close();
-            if (conn != null) ConnessioneDB.releaseConnection(conn); // Allineato al Connection Pool
+            if (conn != null) ConnessioneDB.releaseConnection(conn); 
         }
     }
     
- // UPDATE: Modifica un prodotto esistente nel database
     public boolean updateProdotto(Prodotto p) throws SQLException {
         String query = "UPDATE Prodotto SET Marchio = ?, Seriale = ?, Prezzo = ?, URL_Modello_3D = ?, " +
                        "URL_Immagine_Copertina = ?, Descrizione = ?, In_stock = ?, Nome = ?, Tipo = ?, " +
@@ -150,7 +156,6 @@ public class ProdottoDAO {
             conn = ConnessioneDB.getConnection();
             ps = conn.prepareStatement(query);
             
-            // Settaggio dei nuovi valori
             ps.setString(1, p.getMarchio());
             ps.setString(2, p.getSeriale());
             ps.setDouble(3, p.getPrezzo()); 
@@ -162,7 +167,6 @@ public class ProdottoDAO {
             ps.setString(9, p.getTipo());
             ps.setString(10, p.getStato());
             
-            // Gestione dei campi numerici che potrebbero essere nulli
             if (p.getNumeroScatti() == 0) {
                 ps.setNull(11, Types.INTEGER);
             } else {
@@ -171,8 +175,6 @@ public class ProdottoDAO {
             
             ps.setString(12, p.getCondizioneCollezionistica());
             ps.setInt(13, p.getIva());
-            
-            // Condizione WHERE (ID del prodotto da modificare)
             ps.setString(14, p.getId());
             
             int row = ps.executeUpdate();
@@ -180,12 +182,13 @@ public class ProdottoDAO {
             
         } finally {
             if (ps != null) ps.close();
-            if (conn != null) ConnessioneDB.releaseConnection(conn); // Allineato al Connection Pool
+            if (conn != null) ConnessioneDB.releaseConnection(conn); 
         }
     }
 
     public void deleteProdotto(String idProdotto) throws SQLException {
-        String query = "DELETE FROM Prodotto WHERE ID_Prodotto = ?";
+        // TRASFORMATO IN SOFT DELETE: Aggiorna lo stato invece di eliminare la riga
+        String query = "UPDATE Prodotto SET isAttivo = false WHERE ID_Prodotto = ?";
         Connection conn = null;
         PreparedStatement ps = null;
         
@@ -196,14 +199,14 @@ public class ProdottoDAO {
             ps.executeUpdate();
         } finally {
             if (ps != null) ps.close();
-            if (conn != null) ConnessioneDB.releaseConnection(conn); // Allineato al Connection Pool
+            if (conn != null) ConnessioneDB.releaseConnection(conn); 
         }
     }
     
- // Recupera la lista di tutte le marche (senza duplicati) ordinate in ordine alfabetico
     public List<String> fetchDistinctMarche() throws SQLException {
+        // FILTRO SOFT DELETE: Non mostrare le marche se tutti i loro prodotti sono stati oscurati
         List<String> marche = new ArrayList<>();
-        String query = "SELECT DISTINCT Marchio FROM Prodotto ORDER BY Marchio ASC";
+        String query = "SELECT DISTINCT Marchio FROM Prodotto WHERE isAttivo = true ORDER BY Marchio ASC";
         
         Connection conn = null;
         PreparedStatement ps = null;
@@ -224,10 +227,11 @@ public class ProdottoDAO {
         return marche;
     }
     
-    // Recupera i prodotti filtrati per marca, prezzo, ricerca e tipo
     public List<Prodotto> fetchProdottiFiltrati(String[] marche, String[] fascePrezzo, String search, String tipo) throws SQLException {
         List<Prodotto> prodotti = new ArrayList<>();
-        StringBuilder query = new StringBuilder("SELECT * FROM Prodotto WHERE 1=1 ");
+        
+        // FILTRO SOFT DELETE: La base della query parte solo dai prodotti attivi
+        StringBuilder query = new StringBuilder("SELECT * FROM Prodotto WHERE isAttivo = true ");
 
         // 1. Costruzione dinamica per la Categoria (Tipo)
         if (tipo != null && !tipo.trim().isEmpty()) {
@@ -259,7 +263,7 @@ public class ProdottoDAO {
             query.append(") ");
         }
 
-        // 4. Costruzione dinamica per la Barra di Ricerca forzando il minuscolo
+        // 4. Costruzione dinamica per la Barra di Ricerca
         boolean hasSearch = (search != null && !search.trim().isEmpty());
         if (hasSearch) {
             query.append("AND (LOWER(Nome) LIKE ? OR LOWER(Marchio) LIKE ? OR LOWER(Seriale) LIKE ?) ");
@@ -273,24 +277,21 @@ public class ProdottoDAO {
 
             int paramIndex = 1;
             
-            // Inserimento parametro Tipo
             if (tipo != null && !tipo.trim().isEmpty()) {
                 ps.setString(paramIndex++, tipo);
             }
             
-            // Inserimento parametri Marche
             if (marche != null && marche.length > 0) {
                 for (String marca : marche) {
                     ps.setString(paramIndex++, marca);
                 }
             }
             
-            // Inserimento parametri Ricerca
             if (hasSearch) {
                 String searchPattern = "%" + search.trim().toLowerCase() + "%"; 
-                ps.setString(paramIndex++, searchPattern); // Per Nome
-                ps.setString(paramIndex++, searchPattern); // Per Marchio
-                ps.setString(paramIndex++, searchPattern); // Per Seriale
+                ps.setString(paramIndex++, searchPattern);
+                ps.setString(paramIndex++, searchPattern);
+                ps.setString(paramIndex++, searchPattern); 
             }
 
             try (ResultSet rs = ps.executeQuery()) {
@@ -303,5 +304,22 @@ public class ProdottoDAO {
             if (conn != null) ConnessioneDB.releaseConnection(conn);
         }
         return prodotti;
+    }
+    
+    public void ripristinaProdotto(String idProdotto) throws SQLException {
+        // Riporta isAttivo a true per far ricomparire il prodotto in vetrina
+        String query = "UPDATE Prodotto SET isAttivo = true WHERE ID_Prodotto = ?";
+        Connection conn = null;
+        PreparedStatement ps = null;
+        
+        try {
+            conn = ConnessioneDB.getConnection();
+            ps = conn.prepareStatement(query);
+            ps.setString(1, idProdotto);
+            ps.executeUpdate();
+        } finally {
+            if (ps != null) ps.close();
+            if (conn != null) ConnessioneDB.releaseConnection(conn); 
+        }
     }
 }

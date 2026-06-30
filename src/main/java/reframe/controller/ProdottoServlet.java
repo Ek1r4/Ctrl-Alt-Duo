@@ -103,6 +103,24 @@ public class ProdottoServlet extends HttpServlet {
             }
             return; 
         }
+        
+     // ==========================================
+        // AZIONE: RIPRISTINA PRODOTTO OSCURATO
+        // ==========================================
+        if ("ripristina".equals(action)) {
+            String idProdotto = request.getParameter("idProdotto");
+            
+            try {
+                dao.ripristinaProdotto(idProdotto);
+                
+                // Ricarica la pagina tornando sulla scheda dei Prodotti
+                response.sendRedirect(request.getContextPath() + "/PannelloAdminServlet?tab=prodotti&success=prodottoRipristinato");
+            } catch (SQLException e) {
+                e.printStackTrace();
+                response.sendRedirect(request.getContextPath() + "/PannelloAdminServlet?tab=prodotti&errore=ripristino_fallito");
+            }
+            return;
+        }
     
      // ==========================================
         // AZIONE: MODIFICA PRODOTTO
