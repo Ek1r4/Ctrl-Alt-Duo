@@ -64,7 +64,7 @@
             %>
                 <% if (userMenu.getIsAdmin() > 0) { %>
                 
-                    <a href="${pageContext.request.contextPath}/admin/profiloAdmin.jsp" class="icon-link" title="Area Personale Admin">
+                    <a href="${pageContext.request.contextPath}/admin/gestioneTicket.jsp" class="icon-link" title="Gestione Ticket">
                         <i class="fas fa-headset"></i>
                         <span class="icon-label">Assistenza</span> 
                     </a>

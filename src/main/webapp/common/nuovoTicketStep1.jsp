@@ -1,10 +1,32 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="reframe.model.beans.Utente" %>
+<%@ page import="reframe.model.beans.Ordine" %>
+<%@ page import="reframe.model.beans.DettaglioOrdine" %>
+<%@ page import="reframe.model.dao.OrdineDAO" %>
+<%@ page import="java.util.List" %>
+<%
+    // 1. Sicurezza: Controllo Login
+    Utente utente = (Utente) session.getAttribute("utente");
+    if (utente == null) {
+        response.sendRedirect(request.getContextPath() + "/login.jsp");
+        return;
+    }
+
+    // 2. Recupero Dati Reali
+    OrdineDAO ordineDAO = new OrdineDAO();
+    List<Ordine> listaOrdini = null;
+    try {
+        listaOrdini = ordineDAO.getOrdiniCompletiByUtente(utente.getUsername());
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+%>
 <!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nuovo Ticket - Step 1 - Ekira</title>
+    <title>Nuovo Ticket - Step 1 - ReFrame</title>
     
     <link rel="stylesheet" href="../css/global.css">
     <link rel="stylesheet" href="../css/variables.css">
@@ -34,137 +56,63 @@
 
             <form id="formSelezioneOrdine" action="nuovoTicketStep2.jsp" method="GET">
 
-    <div class="assistenza-accordion-container">
-        
-        <details class="ordine-item">
-            <summary class="ordine-header">
-                <div class="ordine-meta-left">
-                    <label class="custom-cb-wrapper">
-                        <input type="checkbox" class="cb-ordine" name="ordineSelezionato" value="84932">
-                        <span class="custom-cb"></span>
-                    </label>
-                    <div class="ordine-meta">
-                        <span class="ordine-id">ORDINE #84932</span>
-                        <span class="ordine-date">14/06/2026</span>
-                    </div>
-                </div>
-                <div class="ordine-trigger">
-                    <span class="ordine-status">Visualizza Prodotti</span>
-                    <svg class="arrow-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                </div>
-            </summary>
-            <div class="ordine-products">
-                <div class="prodotto-row">
-                    <label class="custom-cb-wrapper">
-                        <input type="checkbox" class="cb-prodotto" name="prodottiSelezionati" value="prod_1A">
-                        <span class="custom-cb"></span>
-                    </label>
-                    <span class="prodotto-nome">Fotocamera Mirrorless Alpha 7</span>
-                    <span class="prodotto-qta">Q.tà: 1</span>
-                </div>
-                <div class="prodotto-row">
-                    <label class="custom-cb-wrapper">
-                        <input type="checkbox" class="cb-prodotto" name="prodottiSelezionati" value="prod_1B">
-                        <span class="custom-cb"></span>
-                    </label>
-                    <span class="prodotto-nome">Obiettivo Prime 50mm f/1.4</span>
-                    <span class="prodotto-qta">Q.tà: 1</span>
-                </div>
-            </div>
-        </details>
+                <div class="assistenza-accordion-container">
+                    
+                    <% if (listaOrdini != null && !listaOrdini.isEmpty()) {
+                        for (Ordine ordine : listaOrdini) { 
+                    %>
+                        <details class="ordine-item">
+                            <summary class="ordine-header">
+                                <div class="ordine-meta-left">
+                                    <label class="custom-cb-wrapper">
+                                        <input type="checkbox" class="cb-ordine" name="ordineSelezionato" value="<%= ordine.getIdOrdine() %>">
+                                        <span class="custom-cb"></span>
+                                    </label>
+                                    <div class="ordine-meta">
+                                        <span class="ordine-id">ORDINE #<%= ordine.getIdOrdine() %></span>
+                                        <span class="ordine-date"><%= ordine.getDataOrdine() %></span>
+                                    </div>
+                                </div>
+                                <div class="ordine-trigger">
+                                    <span class="ordine-status">Visualizza Prodotti</span>
+                                    <svg class="arrow-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                </div>
+                            </summary>
+                            
+                            <div class="ordine-products">
+                                <% if (ordine.getDettagli() != null && !ordine.getDettagli().isEmpty()) {
+                                    for (DettaglioOrdine dett : ordine.getDettagli()) { 
+                                %>
+                                    <div class="prodotto-row">
+                                        <label class="custom-cb-wrapper">
+                                            <input type="checkbox" class="cb-prodotto" name="prodottiSelezionati" value="<%= dett.getNomeProdottoAcquisto().replace("\"", "&quot;") %>">
+                                            <span class="custom-cb"></span>
+                                        </label>
+                                        <span class="prodotto-nome"><%= dett.getNomeProdottoAcquisto() %></span>
+                                        <span class="prodotto-qta">Q.tà: <%= dett.getQuantitaAcquisto() %></span>
+                                    </div>
+                                <%  }
+                                   } else { %>
+                                    <div class="prodotto-row">
+                                        <span class="prodotto-nome" style="color:var(--grigio-taupe);">Nessun prodotto trovato per questo ordine.</span>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </details>
+                    <%  }
+                       } else { %>
+                        <div style="text-align: center; padding: 40px 20px;">
+                            <p style="color: var(--grigio-taupe); font-style: italic;">Non hai ancora effettuato ordini. Puoi saltare questo passaggio.</p>
+                        </div>
+                    <% } %>
 
-        <details class="ordine-item">
-            <summary class="ordine-header">
-                <div class="ordine-meta-left">
-                    <label class="custom-cb-wrapper">
-                        <input type="checkbox" class="cb-ordine" name="ordineSelezionato" value="84311">
-                        <span class="custom-cb"></span>
-                    </label>
-                    <div class="ordine-meta">
-                        <span class="ordine-id">ORDINE #84311</span>
-                        <span class="ordine-date">28/05/2026</span>
-                    </div>
                 </div>
-                <div class="ordine-trigger">
-                    <span class="ordine-status">Visualizza Prodotti</span>
-                    <svg class="arrow-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                </div>
-            </summary>
-            <div class="ordine-products">
-                <div class="prodotto-row">
-                    <label class="custom-cb-wrapper">
-                        <input type="checkbox" class="cb-prodotto" name="prodottiSelezionati" value="prod_2A">
-                        <span class="custom-cb"></span>
-                    </label>
-                    <span class="prodotto-nome">Treppiede Professionale in Carbonio</span>
-                    <span class="prodotto-qta">Q.tà: 1</span>
-                </div>
-            </div>
-        </details>
-        <details class="ordine-item">
-            <summary class="ordine-header">
-                <div class="ordine-meta-left">
-                    <label class="custom-cb-wrapper">
-                        <input type="checkbox" class="cb-ordine" name="ordineSelezionato" value="84311">
-                        <span class="custom-cb"></span>
-                    </label>
-                    <div class="ordine-meta">
-                        <span class="ordine-id">ORDINE #84311</span>
-                        <span class="ordine-date">28/05/2026</span>
-                    </div>
-                </div>
-                <div class="ordine-trigger">
-                    <span class="ordine-status">Visualizza Prodotti</span>
-                    <svg class="arrow-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                </div>
-            </summary>
-            <div class="ordine-products">
-                <div class="prodotto-row">
-                    <label class="custom-cb-wrapper">
-                        <input type="checkbox" class="cb-prodotto" name="prodottiSelezionati" value="prod_2A">
-                        <span class="custom-cb"></span>
-                    </label>
-                    <span class="prodotto-nome">Treppiede Professionale in Carbonio</span>
-                    <span class="prodotto-qta">Q.tà: 1</span>
-                </div>
-            </div>
-        </details>
-        <details class="ordine-item">
-            <summary class="ordine-header">
-                <div class="ordine-meta-left">
-                    <label class="custom-cb-wrapper">
-                        <input type="checkbox" class="cb-ordine" name="ordineSelezionato" value="84311">
-                        <span class="custom-cb"></span>
-                    </label>
-                    <div class="ordine-meta">
-                        <span class="ordine-id">ORDINE #84311</span>
-                        <span class="ordine-date">28/05/2026</span>
-                    </div>
-                </div>
-                <div class="ordine-trigger">
-                    <span class="ordine-status">Visualizza Prodotti</span>
-                    <svg class="arrow-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                </div>
-            </summary>
-            <div class="ordine-products">
-                <div class="prodotto-row">
-                    <label class="custom-cb-wrapper">
-                        <input type="checkbox" class="cb-prodotto" name="prodottiSelezionati" value="prod_2A">
-                        <span class="custom-cb"></span>
-                    </label>
-                    <span class="prodotto-nome">Treppiede Professionale in Carbonio</span>
-                    <span class="prodotto-qta">Q.tà: 1</span>
-                </div>
-            </div>
-        </details>
 
-    </div>
+                <div class="floating-submit-container" id="floatingSubmit">
+                    <button type="submit" class="btn btn-cta">CONFERMA SELEZIONE</button>
+                </div>
 
-    <div class="floating-submit-container" id="floatingSubmit">
-        <button type="submit" class="btn btn-cta">CONFERMA SELEZIONE</button>
-    </div>
-
-</form>
+            </form>
 
             <div class="assistenza-link-container">
                 <a href="nuovoTicketStep2.jsp" class="assistenza-sublink">
@@ -177,42 +125,38 @@
 
     <jsp:include page="../WEB-INF/components/footer.jsp" />
     <script>
-document.addEventListener("DOMContentLoaded", function() {
-    const form = document.getElementById("formSelezioneOrdine");
-    const floatingSubmit = document.getElementById("floatingSubmit");
-    const ordiniItems = document.querySelectorAll(".ordine-item");
+    document.addEventListener("DOMContentLoaded", function() {
+        const form = document.getElementById("formSelezioneOrdine");
+        const floatingSubmit = document.getElementById("floatingSubmit");
+        const ordiniItems = document.querySelectorAll(".ordine-item");
 
-    function checkVisibility() {
-        // Mostra il bottone se almeno un checkbox (qualsiasi) è selezionato
-        const anyChecked = form.querySelectorAll('input[type="checkbox"]:checked').length > 0;
-        if (anyChecked) {
-            floatingSubmit.classList.add("visible");
-        } else {
-            floatingSubmit.classList.remove("visible");
+        function checkVisibility() {
+            const anyChecked = form.querySelectorAll('input[type="checkbox"]:checked').length > 0;
+            if (anyChecked) {
+                floatingSubmit.classList.add("visible");
+            } else {
+                floatingSubmit.classList.remove("visible");
+            }
         }
-    }
 
-    ordiniItems.forEach(item => {
-        const cbOrdine = item.querySelector(".cb-ordine");
-        const cbProdotti = item.querySelectorAll(".cb-prodotto");
+        ordiniItems.forEach(item => {
+            const cbOrdine = item.querySelector(".cb-ordine");
+            const cbProdotti = item.querySelectorAll(".cb-prodotto");
 
-        // Se clicco sull'ordine, seleziona/deseleziona tutti i suoi prodotti
-        cbOrdine.addEventListener("change", function() {
-            cbProdotti.forEach(cb => cb.checked = this.checked);
-            checkVisibility();
-        });
-
-        // Se clicco su un singolo prodotto
-        cbProdotti.forEach(cb => {
-            cb.addEventListener("change", function() {
-                // Seleziona automaticamente l'ordine padre se un prodotto è selezionato
-                const anyProductChecked = Array.from(cbProdotti).some(p => p.checked);
-                cbOrdine.checked = anyProductChecked;
+            cbOrdine.addEventListener("change", function() {
+                cbProdotti.forEach(cb => cb.checked = this.checked);
                 checkVisibility();
+            });
+
+            cbProdotti.forEach(cb => {
+                cb.addEventListener("change", function() {
+                    const anyProductChecked = Array.from(cbProdotti).some(p => p.checked);
+                    cbOrdine.checked = anyProductChecked;
+                    checkVisibility();
+                });
             });
         });
     });
-});
-</script>
+    </script>
 </body>
 </html>
