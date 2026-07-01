@@ -15,6 +15,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nuovo Ticket - Step 2 - ReFrame</title>
     
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet" />
     <link rel="stylesheet" href="../css/global.css">
     <link rel="stylesheet" href="../css/variables.css">
     <link rel="stylesheet" href="../css/form.css">
@@ -27,7 +28,7 @@
         
         <div>
             <a href="nuovoTicketStep1.jsp" class="btn-step-nav">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                <i class="ri-arrow-left-line"></i>
                 INDIETRO
             </a>
         </div>
@@ -39,7 +40,7 @@
                 <span>DETTAGLI TICKET</span>
             </h1>
 
-            <form id="formTicketFinale" action="#" method="POST">
+            <form id="formTicketFinale" action="CreaTicketServlet" method="POST">
                 
                 <%
                     String[] ordiniSelezionati = request.getParameterValues("ordineSelezionato");
@@ -55,64 +56,60 @@
                         <% if(ordiniSelezionati != null) { 
                             for(String ordine : ordiniSelezionati) { %>
                                 <span class="sel-tag-analog">Ordine #<%= ordine %></span>
-                                <input type="hidden" name="ordineSelezionato" value="<%= ordine %>">
+                                <input type="hidden" name="ordineSelezionato" class="hidden-selezione-ordine" value="<%= ordine %>">
                         <%  } } %>
 
                         <% if(prodottiSelezionati != null) { 
                             for(String prodotto : prodottiSelezionati) { %>
                                 <span class="sel-tag-analog">Prodotto: <%= prodotto %></span>
-                                <input type="hidden" name="prodottiSelezionati" value="<%= prodotto.replace("\"", "&quot;") %>">
+                                <input type="hidden" name="prodottiSelezionati" class="hidden-selezione-prodotto" value="<%= prodotto.replace("\"", "&quot;") %>">
                         <%  } } %>
                     </div>
                 <% } %>
 
                 <fieldset class="custom-input">
                     <legend>Titolo del problema *</legend>
-                    <input type="text" name="titolo" placeholder="Es. Prodotto danneggiato..." required>
+                    <input type="text" name="titolo" id="titoloTicket" placeholder="Es. Prodotto danneggiato..." maxlength="50" required>
+                    <span class="error-message" id="errorTitolo">Il titolo deve contenere tra 5 e 50 caratteri.</span>
                 </fieldset>
 
                 <fieldset class="custom-input">
                     <legend>Categoria *</legend>
                     <div class="select-wrapper-analog">
-                        <select name="tag" required>
+                        <select name="tag" id="categoriaTicket" required>
                             <option value="" disabled selected hidden>Seleziona l'argomento...</option>
                             <option value="ordine">Ordine</option>
                             <option value="prodotto">Prodotto</option>
                             <option value="pagamento">Pagamento</option>
                             <option value="account">Account</option>
                         </select>
-                        <span class="select-arrow-analog">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                        </span>
+                        <i class="ri-arrow-down-s-line select-arrow-analog"></i>
                     </div>
+                    <span class="error-message" id="errorCategoria">Seleziona una categoria.</span>
                 </fieldset>
 
                 <fieldset class="custom-input">
                     <legend>Descrizione *</legend>
-                    <textarea name="descrizione" rows="5" placeholder="Descrivi nel dettaglio il problema..." required></textarea>
+                    <textarea name="descrizione" id="descrizioneTicket" rows="5" placeholder="Descrivi nel dettaglio il problema..." maxlength="1024" required></textarea>
+                    <span class="error-message" id="errorDescrizione">La descrizione deve contenere tra 20 e 1024 caratteri.</span>
                 </fieldset>
 
-                <button type="submit" class="btn-cta" style="width: 100%;">INVIA TICKET</button>
+                <button type="submit" class="btn-cta btn-full-width">INVIA TICKET</button>
 
             </form>
         </div>
     </main>
 
-    <div class="ticket-popup-overlay" id="popupConferma"></div>
+    <!-- Popup di Conferma (Nascosto di default) -->
+    <div class="ticket-popup-overlay" id="popupConferma">
+        <div class="ticket-popup-content film-container">
+            <i class="ri-checkbox-circle-line popup-icon-success"></i>
+            <h2>Ticket Creato!</h2>
+            <p>La tua pratica è stata aperta con successo.</p>
+        </div>
+    </div>
 
     <jsp:include page="../WEB-INF/components/footer.jsp" />
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const form = document.getElementById("formTicketFinale");
-            const popup = document.getElementById("popupConferma");
-
-            form.addEventListener("submit", function(e) {
-                e.preventDefault(); 
-                popup.classList.add("active");
-                // Qui potrai rimuovere preventDefault e lasciare che il form vada verso la Servlet!
-            });
-        });
-    </script>
+    <script src="../js/assistenza.js"></script>
 </body>
 </html>

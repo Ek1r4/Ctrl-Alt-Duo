@@ -2,9 +2,21 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <%
-    // MOCKUP RUOLO: cambia questa stringa ("utente", "admin", "superadmin") per testare l'overlay
-    String ruoloSimulato = "superadmin"; 
-    request.setAttribute("ruolo", ruoloSimulato);
+    // ==========================================
+    // DETERMINAZIONE DINAMICA DEL RUOLO
+    // ==========================================
+    reframe.model.beans.Utente utenteLoggatoOverlay = (reframe.model.beans.Utente) session.getAttribute("utente");
+    String ruoloReale = "utente"; // Fallback di default
+    
+    if (utenteLoggatoOverlay != null) {
+        if (utenteLoggatoOverlay.getIsAdmin() == 2) {
+            ruoloReale = "superadmin";
+        } else if (utenteLoggatoOverlay.getIsAdmin() == 1) {
+            ruoloReale = "admin";
+        }
+    }
+    
+    request.setAttribute("ruolo", ruoloReale);
 %>
 <link rel="stylesheet" href="../css/form.css">
 <dialog id="ticketOverlay" class="ticket-dialog">
@@ -93,19 +105,24 @@
                                 <form id="formStato" onsubmit="aggiornaStato(event)">
                                     <fieldset class="custom-input">
                                         <legend>Gestisci Stato</legend>
-                                        <div class="select-wrapper-analog">
-                                            <select id="selectStato" name="stato">
-                                                <option value="Aperta">APERTA</option>
-                                                <option value="In carico">IN CARICO</option>
-                                                <option value="Chiusa">CHIUSA</option>
-                                            </select>
-                                            <i class="ri-arrow-down-s-line select-arrow-analog"></i>
+                                        
+                                        <!-- Container del Toggle Stile "Segmented Control" -->
+                                        <div class="status-toggle-wrapper">
+                                            <input type="checkbox" id="toggleStatoAdmin" name="stato_chiusa" value="true">
+                                            <label class="status-toggle-pill" for="toggleStatoAdmin">
+                                                <span class="toggle-thumb"></span>
+                                                <span class="toggle-text toggle-text-left">IN CARICO</span>
+                                                <span class="toggle-text toggle-text-right">CHIUSA</span>
+                                            </label>
                                         </div>
+
+                                        <!-- Container per il messaggio di avviso -->
+                                        <p id="adminStatusWarning" class="status-warning-msg"></p>
+
                                     </fieldset>
                                     <button type="submit" class="btn-cta btn-chat-compact">AGGIORNA STATO</button>
                                 </form>
                             </c:when>
-
                             <%-- SUPERADMIN --%>
                             <c:when test="${ruolo == 'superadmin'}">
                                 <fieldset class="custom-input read-only-box">
@@ -130,9 +147,13 @@
                                 <form id="formNota" onsubmit="inviaNota(event)" style="margin-top: 15px;">
                                     <fieldset class="custom-input">
                                         <legend>Lascia una Nota Privata</legend>
-                                        <textarea id="notaSuperadmin" placeholder="Verrà spedita via email..." required rows="2"></textarea>
+                                        <textarea id="notaSuperadmin" placeholder="Verrà spedita via email all'admin in carico..." required rows="2"></textarea>
                                     </fieldset>
-                                    <button type="submit" class="btn-cta btn-chat-compact" style="margin-top:5px;">INVIA NOTA</button>
+                                    
+                                    <!-- Avviso mostrato solo quando la pratica è Aperta -->
+                                    <p id="notaSuperadminWarning" class="status-warning-msg" style="text-align: left; margin-bottom: 10px;"></p>
+                                    
+                                    <button type="submit" id="btnInviaNota" class="btn-cta btn-chat-compact">INVIA NOTA</button>
                                 </form>
                             </c:when>
                         </c:choose>

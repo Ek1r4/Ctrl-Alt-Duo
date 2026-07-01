@@ -4,20 +4,17 @@
 
 <%
     // ==========================================
-    // MOCKUP DATI - Dinamico in base alla ricerca
+    // MOCKUP DATI - LATO CLIENTE
     // ==========================================
     
-    // Leggiamo i parametri inviati dal form
     String query = request.getParameter("query");
     String filtro = request.getParameter("filtro");
     
-    // La ricerca è considerata effettuata SOLO se c'è del testo nella barra o se è stato cliccato un filtro
     boolean ricercaEffettuata = (query != null && !query.trim().isEmpty()) || 
                                 (filtro != null && !filtro.trim().isEmpty());
     
     List<Map<String, String>> praticheMock = new ArrayList<>();
     
-    // Riempiamo la lista SOLO se l'utente ha cercato qualcosa
     if(ricercaEffettuata) {
         Map<String, String> p1 = new HashMap<>();
         p1.put("rma", "RMA-001");
@@ -43,7 +40,6 @@
     
     request.setAttribute("pratiche", praticheMock);
     request.setAttribute("ricercaEffettuata", ricercaEffettuata);
-    // ==========================================
 %>
 
 <!DOCTYPE html>
@@ -69,7 +65,7 @@
                 SIAMO LIETI DI AIUTARTI
             </h1>
 
-            <!-- Barra di ricerca -->
+            <!-- Barra di ricerca Cliente -->
             <form action="" method="GET" class="assistenza-search-box">
                 <i class="ri-search-2-line search-icon"></i>
                 <input type="text" name="query" placeholder="inserisci il titolo di un ticket..." value="${param.query}">
@@ -78,19 +74,24 @@
 
             <c:choose>
                 <c:when test="${ricercaEffettuata}">
-                    <!-- RISULTATI RICERCA (GRID) -->
+                    <!-- RISULTATI RICERCA (GRID CLIENTE) -->
                     <div class="pratiche-results-container">
-                        <p class="results-subtitle">"Risultati per la tua ricerca"</p>
+                        
+                        <!-- Intestazione colonne allineata al backoffice -->
+                        <div class="results-subtitle" style="display: flex; justify-content: space-between; padding: 0 1.5rem;">
+                            <span style="flex: 1;">I TUOI TICKET</span>
+                            <span style="width: 150px; text-align: left;">DATA APERTURA</span>
+                            <span style="width: 150px; text-align: right;">STATO</span>
+                        </div>
                         
                         <div class="pratiche-grid">
-                            <!-- Header Grid (opzionale, lo ometto per un look più pulito come da tuo sketch, ma possiamo aggiungerlo) -->
-                            
                             <c:forEach var="pratica" items="${pratiche}">
-                                <!-- Passiamo l'RMA in GET per aprire in seguito l'overlay -->
                                 <a href="?rma=${pratica.rma}" class="pratica-grid-row">
                                     <div class="pratica-titolo">${pratica.motivo}</div>
-                                    <div class="pratica-data">${pratica.data}</div>
-                                    <div class="pratica-stato status-${pratica.stato.toLowerCase().replace(' ', '-')}">
+                                    
+                                    <!-- Nuove classi generiche CSS -->
+                                    <div class="pratica-col-center">${pratica.data}</div>
+                                    <div class="pratica-col-right status-${pratica.stato.toLowerCase().replace(' ', '-')}">
                                         ${pratica.stato}
                                     </div>
                                 </a>
@@ -99,7 +100,7 @@
                     </div>
                 </c:when>
                 <c:otherwise>
-                    <!-- Bottoni Ricerca Rapida (Mostrati solo se non c'è una ricerca attiva) -->
+                    <!-- Bottoni Ricerca Rapida (Esclusivi per il cliente) -->
                     <div class="quick-search-buttons">
                         <button class="btn-outline">ORDINI</button>
                         <button class="btn-outline">PRODOTTI</button>
@@ -111,12 +112,13 @@
             
         </div>
 
-        <!-- CTA sul fondo -->
+        <!-- CTA sul fondo per creare un nuovo ticket (Esclusiva per il cliente) -->
         <div class="assistenza-cta-container">
             <a href="nuovoTicketStep1.jsp" class="btn btn-cta">NUOVO TICKET</a>
         </div>
     </main>
-	<jsp:include page="../WEB-INF/components/ticket-overlay.jsp" />
+
+    <jsp:include page="../WEB-INF/components/ticket-overlay.jsp" />
     <jsp:include page="../WEB-INF/components/footer.jsp" />
     <script src="../js/assistenza.js"></script>
 </body>

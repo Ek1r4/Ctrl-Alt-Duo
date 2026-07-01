@@ -40,7 +40,7 @@
     display: flex;
     align-items: center;
     width: 100%;
-    border: 2px solid var(--beige-scuro); /* Bordo bianco */
+    border: 2px solid var(--beige-scuro);
     border-radius: 4px;
     padding: 0.5rem 1rem;
     margin-bottom: 2rem;
@@ -83,6 +83,7 @@
     padding: 0.6rem 2rem;
     font-size: 0.9rem;
     text-transform: uppercase;
+    text-decoration: none;
     letter-spacing: 1px;
     cursor: pointer;
     border-radius: 4px;
@@ -138,7 +139,7 @@
 /* Struttura del singolo blocco Ordine */
 .ordine-item {
     width: 100%;
-    border: 2px solid var(--beige-scuro); /* Bordo bianco geometrico come mockup */
+    border: 2px solid var(--beige-scuro);
     border-radius: 4px;
     background-color: transparent;
     overflow: hidden;
@@ -153,11 +154,11 @@
     gap: 10vw;
     cursor: pointer;
     user-select: none;
-    list-style: none; /* Rimuove la freccia nativa su Chrome/Firefox */
+    list-style: none;
 }
 
 .ordine-header::-webkit-details-marker {
-    display: none; /* Rimuove la freccia nativa su Safari */
+    display: none;
 }
 
 /* Informazioni a sinistra (ID e Data) */
@@ -210,10 +211,11 @@
 }
 
 .prodotto-qta {
-    color: var(--verde-ottanio); /* Colore accent per risaltare i dettagli numerici */
+    color: var(--verde-ottanio);
     font-size: 0.95rem;
     font-weight: 500;
 }
+
 /* Link di navigazione sul fondo */
 .assistenza-link-container {
     margin-top: 2vh;
@@ -270,7 +272,7 @@
 
 /* Stato attivo del Checkbox */
 .custom-cb-wrapper input:checked ~ .custom-cb {
-    background-color: var(--verde-ottanio); /* Colore accent per la spunta */
+    background-color: var(--verde-ottanio);
     border-color: var(--verde-ottanio);
 }
 
@@ -289,89 +291,63 @@
 .prodotto-row {
     display: flex;
     align-items: center;
-    gap: 1.5rem; /* Spazio tra checkbox e nome */
+    gap: 1.5rem;
     padding-top: 1rem;
     font-size: 1rem;
 }
 
 .prodotto-nome {
-    flex: 1; /* Spinge la quantità verso destra */
+    flex: 1;
 }
 
 /* Tasto a comparsa (Floating Submit) */
 .floating-submit-container{
     position: fixed;
-    bottom: -100px; /* Nascosto di default */
+    bottom: -100px;
     left: 0;
     width: 100%;
     display: flex;
     justify-content: center;
     padding: 1rem;
-    
     transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     z-index: 100;
 }
-/* 1. Stato base sovrascritto */
+
 .floating-submit-container .btn-cta {
     background-color: var(--verde-ottanio);
     color: var(--panna-carta);
     border: 2px solid var(--verde-ottanio);
-    
-    /* Inset preparato ma trasparente + Ombre esterne di base */
-    box-shadow: 
-        inset 0 0 0 2px transparent,
-        0 4px 6px rgba(0, 0, 0, 0.1), 
-        0 15px 35px rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 0 0 2px transparent, 0 4px 6px rgba(0, 0, 0, 0.1), 0 15px 35px rgba(0, 0, 0, 0.2);
 }
 
-/* 2. Stato hover specifico */
 .floating-submit-container .btn-cta:hover {
-    /* Manteniamo i colori intatti */
     background-color: var(--verde-ottanio);
     color: var(--panna-carta);
-    
-    /* 1. La linea interna diventa color panna-carta
-      2. Le ombre esterne si espandono e diventano più scure per enfatizzare il distacco
-    */
-    box-shadow: 
-        inset 0 0 0 2px var(--panna-carta), 
-        0 12px 24px rgba(0, 0, 0, 0.15), 
-        0 25px 50px rgba(0, 0, 0, 0.3);
-    
-    /* Il bottone si innalza di 3 pixel verso l'alto */
+    box-shadow: inset 0 0 0 2px var(--panna-carta), 0 12px 24px rgba(0, 0, 0, 0.15), 0 25px 50px rgba(0, 0, 0, 0.3);
     transform: translateY(-3px);
 }
 
-/* Classe aggiunta via JS per mostrarlo */
 .floating-submit-container.visible {
     bottom: 2rem;
 }
 
-
-
-
-
-
-
-
-
 .auth-wrapper > div{
-	width: 100%; 
-	max-width: 80vw; 
-	display: flex;
-	    flex-direction: column; 
-	margin-top:10vh;
+    width: 100%; 
+    max-width: 80vw; 
+    display: flex;
+    flex-direction: column; 
+    margin-top:10vh;
 }
 
 .film-container.large{
-	max-width:60vw;
+    max-width:60vw;
 }
 .form-title span{
-	color:var(--verde-ottanio);
+    color:var(--verde-ottanio);
 }
 
 /* ===================================================
-   RISULTATI RICERCA (CSS GRID)
+   RISULTATI RICERCA E GRIGLIA TICKETS
    =================================================== */
 .pratiche-results-container {
     width: 100%;
@@ -384,6 +360,7 @@
     color: var(--grigio-taupe);
     margin-bottom: 1rem;
     text-align: left;
+    font-weight: 600;
 }
 
 .pratiche-grid {
@@ -394,8 +371,7 @@
 
 .pratica-grid-row {
     display: grid;
-    /* Grid: il titolo si prende lo spazio che avanza, data e stato hanno larghezze fisse minime */
-    grid-template-columns: 1fr auto 100px; 
+    grid-template-columns: 1fr 150px 150px; 
     align-items: center;
     gap: 1rem;
     padding: 1rem 1.5rem;
@@ -412,20 +388,38 @@
     background-color: rgba(0, 0, 0, 0.02);
 }
 
+/* Header della griglia ticket (Allineamento perfetto) */
+.pratica-grid-header {
+    display: grid;
+    grid-template-columns: 1fr 150px 150px; 
+    gap: 1rem; 
+    padding: 0 1.5rem 0.8rem 1.5rem; 
+    font-size: 0.95rem;
+    font-style: italic;
+    color: var(--grigio-taupe);
+    font-weight: 600;
+}
+
+.pratica-grid-header span:nth-child(1) { text-align: left; }
+.pratica-grid-header span:nth-child(2) { text-align: left; }
+.pratica-grid-header span:nth-child(3) { text-align: right; }
+
 .pratica-titolo {
     font-weight: 500;
     font-size: 1.05rem;
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis; /* Taglia i titoli troppo lunghi con i puntini */
+    text-overflow: ellipsis;
 }
 
-.pratica-data {
+/* Nuove classi generiche per adattarsi a Date/Utenti/Stati/Admin */
+.pratica-col-center {
     color: var(--grigio-taupe);
     font-size: 0.9rem;
+    text-align: left;
 }
 
-.pratica-stato {
+.pratica-col-right {
     text-align: right;
     font-size: 0.85rem;
     font-weight: 600;
@@ -433,60 +427,59 @@
     letter-spacing: 1px;
 }
 
-/* Colori specifici per gli stati (Aggiungi le tue variabili colore se preferisci) */
+/* Stili specifici (Badge Superadmin e Colori Stato) */
+.admin-badge { color: var(--marrone-cuoio); }
 .status-aperta { color: var(--verde-ottanio); }
-.status-in-carico { color: #f59e0b; }
-.status-chiusa { color: #dc2626; }
+.status-in-carico { color: var(--antracite-scuro); }
+.status-chiusa { color: var(--verde-ottanio); text-decoration: line-through; }
 
 /* ===================================================
    RESPONSIVE GRID
    =================================================== */
 @media (max-width: 768px) {
     .pratica-grid-row {
-        /* Su tablet/smartphone la data va sotto il titolo, lo stato resta a destra */
+        /* Incolonna i dettagli sotto il titolo su mobile */
         grid-template-columns: 1fr auto;
         grid-template-areas: 
             "titolo stato"
-            "data stato";
+            "utente stato";
         padding: 1rem;
+    }
+    
+    .pratica-grid-header {
+        display: none;
     }
 
     .pratica-titolo { grid-area: titolo; white-space: normal; line-height: 1.3; }
-    .pratica-data { grid-area: data; margin-top: 0.3rem; }
-    .pratica-stato { grid-area: stato; align-self: center; }
+    .pratica-col-center { grid-area: utente; margin-top: 0.3rem; }
+    .pratica-col-right { grid-area: stato; align-self: center; }
 }
 
-
 /* ===================================================
-   RESPONSIVE: TABLET E SMARTPHONE (max-width: 768px)
+   RESPONSIVE: TABLET E SMARTPHONE (max-width: 1025px)
    =================================================== */
 @media (max-width: 1025px) {
-    
-    /* 1. Riduzione dei margini globali per sfruttare lo schermo */
     .assistenza-main {
-        padding: 4rem 1rem 3rem; /* Margini laterali ridotti a 1rem */
+        padding: 4rem 1rem 3rem;
     }
 
-    /* 2. Titolo più compatto */
     .assistenza-title {
         font-size: 1.8rem;
         margin-bottom: 1.5rem;
     }
 
-    /* 3. Header Ordine: riorganizza gli spazi */
     .ordine-header {
         padding: 1rem;
         align-items: center; 
     }
 
-    /* Incolonna ID e Data uno sotto l'altro */
     .ordine-meta {
         flex-direction: column;
         gap: 0.3rem;
     }
 
     .ordine-meta-left {
-        gap: 1rem; /* Meno spazio tra checkbox e testi */
+        gap: 1rem;
     }
 
     .ordine-id {
@@ -497,11 +490,10 @@
         font-size: 0.85rem;
     }
 
-    /* 4. Riga Prodotto: font più piccoli e gestione a capo */
     .prodotto-row {
         gap: 1rem;
         padding-top: 0.8rem;
-        align-items: flex-start; /* Se il nome va a capo, la quantità resta allineata in alto */
+        align-items: flex-start;
     }
 
     .prodotto-nome {
@@ -511,52 +503,48 @@
 
     .prodotto-qta {
         font-size: 0.85rem;
-        white-space: nowrap; /* Evita che "Q.tà: 1" si spezzi su due righe */
-        margin-top: 2px; /* Allinea visivamente con la prima riga del testo */
+        white-space: nowrap;
+        margin-top: 2px;
     }
 
-    /* 5. Adattamento del tasto a comparsa sul fondo */
     .floating-submit-container {
         padding: 1rem;
     }
 
     .floating-submit-container .btn-cta {
         width: 100%;
-        max-width: 350px; /* Non lo fa diventare larghissimo su tablet */
+        max-width: 350px;
         font-size: 18px;
         padding: 12px;
     }
     .film-container.large{
-		max-width:80vw;
-	}
+        max-width:80vw;
+    }
 }
 
 /* ===================================================
    RESPONSIVE: SMARTPHONE PICCOLI (max-width: 480px)
    =================================================== */
 @media (max-width: 480px) {
-    
     .assistenza-title {
         font-size: 1.5rem;
     }
 
-    /* Nasconde il testo "Visualizza Prodotti" per evitare sovrapposizioni, lascia solo l'icona della freccia */
     .ordine-status {
         display: none;
     }
 
-    /* Mantiene la freccia centrata nonostante il testo sia scomparso */
     .ordine-trigger {
         justify-content: flex-end;
     }
     .film-container.large{
-		max-width:100vw;
-	}
+        max-width:100vw;
+    }
 }
-/* ===================================================
-   DIALOG OVERLAY TICKET (Fix Pellicola & Scroll)
-   =================================================== */
 
+/* ===================================================
+   DIALOG OVERLAY TICKET
+   =================================================== */
 .ticket-dialog {
     padding: 0;
     margin: auto;
@@ -564,7 +552,7 @@
     background: transparent;
     width: 100%;
     max-width: 100vw;
-    overflow: visible; /* Risolve il bottone tagliato */
+    overflow: visible;
 }
 
 .ticket-dialog::backdrop {
@@ -577,14 +565,13 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 30px 10px; /* Padding sopra/sotto per far respirare il bottone */
+    padding: 30px 10px;
     width: 100%;
     max-width: 100vw;
     box-sizing: border-box;
-    overflow-x: hidden; /* Impedisce qualsiasi scroll orizzontale */
+    overflow-x: hidden;
 }
 
-/* Bottone di chiusura sospeso (spostato verso l'interno per non tagliare) */
 .btn-close-dialog {
     position: absolute;
     top: 3px;
@@ -612,7 +599,7 @@
 
 .ticket-dialog-content {
     display: flex;
-    gap: 3vw; /* Gap dinamico per non sfondare il 100vw */
+    gap: 3vw;
     width: 100%;
     max-width: 1100px;
     justify-content: center;
@@ -621,29 +608,22 @@
 
 .ticket-panel {
     width: 100%;
-    max-width: 450px; /* Stringe leggermente i pannelli */
-    height: 80vh; /* Fissa l'altezza per permettere lo scorrimento solo all'interno */
+    max-width: 450px;
+    height: 80vh;
     display: flex;
     flex-direction: column;
     padding: 40px 20px 20px 20px;
-    /* IMPORTANTE: Nessun overflow:auto qui, altrimenti taglia i fori della pellicola */
 }
 
-/* ===================================================
-   AREE SCORREVOLI (Senza scrollbar visibile)
-   =================================================== */
 .chat-history,
 .panel-details-scroll {
     flex-grow: 1;
-    overflow-y: auto; /* Abilita lo scroll */
+    overflow-y: auto;
     padding-right: 5px;
-    
-    /* Nasconde la scrollbar su Firefox e Edge */
     scrollbar-width: none; 
     -ms-overflow-style: none; 
 }
 
-/* Nasconde la scrollbar su Chrome, Safari, Opera */
 .chat-history::-webkit-scrollbar,
 .panel-details-scroll::-webkit-scrollbar {
     display: none; 
@@ -656,9 +636,6 @@
     margin-bottom: 15px;
 }
 
-/* ===================================================
-   MESSAGGI CHAT
-   =================================================== */
 .msg {
     border-radius: 8px;
     padding: 12px;
@@ -695,11 +672,8 @@
     margin-top: 5px;
 }
 
-/* ===================================================
-   FORM CHAT RIDIMENSIONATO
-   =================================================== */
 .chat-form {
-    margin-top: auto; /* Lo tiene ancorato in basso */
+    margin-top: auto;
     flex-shrink: 0;
 }
 
@@ -720,7 +694,6 @@
     width: 100%;
 }
 
-/* Box in sola lettura snelliti */
 .read-only-box {
     border: none !important;
     border-bottom: 1px dashed var(--grigio-taupe) !important;
@@ -743,8 +716,94 @@
 }
 
 /* ===================================================
-   RESPONSIVE TABLET/SMARTPHONE
+   TOGGLE SWITCH STATO ADMIN (SEGMENTED CONTROL)
    =================================================== */
+.status-toggle-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+#toggleStatoAdmin {
+    display: none;
+}
+
+.status-toggle-pill {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 240px; 
+    height: 48px;
+    background-color: color-mix(in srgb, var(--grigio-taupe) 15%, transparent); /* Grigio chiarissimo per lo sfondo */
+    border: 2px solid color-mix(in srgb, var(--grigio-taupe) 30%, transparent);
+    border-radius: 30px;
+    cursor: pointer;
+    padding: 4px;
+    box-sizing: border-box;
+}
+
+/* Il blocco scuro che scorre all'interno */
+.toggle-thumb {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: calc(50% - 4px);
+    height: calc(100% - 8px);
+    background-color: var(--antracite-scuro);
+    border-radius: 25px;
+    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), background-color 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    z-index: 1;
+}
+
+.toggle-text {
+    flex: 1;
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    z-index: 2; /* Rimane sopra al thumb */
+    transition: color 0.3s ease;
+    user-select: none;
+    letter-spacing: 1px;
+}
+
+/* Colori di default (IN CARICO è attivo) */
+.toggle-text-left { color: var(--panna-carta); }
+.toggle-text-right { color: var(--grigio-taupe); }
+
+/* --- STATO "CHIUSA" (Checked - Spostato a destra) --- */
+#toggleStatoAdmin:checked + .status-toggle-pill .toggle-thumb {
+    transform: translateX(100%); /* Si sposta esattamente della sua larghezza */
+    background-color: var(--verde-ottanio); /* Diventa Rosso per indicare la chiusura */
+}
+
+/* Inversione dei colori del testo quando è checked */
+#toggleStatoAdmin:checked + .status-toggle-pill .toggle-text-left { color: var(--grigio-taupe); }
+#toggleStatoAdmin:checked + .status-toggle-pill .toggle-text-right { color: var(--panna-carta); }
+
+/* --- MESSAGGIO DI AVVISO DINAMICO --- */
+.status-warning-msg {
+    font-size: 0.85rem;
+    color: var(--grigio-taupe);
+    margin-top: 0; /* Rimosso il margine fisso per non occupare spazio da nascosto */
+    font-style: italic;
+    text-align: center;
+    line-height: 1.3;
+    max-height: 0; /* Altezza zero di default */
+    opacity: 0;
+    visibility: hidden;
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.3s ease, margin-top 0.3s ease;
+}
+
+.status-warning-msg.show {
+    opacity: 1;
+    visibility: visible;
+    max-height: 60px; /* Si espande solo quando serve */
+    margin-top: 15px; /* Aggiunge lo spazio tra il toggle e il testo solo se visibile */
+    overflow: visible;
+}
+
 @media (max-width: 992px) {
     .ticket-dialog-content {
         flex-direction: column-reverse;
@@ -752,7 +811,85 @@
     }
     
     .ticket-panel {
-        height: 60vh; /* Più corti su tablet per farli stare entrambi in colonna */
+        height: 60vh;
         margin-bottom: 20px;
     }
+}
+/* ===================================================
+   VALIDAZIONE FORM STEP 2
+   =================================================== */
+.btn-full-width {
+    width: 100%;
+}
+
+.custom-input input.input-error, 
+.custom-input textarea.input-error,
+.custom-input select.input-error {
+    border-color: var(--rosso-ruggine);
+    background-color: rgba(220, 38, 38, 0.05);
+}
+
+.error-message {
+    display: none;
+    color: var(--rosso-ruggine);
+    font-size: 0.8rem;
+    margin-top: 5px;
+    font-weight: 500;
+}
+
+.error-message.show {
+    display: block;
+}
+
+/* ===================================================
+   POPUP CONFERMA CREAZIONE TICKET
+   =================================================== */
+.ticket-popup-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    
+    /* Gestione animazione */
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.ticket-popup-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.ticket-popup-content {
+    text-align: center;
+    padding: 3rem 2rem;
+    transform: scale(0.9);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.ticket-popup-overlay.active .ticket-popup-content {
+    transform: scale(1);
+}
+
+.popup-icon-success {
+    font-size: 4rem;
+    color: var(--verde-ottanio);
+    margin-bottom: 1rem;
+    display: inline-block;
+}
+
+.ticket-popup-content h2 {
+    font-size: 1.8rem;
+    color: var(--antracite-scuro);
+    margin-bottom: 0.5rem;
+}
+
+.ticket-popup-content p {
+    color: var(--grigio-taupe);
+    font-size: 1rem;
 }
