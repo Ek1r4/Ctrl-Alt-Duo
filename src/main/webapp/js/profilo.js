@@ -274,117 +274,117 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
 
-	// --- 5. CANCELLAZIONE RISORSE TRAMITE AJAX (CESTINO + MODALE) ---
-	    const deleteButtons = document.querySelectorAll(".btn-delete");
-	    const deleteModal = document.getElementById('delete-confirm-modal');
-	    const deleteMessage = document.getElementById('delete-confirm-message');
-	    const btnConfirmDelete = document.getElementById('btn-confirm-delete');
-	    const btnCancelDelete = document.getElementById('btn-cancel-delete');
-	    
-	    let elementoDaEliminare = null; // Variabile per "ricordare" cosa stiamo eliminando
+    // --- 5. CANCELLAZIONE RISORSE TRAMITE AJAX (CESTINO + MODALE) ---
+        const deleteButtons = document.querySelectorAll(".btn-delete");
+        const deleteModal = document.getElementById('delete-confirm-modal');
+        const deleteMessage = document.getElementById('delete-confirm-message');
+        const btnConfirmDelete = document.getElementById('btn-confirm-delete');
+        const btnCancelDelete = document.getElementById('btn-cancel-delete');
+        
+        let elementoDaEliminare = null; // Variabile per "ricordare" cosa stiamo eliminando
 
-	    if (deleteButtons.length > 0 && deleteModal) {
-	        
-	        // Quando l'utente clicca il cestino sull'indirizzo o sul pagamento
-	        deleteButtons.forEach(button => {
-	            button.addEventListener("click", function() {
-	                const rowItem = button.closest(".info-row-item");
-	                const itemId = rowItem.getAttribute("data-item-id");
-	                const itemType = rowItem.getAttribute("data-type");
+        if (deleteButtons.length > 0 && deleteModal) {
+            
+            // Quando l'utente clicca il cestino sull'indirizzo o sul pagamento
+            deleteButtons.forEach(button => {
+                button.addEventListener("click", function() {
+                    const rowItem = button.closest(".info-row-item");
+                    const itemId = rowItem.getAttribute("data-item-id");
+                    const itemType = rowItem.getAttribute("data-type");
 
-	                // Salviamo tutti i dati necessari per la chiamata AJAX
-	                elementoDaEliminare = { button, rowItem, itemId, itemType };
+                    // Salviamo tutti i dati necessari per la chiamata AJAX
+                    elementoDaEliminare = { button, rowItem, itemId, itemType };
 
-	                // Personalizziamo il messaggio
-	                if (itemType === "shipping") {
-	                    deleteMessage.innerHTML = "Sei sicuro di voler eliminare questo <strong>indirizzo di spedizione</strong>?<br>Non potrai usarlo per i prossimi ordini.";
-	                } else {
-	                    deleteMessage.innerHTML = "Sei sicuro di voler eliminare questo <strong>metodo di pagamento</strong>?<br>Dovrai reinserirlo al prossimo acquisto.";
-	                }
+                    // Personalizziamo il messaggio
+                    if (itemType === "shipping") {
+                        deleteMessage.innerHTML = "Sei sicuro di voler eliminare questo <strong>indirizzo di spedizione</strong>?<br>Non potrai usarlo per i prossimi ordini.";
+                    } else {
+                        deleteMessage.innerHTML = "Sei sicuro di voler eliminare questo <strong>metodo di pagamento</strong>?<br>Dovrai reinserirlo al prossimo acquisto.";
+                    }
 
-	                // Mostriamo il modale
-	                deleteModal.classList.add('active');
-	            });
-	        });
+                    // Mostriamo il modale
+                    deleteModal.classList.add('active');
+                });
+            });
 
-	        // 2. Se clicca su Annulla (o fuori dal modale)
-	        const chiudiModale = () => {
-	            deleteModal.classList.remove('active');
-	            elementoDaEliminare = null; // Svuotiamo la memoria
-	        };
+            // 2. Se clicca su Annulla (o fuori dal modale)
+            const chiudiModale = () => {
+                deleteModal.classList.remove('active');
+                elementoDaEliminare = null; // Svuotiamo la memoria
+            };
 
-	        if (btnCancelDelete) btnCancelDelete.addEventListener('click', chiudiModale);
-	        deleteModal.addEventListener('click', (e) => {
-	            if (e.target === deleteModal) chiudiModale();
-	        });
+            if (btnCancelDelete) btnCancelDelete.addEventListener('click', chiudiModale);
+            deleteModal.addEventListener('click', (e) => {
+                if (e.target === deleteModal) chiudiModale();
+            });
 
-	        // 3. Se clicca su Procedi (Parte la chiamata AJAX!)
-	        if (btnConfirmDelete) {
-	            btnConfirmDelete.addEventListener('click', async () => {
-	                if (!elementoDaEliminare) return;
+            // 3. Se clicca su Procedi (Parte la chiamata AJAX!)
+            if (btnConfirmDelete) {
+                btnConfirmDelete.addEventListener('click', async () => {
+                    if (!elementoDaEliminare) return;
 
-	                // Estraiamo i dati salvati prima
-	                const { button, rowItem, itemId, itemType } = elementoDaEliminare;
-	                
-	                // Chiudiamo subito il modale
-	                deleteModal.classList.remove('active');
+                    // Estraiamo i dati salvati prima
+                    const { button, rowItem, itemId, itemType } = elementoDaEliminare;
+                    
+                    // Chiudiamo subito il modale
+                    deleteModal.classList.remove('active');
 
-	                // Effetto visivo di caricamento sul cestino originale
-	                button.disabled = true;
-	                button.style.opacity = "0.5";
-	                button.style.cursor = "not-allowed";
+                    // Effetto visivo di caricamento sul cestino originale
+                    button.disabled = true;
+                    button.style.opacity = "0.5";
+                    button.style.cursor = "not-allowed";
 
-	                try {
-	                    const formData = new URLSearchParams();
-	                    formData.append("action", "eliminaRisorsa"); 
-	                    formData.append("id", itemId);
-	                    formData.append("type", itemType);
+                    try {
+                        const formData = new URLSearchParams();
+                        formData.append("action", "eliminaRisorsa"); 
+                        formData.append("id", itemId);
+                        formData.append("type", itemType);
 
-	                    const response = await fetch(contestoReFrame + "/ProfiloServlet", {
-	                        method: "POST",
-	                        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-	                        body: formData.toString()
-	                    });
+                        const response = await fetch(contestoReFrame + "/ProfiloServlet", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                            body: formData.toString()
+                        });
 
-	                    if (response.url.includes("success=eliminazione")) {
-	                        rowItem.style.opacity = "0";
-	                        setTimeout(() => { 
-	                            const parentContainer = rowItem.parentElement;
-	                            rowItem.remove(); 
-	                            
-	                            // Se era l'ultimo elemento, mostriamo il messaggio "Nessun indirizzo salvato"
-	                            const remainingItems = parentContainer.querySelectorAll(".info-row-item");
-	                            if (remainingItems.length === 0) {
-	                                const emptyMsg = document.createElement("p");
-	                                emptyMsg.className = "empty-message";
-	                                emptyMsg.textContent = itemType === "shipping" 
-	                                    ? "Nessun indirizzo di spedizione salvato." 
-	                                    : "Nessun metodo di pagamento salvato.";
-	                                parentContainer.appendChild(emptyMsg);
-	                            }
-	                            
-	                            showToast(itemType === "shipping" ? "Indirizzo rimosso!" : "Metodo di pagamento rimosso!");
+                        if (response.url.includes("success=eliminazione")) {
+                            rowItem.style.opacity = "0";
+                            setTimeout(() => { 
+                                const parentContainer = rowItem.parentElement;
+                                rowItem.remove(); 
+                                
+                                // Se era l'ultimo elemento, mostriamo il messaggio "Nessun indirizzo salvato"
+                                const remainingItems = parentContainer.querySelectorAll(".info-row-item");
+                                if (remainingItems.length === 0) {
+                                    const emptyMsg = document.createElement("p");
+                                    emptyMsg.className = "empty-message";
+                                    emptyMsg.textContent = itemType === "shipping" 
+                                        ? "Nessun indirizzo di spedizione salvato." 
+                                        : "Nessun metodo di pagamento salvato.";
+                                    parentContainer.appendChild(emptyMsg);
+                                }
+                                
+                                showToast(itemType === "shipping" ? "Indirizzo rimosso!" : "Metodo di pagamento rimosso!");
 
-	                        }, 300);
-	                    } 
-	                    else {
-	                        alert("Si è verificato un errore durante l'eliminazione.");
-	                        button.disabled = false;
-	                        button.style.opacity = "1";
-	                        button.style.cursor = "pointer";
-	                    }
-	                } catch (error) {
-	                    console.error("Errore AJAX:", error);
-	                    button.disabled = false;
-	                    button.style.opacity = "1";
-	                    button.style.cursor = "pointer";
-	                } finally {
-	                    // Puliamo la variabile per la prossima volta
-	                    elementoDaEliminare = null;
-	                }
-	            });
-	        }
-	    }
+                            }, 300);
+                        } 
+                        else {
+                            alert("Si è verificato un errore durante l'eliminazione.");
+                            button.disabled = false;
+                            button.style.opacity = "1";
+                            button.style.cursor = "pointer";
+                        }
+                    } catch (error) {
+                        console.error("Errore AJAX:", error);
+                        button.disabled = false;
+                        button.style.opacity = "1";
+                        button.style.cursor = "pointer";
+                    } finally {
+                        // Puliamo la variabile per la prossima volta
+                        elementoDaEliminare = null;
+                    }
+                });
+            }
+        }
     
     // --- 6. GESTIONE FORM AGGIUNTA RISORSE E RESET ---
     const resetFormState = (formContainer) => {
@@ -452,8 +452,8 @@ document.addEventListener("DOMContentLoaded", function() {
             btnPasswordToggle.classList.remove("hidden");
         });
     }
-	
-	// --- 8. MENU A TENDINA PER CELLULARI (ACCORDION) ---
+    
+    // --- 8. MENU A TENDINA PER CELLULARI (ACCORDION) ---
     const accordionCards = document.querySelectorAll('.scrollable-column .profile-card');
     
     accordionCards.forEach(card => {
@@ -469,7 +469,22 @@ document.addEventListener("DOMContentLoaded", function() {
             });
         }
     });
-});
+
+	
+	// --- 9. INIEZIONE DINAMICA CARD ASSISTENZA ---
+	    const rightColumn = document.querySelector('.fixed-column');
+	    const supportCard = document.getElementById('supportCardTemplate');
+	    
+	    if (rightColumn && supportCard) {
+	        rightColumn.appendChild(supportCard);
+	        supportCard.style.display = 'block'; // Rende visibile la card dopo lo spostamento
+	        
+	        // NUOVO: Sincronizza l'altezza non appena la card fa allungare la colonna destra
+	        sincronizzaAltezzaColonne();
+	    }
+
+	}); // <-- Fine del DOMContentLoaded esistente
+
 function openOrderModal(id) {
     const modale = document.getElementById('modal-' + id);
     if (modale) {
@@ -494,6 +509,7 @@ window.addEventListener('click', function(event) {
         document.body.style.overflow = 'auto';
     }
 });
+
 // 1. Funzione per filtrare lo storico ordini in tempo reale
 function filtraOrdini() {
     const inputElement = document.getElementById("searchHistory");
@@ -528,15 +544,23 @@ function filtraOrdini() {
     }
 }
 
+// --- 10. SINCRONIZZAZIONE ALTEZZA COLONNE (SCROLL COLUMN) ---
+function sincronizzaAltezzaColonne() {
+    const fixedCol = document.querySelector('.fixed-column');
+    const scrollCol = document.querySelector('.scrollable-column');
+    
+    // Controlliamo che entrambe esistano e che siamo su Desktop
+    if (fixedCol && scrollCol && window.innerWidth > 1024) {
+        // Legge l'altezza totale in pixel della colonna di destra
+        const altezzaDestra = fixedCol.offsetHeight;
+        // Assegna quell'esatta altezza come limite massimo alla colonna di sinistra
+        scrollCol.style.maxHeight = altezzaDestra + 'px';
+    } else if (scrollCol) {
+        // Su dispositivi mobili sblocchiamo l'altezza per far fluire i blocchi
+        scrollCol.style.maxHeight = 'none';
+    }
+}
 
-
-
-
-
-
-
-
-
-
-
-
+// Assicuriamoci che la sincronizzazione avvenga al caricamento completo e se l'utente ridimensiona la finestra
+window.addEventListener('load', sincronizzaAltezzaColonne);
+window.addEventListener('resize', sincronizzaAltezzaColonne);

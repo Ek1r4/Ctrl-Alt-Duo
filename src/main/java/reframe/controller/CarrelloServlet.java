@@ -118,27 +118,33 @@ public class CarrelloServlet extends HttpServlet {
             }
         }
 
-        // --- BLOCCO AJAX: Risposta JSON per l'aggiornamento in tempo reale del Carrello ---
+     // --- BLOCCO AJAX: Risposta JSON per l'aggiornamento in tempo reale ---
         if ("true".equals(isAjax)) {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             
             double nuovoTotaleRiga = 0;
+            int nuovaQuantitaRiga = 0;
+            String nomeProdottoRiga = "";
             
-            // Se stiamo aggiornando le quantità, calcoliamo il nuovo subtotale di quella specifica riga
-            if ("update".equals(action)) {
+            // Troviamo la riga appena aggiunta/aggiornata per estrarne i dati
+            if ("update".equals(action) || "add".equals(action)) {
                 for (CarrelloItem item : carrello.getItems()) {
                     if (item.getIdProdotto().equals(idProdotto)) {
                         nuovoTotaleRiga = item.getPrezzoTotale();
+                        nuovaQuantitaRiga = item.getQuantita();
+                        nomeProdottoRiga = item.getNome();
                         break;
                     }
                 }
             }
 
-            // Costruzione manuale della stringa JSON per lo Scontrino
+            // Costruzione manuale della stringa JSON 
             String jsonResponse = "{"
                 + "\"status\":\"success\", "
                 + "\"totaleRiga\":" + String.valueOf(nuovoTotaleRiga) + ", "
+                + "\"quantitaRiga\":" + nuovaQuantitaRiga + ", "
+                + "\"nomeProdottoRiga\":\"" + nomeProdottoRiga.replace("\"", "\\\"") + "\", "
                 + "\"subtotale\":" + String.valueOf(carrello.getSubtotaleProdotti()) + ", "
                 + "\"spedizione\":" + String.valueOf(carrello.getCostoSpedizione()) + ", "
                 + "\"totaleCarrello\":" + String.valueOf(carrello.getTotaleComplessivo()) + ", "
@@ -146,9 +152,8 @@ public class CarrelloServlet extends HttpServlet {
                 + "}";
                 
             response.getWriter().write(jsonResponse);
-            return; // Interrompiamo qui: niente forward alla JSP perché è una chiamata asincrona JavaScript!
+            return; 
         }
-
         // PATTERN PRG: Redirigiamo l'utente pulendo l'URL per evitare doppi inserimenti al refresh
         response.sendRedirect(request.getContextPath() + "/common/carrello.jsp");
     }
