@@ -49,8 +49,8 @@
         	<button type="submit" class="btn-quick-add" title="Aggiungi al carrello">
             	<i class="fas fa-cart-plus"></i>
         	</button>
-    	</form>
-    		<% } %>
+        	</form>
+    			<% } %>
 			</div>
             
         </div>

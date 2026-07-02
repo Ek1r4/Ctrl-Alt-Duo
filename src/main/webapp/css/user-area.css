@@ -409,6 +409,47 @@ fieldset.custom-input input[type="password"]::-ms-clear { display: none; }
 .modal-item-name { color: var(--antracite-scuro); text-align: left; }
 .modal-error-text { color: var(--rosso-ruggine); font-style: italic; }
 .modal-footer-box { margin-top: 25px; }
+
+/* --- Card Assistenza (Invertita per Call to Action) --- */
+.support-card {
+    background-color: var(--antracite-scuro);
+    border-color: var(--antracite-scuro);
+    color: var(--panna-carta);
+    margin-top: 30px; /* Distanzia la card da quella dell'anagrafica */
+}
+
+.support-card .card-header h2 {
+    color: var(--panna-carta);
+}
+
+.support-card p {
+    font-size: 16px;
+    margin-bottom: 25px;
+    line-height: 1.4;
+    color: var(--panna-carta);
+    opacity: 0.9;
+}
+
+/* Bottone Invertito */
+.support-card .btn-cta.inverted-btn {
+    background-color: var(--panna-carta);
+    color: var(--antracite-scuro);
+    width: 100%; 
+    text-align: center;
+    display: block;
+    box-sizing: border-box;
+    border: 2px solid var(--panna-carta);
+    text-decoration: none;
+    font-weight: 900;
+}
+
+/* Effetto Hover Brutalista: Diventa trasparente con bordo chiaro */
+.support-card .btn-cta.inverted-btn:hover {
+    background-color: transparent;
+    color: var(--panna-carta);
+}
+
+
 /* --- Responsive: Tablet --- */
 @media (max-width: 1024px) {
     
@@ -564,15 +605,15 @@ fieldset.custom-input input[type="password"]::-ms-clear { display: none; }
         text-align: left;
     }
     fieldset.custom-input{
-    	margin: 0;
+        margin: 0;
     }
     .card-header.history-header-wrap::after{
      top: 15%;
     }
     .search-history-container{max-width:80vw;}
-	.history-content .btn-edit{display:none;}
-	.history-content .item-details p.sub-text{ margin: 0;}
-	
+    .history-content .btn-edit{display:none;}
+    .history-content .item-details p.sub-text{ margin: 0;}
+    
     /* Allineamento Icone a Destra */
     .info-row-item > div:last-child {
         width: 100%;

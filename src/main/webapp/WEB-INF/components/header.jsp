@@ -104,7 +104,7 @@
                         <% } else {
                             for (CarrelloItem mItem : mc.getItems()) {
                         %>
-                            <div class="mc-item">
+                            <div class="mc-item" id="mc-item-<%= mItem.getIdProdotto() %>">
                                 <div class="mc-item-info">
                                     <span class="mc-name"><%= mItem.getNome() %></span>
                                     <span class="mc-qty">Quantità: <%= mItem.getQuantita() %></span>
@@ -124,7 +124,7 @@
                     <div class="mini-cart-footer">
                         <div class="mc-total">
                             <span>TOTALE:</span>
-                            <span>€ <%= String.format("%.2f", mc.getTotale()) %></span>
+                            <span id="mc-totale-complessivo">€ <%= String.format("%.2f", mc.getTotale()) %></span>
                         </div>
                         <a href="${pageContext.request.contextPath}/common/checkout.jsp" class="btn-cta mc-checkout-btn">VAI AL CHECKOUT</a>
                     </div>
@@ -132,6 +132,29 @@
                 </div>
                 <% } %>
             </div>
+            
+            <% if (session.getAttribute("utente") != null) { 
+            	reframe.model.beans.Utente userMenu = (reframe.model.beans.Utente) session.getAttribute("utente");
+            %>
+                <% if (userMenu.getIsAdmin() > 0) { %>
+                
+                    <a href="${pageContext.request.contextPath}/admin/gestioneTicket.jsp" class="icon-link" title="pannello di assistenza">
+                        <i class="fas fa-headset"></i>
+                        <span class="icon-label">Assistenza</span> 
+                    </a>
+                    
+                    <a href="${pageContext.request.contextPath}/PannelloAdminServlet" class="icon-link" title="Pannello di Gestione">
+                    	<i class="fas fa-sliders-h"></i> <span class="icon-label">Gestione</span>
+                	</a>
+                	
+                <% } else { %>
+                
+                    <a href="${pageContext.request.contextPath}/ProfiloServlet" class="icon-link" title="Area Personale">
+                        <i class="far fa-user-circle"></i>
+                        <span class="icon-label">Il Mio Profilo</span> 
+                    </a>
+                    
+                    
             		
                 <% } %>
                 <a href="${pageContext.request.contextPath}/LogoutServlet" class="icon-link logout-link" title="Esci">

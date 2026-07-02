@@ -510,3 +510,10 @@
         letter-spacing: 1px;
     }
 }
+
+/* --- HOVER FORZATO TRAMITE JAVASCRIPT --- */
+.cart-wrapper.force-open .mini-cart-preview {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) !important;
+}

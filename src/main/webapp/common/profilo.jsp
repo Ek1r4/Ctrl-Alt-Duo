@@ -166,11 +166,22 @@
 
         </div> 
 
-		<%@ include file="/WEB-INF/components/anagrafia.jsp" %>
- 
-	</div>
-	
-	<div id="delete-confirm-modal" class="admin-modal-overlay">
+        <%@ include file="/WEB-INF/components/anagrafia.jsp" %>
+        
+        <!-- CARD ASSISTENZA (Template nascosto, verrà spostato via JS) -->
+        <div id="supportCardTemplate" class="profile-card support-card" style="display: none;">
+            <div class="card-header">
+                <h2><i class="fas fa-life-ring"></i> ASSISTANCE</h2>
+            </div>
+            <p>Hai problemi con un ordine, un reso o necessiti di supporto tecnico? Il nostro team è a tua disposizione.</p>
+            <a href="<%= request.getContextPath() %>/common/centroAssistenza.jsp" class="btn-cta inverted-btn">
+                ENTRA NEL CENTRO ASSISTENZA
+            </a>
+        </div>
+        
+    </div>
+    
+    <div id="delete-confirm-modal" class="admin-modal-overlay">
             <div class="film-container modal-film-override confirm-modal-box">
                 
                 <h3 class="form-title" style="margin-bottom: 5px;">Conferma Azione</h3>
@@ -182,11 +193,11 @@
                 </div>
             </div>
         </div>
-	
-			<footer class="site-footer-minimal">
-            	&copy; 2026 ReFrame
-    		</footer>
-	<% if (listaOrdini != null) {
+    
+            <footer class="site-footer-minimal">
+                &copy; 2026 ReFrame
+            </footer>
+    <% if (listaOrdini != null) {
         for (Ordine ord : listaOrdini) { %>
         <div id="modal-<%= ord.getIdOrdine() %>" class="order-modal-overlay hidden">
             <div class="film-container order-modal-content">
