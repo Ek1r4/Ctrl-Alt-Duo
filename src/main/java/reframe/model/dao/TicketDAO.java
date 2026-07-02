@@ -12,8 +12,6 @@ public class TicketDAO
 	private Ticket estraiTicket(ResultSet rs) throws SQLException {
 	    Ticket ticket = new Ticket();
 	    ticket.setIdTicket(rs.getString("ID_ticket"));
-	    ticket.setTitolo(rs.getString("Titolo"));           // Aggiornato
-	    ticket.setCategoria(rs.getString("Categoria"));     // Aggiornato
 	    ticket.setTestoMessaggio(rs.getString("Testo_Messaggio"));
 	    ticket.setDataTicket(rs.getTimestamp("Data_ticket"));
 	    ticket.setRmaPratica(rs.getString("RMA_Pratica"));
@@ -23,7 +21,7 @@ public class TicketDAO
 
 	public boolean doSave(Ticket nuovoTicket) throws SQLException {
 	    // Aggiornata la query con le nuove colonne
-	    String query = "INSERT INTO Ticket (ID_ticket, Titolo, Categoria, Testo_Messaggio, Data_ticket, RMA_Pratica, Autore_Messaggio) VALUES (?, ?, ?, ?, ?, ?, ?)";
+	    String query = "INSERT INTO Ticket (ID_ticket, Testo_Messaggio, Data_ticket, RMA_Pratica, Autore_Messaggio) VALUES (?, ?, ?, ?, ?, ?, ?)";
 	    
 	    Connection conn = null;
 	    PreparedStatement ps = null;
@@ -33,8 +31,6 @@ public class TicketDAO
 	        ps = conn.prepareStatement(query); 
 	        
 	        ps.setString(1, nuovoTicket.getIdTicket());
-	        ps.setString(2, nuovoTicket.getTitolo());       // Nuovo
-	        ps.setString(3, nuovoTicket.getCategoria());    // Nuovo
 	        ps.setString(4, nuovoTicket.getTestoMessaggio());
 	        ps.setTimestamp(5, nuovoTicket.getDataTicket());
 	        ps.setString(6, nuovoTicket.getRmaPratica());
@@ -71,85 +67,6 @@ public class TicketDAO
         }
         
         return ticketTrovato;
-    }
-
-    // Ora cerca per la nuova colonna RMA_Pratica
-    public List<Ticket> doRetrieveByPratica(String rmaPratica) throws SQLException 
-    {
-        String query = "SELECT * FROM Ticket WHERE RMA_Pratica = ? ORDER BY Data_ticket ASC";
-        
-        Connection conn = null;
-        PreparedStatement ps = null;
-        List<Ticket> lista = new ArrayList<>();
-        
-        try 
-        {
-            conn = ConnessioneDB.getConnection();
-            ps = conn.prepareStatement(query);
-            ps.setString(1, rmaPratica);
-            
-            try( ResultSet rs = ps.executeQuery() ) {
-                while(rs.next()) lista.add(estraiTicket(rs));    
-            }
-        } catch (SQLException e) { e.printStackTrace(); }
-        finally { 
-            try { if (ps != null) ps.close(); } catch (SQLException e) { e.printStackTrace(); }
-            if (conn != null) { ConnessioneDB.releaseConnection(conn); } 
-        }
-        
-        return lista;
-    }
-    
-    public List<Ticket> doRetrieveByCategoria(String categoria) throws SQLException 
-    {
-        String query = "SELECT * FROM Ticket WHERE Categoria = ? ORDER BY Data_ticket ASC";
-        
-        Connection conn = null;
-        PreparedStatement ps = null;
-        List<Ticket> lista = new ArrayList<>();
-        
-        try 
-        {
-            conn = ConnessioneDB.getConnection();
-            ps = conn.prepareStatement(query);
-            ps.setString(1, categoria);
-            
-            try( ResultSet rs = ps.executeQuery() ) {
-                while(rs.next()) lista.add(estraiTicket(rs));    
-            }
-        } catch (SQLException e) { e.printStackTrace(); }
-        finally { 
-            try { if (ps != null) ps.close(); } catch (SQLException e) { e.printStackTrace(); }
-            if (conn != null) { ConnessioneDB.releaseConnection(conn); } 
-        }
-        
-        return lista;
-    }
-    
-    public List<Ticket> doRetrieveByTitolo(String titolo) throws SQLException 
-    {
-        String query = "SELECT * FROM Ticket WHERE Titolo LIKE ? ORDER BY Data_ticket ASC";
-        
-        Connection conn = null;
-        PreparedStatement ps = null;
-        List<Ticket> lista = new ArrayList<>();
-        
-        try 
-        {
-            conn = ConnessioneDB.getConnection();
-            ps = conn.prepareStatement(query);
-            ps.setString(1, "%" + titolo + "%");
-            
-            try( ResultSet rs = ps.executeQuery() ) {
-                while(rs.next()) lista.add(estraiTicket(rs));    
-            }
-        } catch (SQLException e) { e.printStackTrace(); }
-        finally { 
-            try { if (ps != null) ps.close(); } catch (SQLException e) { e.printStackTrace(); }
-            if (conn != null) { ConnessioneDB.releaseConnection(conn); } 
-        }
-        
-        return lista;
     }
 
     public List<Ticket> doRetrieveAll(String order) throws SQLException 

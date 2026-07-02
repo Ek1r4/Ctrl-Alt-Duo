@@ -4,8 +4,6 @@ import java.sql.Timestamp;
 
 public class Ticket {
     private String idTicket;
-    private String titolo;       // Nuovo
-    private String categoria;    // Nuovo
     private String testoMessaggio;
     private Timestamp dataTicket;
     private String rmaPratica;
@@ -16,12 +14,6 @@ public class Ticket {
     // Getter e Setter
     public String getIdTicket() { return idTicket; }
     public void setIdTicket(String idTicket) { this.idTicket = idTicket; }
-
-    public String getTitolo() { return titolo; }
-    public void setTitolo(String titolo) { this.titolo = titolo; }
-
-    public String getCategoria() { return categoria; }
-    public void setCategoria(String categoria) { this.categoria = categoria; }
 
     public String getTestoMessaggio() { return testoMessaggio; }
     public void setTestoMessaggio(String testoMessaggio) { this.testoMessaggio = testoMessaggio; }
@@ -40,8 +32,6 @@ public class Ticket {
     public String toString() {
         return "Ticket{" +
                 "idTicket='" + idTicket + '\'' +
-                ", titolo='" + titolo + '\'' +
-                ", categoria='" + categoria + '\'' +
                 ", testoMessaggio='" + testoMessaggio + '\'' +
                 ", dataTicket=" + dataTicket +
                 ", rmaPratica='" + rmaPratica + '\'' +

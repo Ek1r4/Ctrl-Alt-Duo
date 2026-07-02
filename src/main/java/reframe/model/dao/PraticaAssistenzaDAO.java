@@ -7,25 +7,27 @@ import java.util.*;
 
 public class PraticaAssistenzaDAO 
 {
-    private PraticaAssistenza estraiPraticaAssistenza(ResultSet rs) throws SQLException 
+	private PraticaAssistenza estraiPraticaAssistenza(ResultSet rs) throws SQLException 
     {
         PraticaAssistenza pratica = new PraticaAssistenza();
         
         pratica.setRma(rs.getString("RMA"));
         pratica.setStato(rs.getString("Stato"));
+        pratica.setTitolo(rs.getString("Titolo"));         // Aggiunto
+        pratica.setCategoria(rs.getString("Categoria"));   // Aggiunto
         pratica.setMotivo(rs.getString("Motivo"));
         pratica.setDataApertura(rs.getTimestamp("Data_apertura"));
         pratica.setDataChiusura(rs.getTimestamp("Data_chiusura"));
-        pratica.setIdOrdine(rs.getString("ID_Ordine"));
         pratica.setIdUtente(rs.getString("ID_Utente"));
-        pratica.setAdminInCarico(rs.getString("Admin_In_Carico")); // Aggiunto
+        pratica.setAdminInCarico(rs.getString("Admin_In_Carico")); 
         
         return pratica;
     }
 
     public boolean doSave(PraticaAssistenza nuovaPratica) throws SQLException 
     {
-        String query = "INSERT INTO Pratica_Assistenza (RMA, Stato, Motivo, Data_apertura, Data_chiusura, ID_Ordine, ID_Utente, Admin_In_Carico) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        // Corretti 10 campi e 10 punti interrogativi
+        String query = "INSERT INTO Pratica_Assistenza (RMA, Stato, Titolo, Categoria, Motivo, Data_apertura, Data_chiusura, ID_Utente, Admin_In_Carico) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
         Connection conn = null;
         PreparedStatement ps = null;
@@ -37,17 +39,21 @@ public class PraticaAssistenzaDAO
             
             ps.setString(1, nuovaPratica.getRma());
             ps.setString(2, nuovaPratica.getStato());
-            ps.setString(3, nuovaPratica.getMotivo());
-            ps.setTimestamp(4, nuovaPratica.getDataApertura());
-            ps.setTimestamp(5, nuovaPratica.getDataChiusura());
-            ps.setString(6, nuovaPratica.getIdOrdine());
-            ps.setString(7, nuovaPratica.getIdUtente());
-            ps.setString(8, nuovaPratica.getAdminInCarico()); // Aggiunto
+            ps.setString(3, nuovaPratica.getTitolo());       // Aggiunto
+            ps.setString(4, nuovaPratica.getCategoria());    // Aggiunto
+            ps.setString(5, nuovaPratica.getMotivo());
+            ps.setTimestamp(6, nuovaPratica.getDataApertura());
+            ps.setTimestamp(7, nuovaPratica.getDataChiusura());
+            ps.setString(8, nuovaPratica.getIdUtente());
+            ps.setString(9, nuovaPratica.getAdminInCarico()); 
             
             int row = ps.executeUpdate();
             return row > 0;
             
-        } catch(SQLException e) { e.printStackTrace(); return false; } 
+        } catch(SQLException e) { 
+            e.printStackTrace(); 
+            return false; 
+        } 
         finally { 
             try { if (ps != null) ps.close(); } catch (SQLException e) { e.printStackTrace(); }
             if (conn != null) { ConnessioneDB.releaseConnection(conn); } 
@@ -78,6 +84,62 @@ public class PraticaAssistenzaDAO
         }
         
         return praticaTrovata;
+    }
+    
+    public List<PraticaAssistenza> doRetrieveByCategoria(String categoria) throws SQLException 
+    {
+        // Query che filtra per la colonna Categoria
+        String query = "SELECT * FROM Pratica_Assistenza WHERE Categoria = ? ORDER BY Data_apertura DESC";
+        
+        Connection conn = null;
+        PreparedStatement ps = null;
+        List<PraticaAssistenza> lista = new ArrayList<>();
+        
+        try 
+        {
+            conn = ConnessioneDB.getConnection();
+            ps = conn.prepareStatement(query);
+            ps.setString(1, categoria); // Impostiamo il parametro della categoria
+            
+            try( ResultSet rs = ps.executeQuery() ) {
+                while(rs.next()) {
+                    lista.add(estraiPraticaAssistenza(rs));    
+                }
+            }
+        } catch (SQLException e) { 
+            e.printStackTrace(); 
+        } finally { 
+            try { if (ps != null) ps.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if (conn != null) { ConnessioneDB.releaseConnection(conn); } 
+        }
+        
+        return lista;
+    }
+    
+    public List<PraticaAssistenza> doRetrieveByTitolo(String titolo) throws SQLException 
+    {
+        String query = "SELECT * FROM Pratica_Assistenza WHERE Titolo LIKE ? ORDER BY Data_apertura DESC";
+        
+        Connection conn = null;
+        PreparedStatement ps = null;
+        List<PraticaAssistenza> lista = new ArrayList<>();
+        
+        try 
+        {
+            conn = ConnessioneDB.getConnection();
+            ps = conn.prepareStatement(query);
+            ps.setString(1, "%" + titolo + "%"); // Il LIKE cerca il testo all'interno del titolo
+            
+            try( ResultSet rs = ps.executeQuery() ) {
+                while(rs.next()) lista.add(estraiPraticaAssistenza(rs));    
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        finally { 
+            try { if (ps != null) ps.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if (conn != null) { ConnessioneDB.releaseConnection(conn); } 
+        }
+        
+        return lista;
     }
 
     public List<PraticaAssistenza> doRetrieveAll(String order) throws SQLException 
@@ -124,8 +186,8 @@ public class PraticaAssistenzaDAO
             
             ps.setString(1, praticaModificata.getStato());
             ps.setTimestamp(2, praticaModificata.getDataChiusura());
-            ps.setString(4, praticaModificata.getAdminInCarico());
-            ps.setString(5, praticaModificata.getRma());
+            ps.setString(3, praticaModificata.getAdminInCarico());
+            ps.setString(4, praticaModificata.getRma());
             
             int row = ps.executeUpdate();
             return row > 0;
