@@ -16,6 +16,9 @@ import reframe.model.beans.Prodotto;
 import reframe.model.beans.Utente;
 import reframe.model.dao.ProdottoDAO; 
 import reframe.model.dao.UtenteDAO;
+import reframe.model.beans.Ordine;
+import reframe.model.dao.OrdineDAO;
+import reframe.utils.HashingPassword;
 
 @WebServlet("/PannelloAdminServlet")
 @MultipartConfig(
@@ -30,32 +33,43 @@ public class PannelloAdminServlet extends HttpServlet {
         HttpSession session = request.getSession();
         Utente adminLoggato = (Utente) session.getAttribute("utente");
 
-        // 1. Controllo di sicurezza: se non sei loggato o non sei admin, fuori!
         if (adminLoggato == null || adminLoggato.getIsAdmin() == 0) {
             response.sendRedirect(request.getContextPath() + "/login.jsp");
             return;
         }
 
         try {
-            // 2. Recupero i Prodotti dal Database
+            // 1. RECUPERO PRODOTTI
             ProdottoDAO prodottoDAO = new ProdottoDAO();
-            List<Prodotto> listaProdotti = prodottoDAO.fetchAllProdotti();
-            request.setAttribute("listaProdotti", listaProdotti);
+            request.setAttribute("listaProdotti", prodottoDAO.fetchAllProdotti());
 
-            // 3. Se è Super Admin, recupero anche la lista degli altri Admin
+            // 2. RECUPERO ADMIN (se SuperAdmin)
             if (adminLoggato.getIsAdmin() == 2) {
                 UtenteDAO utenteDAO = new UtenteDAO();
-                List<Utente> listaAdmins = utenteDAO.doRetrieveAllAdmins();
-                request.setAttribute("listaAdmins", listaAdmins);
+                request.setAttribute("listaAdmins", utenteDAO.doRetrieveAllAdmins());
             }
 
-            // 4. Passo tutti i dati alla JSP
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/admin/pannelloAdmin.jsp");
-            dispatcher.forward(request, response);
+            // 3. RECUPERO ORDINI CON FILTRI
+            String cliente = request.getParameter("cliente");
+            String dataInizioStr = request.getParameter("dataInizio");
+            String dataFineStr = request.getParameter("dataFine");
+
+            java.sql.Date dataInizio = (dataInizioStr != null && !dataInizioStr.isEmpty()) ? java.sql.Date.valueOf(dataInizioStr) : null;
+            java.sql.Date dataFine = (dataFineStr != null && !dataFineStr.isEmpty()) ? java.sql.Date.valueOf(dataFineStr) : null;
+
+            OrdineDAO ordineDAO = new OrdineDAO();
+            // Assicurati che il metodo nel DAO sia quello che abbiamo discusso
+            request.setAttribute("listaOrdini", ordineDAO.getOrdiniFiltrati(cliente, dataInizio, dataFine));
+
+            // 4. FORZA IL TAB "ORDINI" SE SONO STATI USATI I FILTRI
+            if (cliente != null || dataInizioStr != null || dataFineStr != null || "ordini".equals(request.getParameter("tab"))) {
+                request.setAttribute("targetTab", "ordini");
+            }
+
+            request.getRequestDispatcher("/admin/pannelloAdmin.jsp").forward(request, response);
 
         } catch (Exception e) {
             e.printStackTrace();
-            // Gestione errore
             response.sendRedirect(request.getContextPath() + "/500.jsp");
         }
     }
@@ -65,11 +79,9 @@ public class PannelloAdminServlet extends HttpServlet {
         String action = request.getParameter("action");
 
         // =======================================================
-        // 1. BIVIO: AGGIUNTA NUOVO PROdotto (CON UPLOAD FILE)
+        // 1. BIVIO: AGGIUNTA NUOVO PRODOTTO
         // =======================================================
         if ("aggiungiProdotto".equals(action)) {
-            
-            // Lettura dei campi di testo
             String idProdottoStr = request.getParameter("idProdotto");
             String seriale = request.getParameter("seriale");
             String marchio = request.getParameter("marchio");
@@ -79,23 +91,19 @@ public class PannelloAdminServlet extends HttpServlet {
             String tipo = request.getParameter("tipo");
             String stato = request.getParameter("stato");
             
-            // Gestione del numero scatti (potrebbe essere vuoto se il prodotto è nuovo)
             String scattiStr = request.getParameter("numeroScatti");
             int numeroScatti = (scattiStr != null && !scattiStr.trim().isEmpty()) ? Integer.parseInt(scattiStr) : 0;
             
             String condizione = request.getParameter("condizioneCollezionistica");
             String descrizione = request.getParameter("descrizione");
 
-            // Preparazione dei percorsi fisici sul server
             String basePath = request.getServletContext().getRealPath("");
             String uploadPathImg = basePath + File.separator + "assets" + File.separator + "copertina";
             String uploadPath3D = basePath + File.separator + "assets" + File.separator + "modelli3D";
 
-            // Creazione delle cartelle se non esistono
             new File(uploadPathImg).mkdirs();
             new File(uploadPath3D).mkdirs();
 
-            // Estrazione e salvataggio dell'Immagine
             Part imgPart = request.getPart("immagineCopertina");
             String fileNameImg = "";
             if (imgPart != null && imgPart.getSize() > 0) {
@@ -103,7 +111,6 @@ public class PannelloAdminServlet extends HttpServlet {
                 imgPart.write(uploadPathImg + File.separator + fileNameImg);
             }
 
-            // Estrazione e salvataggio del Modello 3D
             Part modelPart = request.getPart("modello3D");
             String fileName3D = "";
             if (modelPart != null && modelPart.getSize() > 0) {
@@ -111,13 +118,10 @@ public class PannelloAdminServlet extends HttpServlet {
                 modelPart.write(uploadPath3D + File.separator + fileName3D);
             }
 
-            // Stringhe relative da salvare nel DB
             String dbPathImg = fileNameImg.isEmpty() ? null : "/assets/copertina/" + fileNameImg;
             String dbPath3D = fileName3D.isEmpty() ? null : "/assets/modelli3D/" + fileName3D;
 
-            // Creazione dell'oggetto Prodotto
             Prodotto p = new Prodotto();
-            
             p.setId(idProdottoStr);
             p.setSeriale(seriale);
             p.setMarchio(marchio);
@@ -135,20 +139,38 @@ public class PannelloAdminServlet extends HttpServlet {
             ProdottoDAO prodottoDAO = new ProdottoDAO();
             try {
                 prodottoDAO.insertProdotto(p);
-                // Il redirect usa il parametro 'prodottoCreato' per far scattare la scheda del catalogo nella JSP
                 response.sendRedirect(request.getContextPath() + "/PannelloAdminServlet?success=prodottoCreato");
             } catch (SQLException e) {
                 e.printStackTrace();
                 response.sendRedirect(request.getContextPath() + "/PannelloAdminServlet?errore=salvataggio_fallito");
             }
-            return; // Ferma l'esecuzione qui per non far scattare gli altri if
+            return;
+        }
+
+     // =======================================================
+        // 2. BIVIO: AGGIORNA STATO ORDINE (RICARICAMENTO CLASSICO)
+        // =======================================================
+        if ("aggiornaStatoOrdine".equals(action)) {
+            String idOrdine = request.getParameter("idOrdine");
+            String nuovoStato = request.getParameter("nuovoStato");
+            
+            try {
+                OrdineDAO ordineDAO = new OrdineDAO();
+                ordineDAO.updateStato(idOrdine, nuovoStato);
+                
+                // Redirect classico con il parametro per riaprire direttamente la scheda Ordini
+                response.sendRedirect(request.getContextPath() + "/PannelloAdminServlet?tab=ordini&success=statoAggiornato");
+            } catch (Exception e) {
+                e.printStackTrace();
+                response.sendRedirect(request.getContextPath() + "/PannelloAdminServlet?tab=ordini&errore=updateFallito");
+            }
+            return;
         }
 
         // =======================================================
-        // 2. BIVIO: REVOCA ACCESSO (ELIMINAZIONE ADMIN)
+        // 3. BIVIO: REVOCA ACCESSO (ELIMINAZIONE ADMIN)
         // =======================================================
         String userAdminDaEliminare = request.getParameter("userAdmin");
-        
         if (userAdminDaEliminare != null && !userAdminDaEliminare.trim().isEmpty()) {
             UtenteDAO dao = new UtenteDAO();
             try {
@@ -158,83 +180,64 @@ public class PannelloAdminServlet extends HttpServlet {
                 e.printStackTrace();
                 response.sendRedirect(request.getContextPath() + "/PannelloAdminServlet?errore=Impossibile_revocare_accesso");
             }
-            return; // FONDAMENTALE: Ferma l'esecuzione qui
+            return;
         }
         
         // =======================================================
-        // 3. BIVIO: CREAZIONE NUOVO ADMIN
+        // 4. BIVIO: CREAZIONE NUOVO ADMIN
         // =======================================================
         String username = request.getParameter("username");
-        String nome = request.getParameter("nome");
-        String cognome = request.getParameter("cognome");
-        String email = request.getParameter("adminEmail");
-        String password = request.getParameter("adminPassword");
-        
-        List<String> errors = new ArrayList<>();
-        
-        if (username == null || username.trim().isEmpty()) {
-            errors.add("Tutti i campi sono obbligatori.");
-        } else {
-            username = username.trim();
-        }
-        
-        if (email == null || email.trim().isEmpty()) {
-            errors.add("Tutti i campi sono obbligatori.");
-        } else {
-            email = email.trim();
-        }
-        
-        if (password == null || password.trim().isEmpty()) {
-            errors.add("Tutti i campi sono obbligatori.");
-        } else if (password.length() < 8) {
-            errors.add("La password deve essere di almeno 8 caratteri.");
-        } else {
-            password = password.trim();
-        }
-        
-        if (nome == null || nome.trim().isEmpty()) {
-            errors.add("Tutti i campi sono obbligatori.");
-        } else {
-            nome = nome.trim();
-        }
-        
-        if (cognome == null || cognome.trim().isEmpty()) {
-            errors.add("Tutti i campi sono obbligatori.");
-        } else {
-            cognome = cognome.trim();
-        }
-        
-        if (!errors.isEmpty()) {
-            request.setAttribute("errors", errors);
-            request.getRequestDispatcher("/admin/pannelloAdmin.jsp").forward(request, response);
-            return; 
-        }
-        
-        UtenteDAO dao = new UtenteDAO();
-        
-        try {
-            if (dao.VerificaEmail(email)) {
-                errors.add("Questa email è già registrata nel sistema.");
+        if (username != null) {
+            String nome = request.getParameter("nome");
+            String cognome = request.getParameter("cognome");
+            String email = request.getParameter("adminEmail");
+            String password = request.getParameter("adminPassword");
+            
+            List<String> errors = new ArrayList<>();
+            
+            if (username.trim().isEmpty() || email.trim().isEmpty() || password.trim().isEmpty() || nome.trim().isEmpty() || cognome.trim().isEmpty()) {
+                errors.add("Tutti i campi sono obbligatori.");
+            } else if (password.length() < 8) {
+                errors.add("La password deve essere di almeno 8 caratteri.");
+            }
+            
+            if (!errors.isEmpty()) {
+                request.setAttribute("errors", errors);
+                request.getRequestDispatcher("/admin/pannelloAdmin.jsp").forward(request, response);
+                return; 
+            }
+            
+            UtenteDAO dao = new UtenteDAO();
+            try {
+                if (dao.VerificaEmail(email)) {
+                    errors.add("Questa email è già registrata nel sistema.");
+                    request.setAttribute("errors", errors);
+                    request.getRequestDispatcher("/admin/pannelloAdmin.jsp").forward(request, response);
+                    return;
+                }
+            
+                Utente nuovoAdmin = new Utente();
+                nuovoAdmin.setUsername(username.trim());
+                nuovoAdmin.setEmail(email.trim());
+                
+                String passwordHashata = HashingPassword.hashPassword(password.trim());
+                nuovoAdmin.setPassword(passwordHashata);
+                
+                nuovoAdmin.setNome(nome.trim());
+                nuovoAdmin.setCognome(cognome.trim());
+                
+                dao.doSaveAdmin(nuovoAdmin);
+                
+                response.sendRedirect(request.getContextPath() + "/PannelloAdminServlet?success=adminCreato");
+                return;
+            } catch (SQLException e) {
+                e.printStackTrace();
+                errors.add("Errore interno. Riprova più tardi.");
                 request.setAttribute("errors", errors);
                 request.getRequestDispatcher("/admin/pannelloAdmin.jsp").forward(request, response);
                 return;
             }
-        
-            Utente nuovoAdmin = new Utente();
-            nuovoAdmin.setUsername(username);
-            nuovoAdmin.setEmail(email);
-            nuovoAdmin.setPassword(password);
-            nuovoAdmin.setNome(nome);
-            nuovoAdmin.setCognome(cognome);
-            
-            dao.doSaveAdmin(nuovoAdmin);
-            
-            response.sendRedirect(request.getContextPath() + "/PannelloAdminServlet?success=adminCreato");
-        } catch (SQLException e) {
-            e.printStackTrace();
-            errors.add("Errore interno del server durante la registrazione. Riprova più tardi.");
-            request.setAttribute("errors", errors);
-            request.getRequestDispatcher("/admin/pannelloAdmin.jsp").forward(request, response);
         }
+        
     }
 }

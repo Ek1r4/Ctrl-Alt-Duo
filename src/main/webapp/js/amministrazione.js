@@ -21,6 +21,15 @@ document.addEventListener('DOMContentLoaded', () => {
 		document.querySelector('.tab-btn[data-target="superadmin"]').classList.add('active');
 		document.getElementById('superadmin').classList.add('active');
     }
+	
+	else if (triggerTab === 'ordini') {
+			// Forza l'apertura della scheda Ordini
+			btns.forEach(b => b.classList.remove('active'));
+			sections.forEach(s => s.classList.remove('active'));
+			        
+			document.querySelector('.tab-btn[data-target="ordini"]').classList.add('active');
+			document.getElementById('ordini').classList.add('active');
+	    }
 
     if (btns.length > 0 && sections.length > 0) {
         
@@ -393,4 +402,5 @@ document.addEventListener('DOMContentLoaded', () => {
 				            }
 				        });
 				    }
+				
 });

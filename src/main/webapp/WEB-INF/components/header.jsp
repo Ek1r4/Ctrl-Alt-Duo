@@ -57,7 +57,30 @@
 				<li><a href="${pageContext.request.contextPath}/ProdottoServlet?tipo=Collezione">COLLEZIONISMO</a></li>
             </ul>
 
-            <div class="cart-wrapper">
+            
+            
+            <% if (session.getAttribute("utente") != null) { 
+            	reframe.model.beans.Utente userMenu = (reframe.model.beans.Utente) session.getAttribute("utente");
+            %>
+                <% if (userMenu.getIsAdmin() > 0) { %>
+                
+                    <a href="${pageContext.request.contextPath}/admin/gestioneTicket.jsp" class="icon-link" title="Gestione Ticket">
+                        <i class="fas fa-headset"></i>
+                        <span class="icon-label">Assistenza</span> 
+                    </a>
+                    
+                    <a href="${pageContext.request.contextPath}/PannelloAdminServlet" class="icon-link" title="Pannello di Gestione">
+                    	<i class="fas fa-sliders-h"></i> <span class="icon-label">Gestione</span>
+                	</a>
+                	
+                <% } else { %>
+                
+                    <a href="${pageContext.request.contextPath}/ProfiloServlet" class="icon-link" title="Area Personale">
+                        <i class="far fa-user-circle"></i>
+                        <span class="icon-label">Il Mio Profilo</span> 
+                    </a>
+                    
+                    <div class="cart-wrapper">
                 <a href="${pageContext.request.contextPath}/common/carrello.jsp" class="icon-link cart-link" title="Carrello">
                     <i class="fas fa-shopping-cart"></i>
                     <span class="icon-label">Carrello</span> 

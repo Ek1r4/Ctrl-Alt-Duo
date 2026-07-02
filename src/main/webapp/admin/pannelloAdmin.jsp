@@ -2,6 +2,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="reframe.model.beans.Utente" %>
 <%@ page import="reframe.model.beans.Prodotto" %>
+<%@ page import="reframe.model.beans.Ordine" %>
 
 <%
     // Protezione della rotta
@@ -15,6 +16,7 @@
 
     List<Prodotto> listaProdotti = (List<Prodotto>) request.getAttribute("listaProdotti");
     List<Utente> listaAdmins = (List<Utente>) request.getAttribute("listaAdmins");
+    List<Ordine> listaOrdini = (List<Ordine>) request.getAttribute("listaOrdini");
 %>
 
 <!DOCTYPE html>
@@ -33,19 +35,31 @@
 <body class="admin-layout">
 
 	<%
-        String checkSuccess = request.getParameter("success");
-        String targetTab = "";
-        
-        // Se il successo riguarda gli admin, apri la scheda SuperAdmin
-        if ("adminCreato".equals(checkSuccess) || "adminEliminato".equals(checkSuccess)) {
-            targetTab = "superadmin";
-        } 
-        // Altrimenti, se c'è un qualsiasi altro successo (es. prodotto) o errore, vai al Catalogo
-        else if (checkSuccess != null || request.getParameter("errore") != null) {
-            targetTab = "prodotti";
-        }
-    %>
-    <input type="hidden" id="triggerTab" value="<%= targetTab %>">
+    String checkSuccess = request.getParameter("success");
+    String paramTab = request.getParameter("tab");
+    String targetTab = "";
+    
+    // 1. Controllo primario: Se l'URL ci dice esplicitamente in che tab andare (proveniente dal form di filtro)
+    if (paramTab != null && !paramTab.trim().isEmpty()) {
+        targetTab = paramTab;
+    }
+    // 2. Controllo secondario: Gestione dei redirect dalle Servlet
+    else if ("filtroApplicato".equals(checkSuccess) || "filtroFallito".equals(checkSuccess)) {
+        targetTab = "ordini";
+    }
+    else if ("statoAggiornato".equals(checkSuccess) || "updateFallito".equals(checkSuccess)) {
+        targetTab = "ordini";
+    }
+    else if ("adminCreato".equals(checkSuccess) || "adminEliminato".equals(checkSuccess)) {
+        targetTab = "superadmin";
+    } 
+    else if (checkSuccess != null || request.getParameter("errore") != null) {
+        targetTab = "prodotti";
+    }
+	%>
+	
+<input type="hidden" id="triggerTab" value="<%= targetTab %>">
+
     <aside class="sidebar">
         <div class="sidebar-header">
             <a href="${pageContext.request.contextPath}/index.jsp" class="header-logo">
@@ -100,7 +114,12 @@
                             <td><%= p.getSeriale() %></td>
                             <td><%= p.getTipo() %></td>
                             <td><%= p.getMarchio() %></td>
-                            <td><%= p.getNome() %></td>
+                            <td>
+                                <%= p.getNome() %>
+                                <% if (!p.isAttivo()) { %>
+                                    <span class="badge-oscurato"><i class="fas fa-eye-slash"></i></span>
+                                <% } %>
+                            </td>
                             <td>€ <%= String.format("%.2f", p.getPrezzo()) %></td>
                             <td><%= p.getInStock() %></td>
                             <td class="actions">
@@ -118,10 +137,16 @@
                                 </button>
                                 
                                 <form action="<%= request.getContextPath() %>/ProdottoServlet" method="POST" class="inline-form">
-    								<input type="hidden" name="action" value="delete"> 
-    								<input type="hidden" name="idProdotto" value="<%= p.getId() %>">
-    								<button type="submit" class="btn-icon delete" title="Elimina"><i class="fas fa-trash-alt"></i></button>
-								</form>
+                                    <input type="hidden" name="idProdotto" value="<%= p.getId() %>">
+                                    
+                                    <% if (p.isAttivo()) { %>
+                                        <input type="hidden" name="action" value="delete"> 
+                                        <button type="submit" class="btn-icon delete" title="Oscura dal catalogo"><i class="fas fa-eye"></i></button>
+                                    <% } else { %>
+                                        <input type="hidden" name="action" value="ripristina"> 
+                                        <button type="submit" class="btn-icon update" title="Rendi di nuovo visibile" style="color: var(--verde-ottanio);"><i class="fas fa-eye-slash"></i></button>
+                                    <% } %>
+                                </form>
                             </td>
                         </tr>
                         <%  } 
@@ -214,49 +239,73 @@
         </section>
 
         <section id="ordini" class="dashboard-section">
-            <div class="rect-card filter-card">
-                <form action="<%= request.getContextPath() %>/FiltraOrdiniServlet" method="GET" class="filter-form">
-                    <input type="text" name="cliente" placeholder="Cerca per Email Cliente..." class="search-input">
-                    <input type="date" name="dataInizio" title="Data Inizio">
-                    <input type="date" name="dataFine" title="Data Fine">
-                    <button type="submit" class="btn-submit"><i class="fas fa-search"></i> Applica</button>
-                </form>
+    
+    <div class="rect-card mb-20">
+        <h3>Filtra Ordini</h3>
+        <form action="<%= request.getContextPath() %>/PannelloAdminServlet" method="GET" class="filter-form">
+        	<input type="hidden" name="tab" value="ordini">
+            <input type="text" name="cliente" placeholder="Cerca per Cliente..." class="search-input">
+            
+            <div class="date-filter">
+                <label>Da:</label>
+                <input type="date" name="dataInizio" title="Data Inizio">
             </div>
             
-            <div class="rect-card">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>N° Ordine</th>
-                            <th>Data</th>
-                            <th>Cliente</th>
-                            <th>Totale</th>
-                            <th>Stato Attuale</th>
-                            <th>Modifica Stato</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>#ORD-101</td>
-                            <td>25/06/2026</td>
-                            <td>cliente@email.com</td>
-                            <td>€ 1200,00</td>
-                            <td><span class="status-badge elaborazione">In Elaborazione</span></td>
-                            <td>
-                                <form action="<%= request.getContextPath() %>/AggiornaStatoOrdineServlet" method="POST" class="status-form">
-                                    <input type="hidden" name="idOrdine" value="101">
-                                    <select name="nuovoStato">
-                                        <option value="Spedito">Spedito</option>
-                                        <option value="Consegnato">Consegnato</option>
-                                    </select>
-                                    <button type="submit" class="btn-icon update"><i class="fas fa-check-circle"></i></button>
-                                </form>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="date-filter">
+                <label>A:</label>
+                <input type="date" name="dataFine" title="Data Fine">
             </div>
-        </section>
+            
+            <button type="submit" class="btn-cta"><i class="fas fa-search"></i> Applica Filtri</button>
+        </form>
+    </div>
+
+    <div class="rect-card">
+        <h3>Lista Ordini</h3>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>N° Ordine</th>
+                    <th>Data</th>
+                    <th>Cliente</th>
+                    <th>Totale</th>
+                    <th>Stato Attuale</th>
+                    <th>Modifica Stato</th>
+                </tr>
+            </thead>
+            <tbody>
+                <%
+                   if (listaOrdini != null && !listaOrdini.isEmpty()) { 
+                       for (Ordine o : listaOrdini) { 
+                %>
+                <tr>
+                    <td>#<%= o.getIdOrdine() %></td>
+                    <td><%= o.getDataOrdine() %></td>
+                    <td><%= o.getIdUtente() %></td>
+                    <td>&euro; <%= String.format("%.2f", o.getTotale()) %></td>
+                    <td><span class="status-badge"><%= o.getStato() %></span></td>
+                    <td>
+                        <form action="<%= request.getContextPath() %>/PannelloAdminServlet" method="POST" class="status-form">
+                            <input type="hidden" name="action" value="aggiornaStatoOrdine">
+                            
+                            <input type="hidden" name="idOrdine" value="<%= o.getIdOrdine() %>">
+                            <select name="nuovoStato" class="status-select">
+                                <option value="In lavorazione" <%= "In lavorazione".equals(o.getStato()) ? "selected" : "" %>>In lavorazione</option>
+                                <option value="In consegna" <%= "Spedito".equals(o.getStato()) ? "selected" : "" %>>In consegna</option>
+                                <option value="Consegnato" <%= "Consegnato".equals(o.getStato()) ? "selected" : "" %>>Consegnato</option>
+                            </select>
+                            <button type="submit" class="btn-icon update" title="Aggiorna Stato"><i class="fas fa-check-circle"></i></button>
+                        </form>
+                    </td>
+                </tr>
+                <%     } 
+                   } else { %>
+                <tr><td colspan="6" class="text-center">Nessun ordine trovato.</td></tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+</section>
 
         <% if (isSuperAdmin) { %>
         <section id="superadmin" class="dashboard-section">

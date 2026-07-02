@@ -1,6 +1,8 @@
 package reframe.model.dao;
 
 import java.sql.*;
+import java.util.List;
+import java.util.ArrayList;
 
 import reframe.model.beans.DettaglioOrdine;
 import reframe.model.beans.Ordine;
@@ -8,17 +10,13 @@ import reframe.utils.ConnessioneDB;
 
 public class OrdineDAO {
 
-	/**
+    /**
      * Inserisce un nuovo ordine completo (Testata + Dettagli) 
      * e scala lo stock dei prodotti, tutto in una singola Transazione SQL.
      */
     public void insertOrdineCompleto(Ordine ordine) throws SQLException {
-        // Query per la tabella Ordine
         String queryOrdine = "INSERT INTO Ordine (ID_ordine, Data_ordine, Totale, Garanzia, Stato, ID_Utente, ID_Pagamento, ID_Spedizione) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        
-        // Query per la tabella Ordine_Prodotto
         String queryDettaglio = "INSERT INTO Ordine_Prodotto (ID_Ordine, ID_Prodotto, Prezzo_acquisto, Quantita_acquisto, Nome_prodotto_acquisto, IVA_acquisto) VALUES (?, ?, ?, ?, ?, ?)";
-        
         String queryUpdateStock = "UPDATE Prodotto SET In_stock = In_stock - ? WHERE ID_prodotto = ?";
         
         Connection conn = null;
@@ -65,37 +63,36 @@ public class OrdineDAO {
                 psUpdateStock.executeUpdate();
             }
             
-            // 4. CONFERMA TRANSAZIONE: Se arriviamo qui, tutto è andato bene!
+            // 4. CONFERMA TRANSAZIONE
             conn.commit();
             
         } catch (SQLException e) {
-            // ERRORE: Annulliamo tutto (Rollback) per evitare dati a metà
+            // ERRORE: Rollback
             if (conn != null) {
                 try {
                     conn.rollback();
                     System.err.println("Transazione fallita. Eseguito Rollback dell'ordine: " + ordine.getIdOrdine());
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                }
+                } catch (SQLException ex) { ex.printStackTrace(); }
             }
-            throw e; // Rilanciamo l'eccezione per farla catturare dalla Servlet
+            throw e; 
             
         } finally {
-            // Chiusura sicura delle risorse
             try {
                 if (psUpdateStock != null) psUpdateStock.close();
                 if (psDettaglio != null) psDettaglio.close();
                 if (psOrdine != null) psOrdine.close();
-                if (conn != null) {
-                    conn.setAutoCommit(true); 
-                    conn.close();             
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
+            } catch (SQLException e) { e.printStackTrace(); }
+            
+            if (conn != null) {
+                try { 
+                    conn.setAutoCommit(true); // Ripristina l'autocommit prima di restituirla
+                } catch (SQLException e) { e.printStackTrace(); }
+                ConnessioneDB.releaseConnection(conn); 
             }
         }
     }
- // Recupera l'ordine e tutti i suoi prodotti per stampare la fattura
+
+    // Recupera l'ordine e tutti i suoi prodotti per stampare la fattura
     public Ordine fetchOrdineById(String idOrdine) throws SQLException {
         String queryOrdine = "SELECT * FROM Ordine WHERE ID_ordine = ?";
         String queryDettagli = "SELECT * FROM Ordine_Prodotto WHERE ID_Ordine = ?";
@@ -141,11 +138,14 @@ public class OrdineDAO {
                 }
             }
         } finally {
-            if (rsDettagli != null) rsDettagli.close();
-            if (psDettagli != null) psDettagli.close();
-            if (rsOrdine != null) rsOrdine.close();
-            if (psOrdine != null) psOrdine.close();
-            if (conn != null) conn.close();
+            try {
+                if (rsDettagli != null) rsDettagli.close();
+                if (psDettagli != null) psDettagli.close();
+                if (rsOrdine != null) rsOrdine.close();
+                if (psOrdine != null) psOrdine.close();
+            } catch (SQLException e) { e.printStackTrace(); }
+
+            if (conn != null) { ConnessioneDB.releaseConnection(conn); }
         }
         return ordine;
     }
@@ -154,50 +154,133 @@ public class OrdineDAO {
      * Recupera tutti gli ordini (con i relativi dettagli) di un utente specifico, 
      * ordinati dal più recente al più vecchio.
      */
-    public java.util.List<Ordine> getOrdiniCompletiByUtente(String username) throws SQLException {
-        java.util.List<Ordine> lista = new java.util.ArrayList<>();
+    public List<Ordine> getOrdiniCompletiByUtente(String username) throws SQLException {
+        List<Ordine> lista = new ArrayList<>();
         String queryOrdini = "SELECT * FROM Ordine WHERE ID_Utente = ? ORDER BY Data_ordine DESC";
         String queryDettagli = "SELECT * FROM Ordine_Prodotto WHERE ID_Ordine = ?";
 
         Connection conn = null;
         PreparedStatement psOrdini = null;
         PreparedStatement psDettagli = null;
+        ResultSet rsOrdini = null;
 
         try {
             conn = ConnessioneDB.getConnection();
             psOrdini = conn.prepareStatement(queryOrdini);
             psOrdini.setString(1, username);
             
-            try (ResultSet rsOrdini = psOrdini.executeQuery()) {
-                while (rsOrdini.next()) {
-                    Ordine ord = new Ordine();
-                    ord.setIdOrdine(rsOrdini.getString("ID_ordine"));
-                    ord.setDataOrdine(rsOrdini.getDate("Data_ordine"));
-                    ord.setTotale(rsOrdini.getDouble("Totale"));
-                    ord.setStato(rsOrdini.getString("Stato"));
+            rsOrdini = psOrdini.executeQuery();
+            while (rsOrdini.next()) {
+                Ordine ord = new Ordine();
+                ord.setIdOrdine(rsOrdini.getString("ID_ordine"));
+                ord.setDataOrdine(rsOrdini.getDate("Data_ordine"));
+                ord.setTotale(rsOrdini.getDouble("Totale"));
+                ord.setStato(rsOrdini.getString("Stato"));
 
-                    // Recupera i prodotti per questo specifico ordine
-                    psDettagli = conn.prepareStatement(queryDettagli);
-                    psDettagli.setString(1, ord.getIdOrdine());
-                    try (ResultSet rsDettagli = psDettagli.executeQuery()) {
-                        while (rsDettagli.next()) {
-                            DettaglioOrdine dett = new DettaglioOrdine();
-                            dett.setNomeProdottoAcquisto(rsDettagli.getString("Nome_prodotto_acquisto"));
-                            dett.setQuantitaAcquisto(rsDettagli.getInt("Quantita_acquisto"));
-                            dett.setPrezzoAcquisto(rsDettagli.getDouble("Prezzo_acquisto"));
-                            dett.setIvaAcquisto(rsDettagli.getInt("IVA_acquisto"));
-                            ord.addDettaglio(dett);
-                        }
+                // Recupera i prodotti per questo specifico ordine
+                psDettagli = conn.prepareStatement(queryDettagli);
+                psDettagli.setString(1, ord.getIdOrdine());
+                try (ResultSet rsDettagli = psDettagli.executeQuery()) {
+                    while (rsDettagli.next()) {
+                        DettaglioOrdine dett = new DettaglioOrdine();
+                        dett.setNomeProdottoAcquisto(rsDettagli.getString("Nome_prodotto_acquisto"));
+                        dett.setQuantitaAcquisto(rsDettagli.getInt("Quantita_acquisto"));
+                        dett.setPrezzoAcquisto(rsDettagli.getDouble("Prezzo_acquisto"));
+                        dett.setIvaAcquisto(rsDettagli.getInt("IVA_acquisto"));
+                        ord.addDettaglio(dett);
                     }
-                    psDettagli.close();
-                    lista.add(ord);
                 }
+                psDettagli.close(); // Lo chiudiamo per riaprirlo al ciclo successivo
+                lista.add(ord);
             }
+            
         } finally {
-            if (psDettagli != null) psDettagli.close();
-            if (psOrdini != null) psOrdini.close();
-            if (conn != null) conn.close();
+            try {
+                if (rsOrdini != null) rsOrdini.close();
+                if (psDettagli != null) psDettagli.close();
+                if (psOrdini != null) psOrdini.close();
+            } catch (SQLException e) { e.printStackTrace(); }
+
+            if (conn != null) { ConnessioneDB.releaseConnection(conn); }
         }
         return lista;
+    }
+    
+    public List<Ordine> getOrdiniFiltrati(String emailCliente, java.sql.Date dataInizio, java.sql.Date dataFine) throws SQLException {
+        List<Ordine> lista = new ArrayList<>();
+        StringBuilder query = new StringBuilder("SELECT * FROM Ordine WHERE 1=1");
+        
+        if (emailCliente != null && !emailCliente.trim().isEmpty()) {
+            query.append(" AND ID_Utente LIKE ?");
+        }
+        if (dataInizio != null) {
+            query.append(" AND Data_ordine >= ?");
+        }
+        if (dataFine != null) {
+            query.append(" AND Data_ordine <= ?");
+        }
+        query.append(" ORDER BY Data_ordine DESC");
+
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            conn = ConnessioneDB.getConnection();
+            ps = conn.prepareStatement(query.toString());
+            
+            int paramIndex = 1;
+            if (emailCliente != null && !emailCliente.trim().isEmpty()) {
+                ps.setString(paramIndex++, "%" + emailCliente + "%");
+            }
+            if (dataInizio != null) {
+                ps.setDate(paramIndex++, dataInizio);
+            }
+            if (dataFine != null) {
+                ps.setDate(paramIndex++, dataFine);
+            }
+            
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                Ordine ord = new Ordine();
+                ord.setIdOrdine(rs.getString("ID_ordine"));
+                ord.setDataOrdine(rs.getDate("Data_ordine"));
+                ord.setTotale(rs.getDouble("Totale"));
+                ord.setStato(rs.getString("Stato"));
+                ord.setIdUtente(rs.getString("ID_Utente"));
+                lista.add(ord);
+            }
+            
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (ps != null) ps.close();
+            } catch (SQLException e) { e.printStackTrace(); }
+            
+            if (conn != null) { ConnessioneDB.releaseConnection(conn); }
+        }
+        return lista;
+    }
+    
+    public void updateStato(String idOrdine, String nuovoStato) throws SQLException {
+        String query = "UPDATE Ordine SET Stato = ? WHERE ID_Ordine = ?";
+        
+        Connection conn = null;
+        PreparedStatement ps = null;
+        
+        try {
+            conn = ConnessioneDB.getConnection();
+            ps = conn.prepareStatement(query);
+            ps.setString(1, nuovoStato);
+            ps.setString(2, idOrdine);
+            ps.executeUpdate();
+            
+        } finally {
+            try {
+                if (ps != null) ps.close();
+            } catch (SQLException e) { e.printStackTrace(); }
+            
+            if (conn != null) { ConnessioneDB.releaseConnection(conn); }
+        }
     }
 }

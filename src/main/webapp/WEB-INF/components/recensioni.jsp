@@ -2,6 +2,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="reframe.model.beans.Recensione" %>
 <%@ page import="reframe.model.beans.Utente" %>
+<%@ page import="reframe.model.beans.Prodotto" %>
 
 <%
     // Recupero la lista delle recensioni passata dalla Servlet

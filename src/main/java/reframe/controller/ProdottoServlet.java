@@ -45,6 +45,10 @@ public class ProdottoServlet extends HttpServlet {
                 request.setAttribute("titoloVetrina", "Tutto il Catalogo");
             }
             
+            if (catalogo != null) {
+                catalogo.removeIf(p -> p.getInStock() <= 0);
+            }
+            
             request.setAttribute("listaProdotti", catalogo);
             
             List<String> marcheDisponibili = dao.fetchDistinctMarche(); 
@@ -98,6 +102,24 @@ public class ProdottoServlet extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + "/PannelloAdminServlet");
             }
             return; 
+        }
+        
+     // ==========================================
+        // AZIONE: RIPRISTINA PRODOTTO OSCURATO
+        // ==========================================
+        if ("ripristina".equals(action)) {
+            String idProdotto = request.getParameter("idProdotto");
+            
+            try {
+                dao.ripristinaProdotto(idProdotto);
+                
+                // Ricarica la pagina tornando sulla scheda dei Prodotti
+                response.sendRedirect(request.getContextPath() + "/PannelloAdminServlet?tab=prodotti&success=prodottoRipristinato");
+            } catch (SQLException e) {
+                e.printStackTrace();
+                response.sendRedirect(request.getContextPath() + "/PannelloAdminServlet?tab=prodotti&errore=ripristino_fallito");
+            }
+            return;
         }
     
      // ==========================================
