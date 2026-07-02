@@ -893,3 +893,62 @@
     color: var(--grigio-taupe);
     font-size: 1rem;
 }
+
+/* --- Allineamento Titolo e Badge Categoria --- */
+.titolo-categoria-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 15px; 
+    flex-direction: row-reverse;
+}
+
+/* --- Badge Brutalista: Linee spezzate, minimal e a pillola --- */
+.badge-categoria-brutal {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 8px;
+    border: 2px dashed var(--verde-ottanio);
+    border-radius: 50px;
+    background-color: transparent;
+    color: var(--verde-ottanio);
+    font-family: var(--font-tecnico);
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+/* --- Testo del Titolo --- */
+.dettaglio-titolo-testo {
+    margin: 0 !important;
+    font-size: 16px;
+    color: var(--antracite-scuro);
+    line-height: 1.4;
+}
+
+/* --- Evidenziatore Pratiche "Da Assegnare" (Superadmin) --- */
+.badge-urgent-assign {
+    color: var(--verde-ottanio) ;
+    background-color: transparent;
+    font-weight: 900;
+    letter-spacing: 1px;
+    animation: pulse-ottanio 2s infinite ease-in-out;
+    padding-right: 6px;
+}
+
+@keyframes pulse-ottanio {
+    0% { 
+        opacity: 1; 
+        box-shadow: 0 0 0 0 color-mix(in srgb, var(--verde-ottanio) 40%, transparent); 
+    }
+    50% { 
+        opacity: 0.8; 
+        box-shadow: 0 0 0 8px transparent; 
+    }
+    100% { 
+        opacity: 1; 
+        box-shadow: 0 0 0 0 transparent; 
+    }
+}

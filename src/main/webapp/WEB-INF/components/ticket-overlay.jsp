@@ -75,8 +75,11 @@
                             <p id="dettaglioData" class="testo-tecnico">--</p>
                         </fieldset>
                         <fieldset class="custom-input read-only-box">
-                            <legend>Motivo</legend>
-                            <p id="dettaglioMotivo" class="testo-tecnico">--</p>
+                            <legend>Titolo & Categoria</legend>
+                            <div class="titolo-categoria-wrapper">
+                                <span id="dettaglioCategoria" class="badge-categoria-brutal">--</span>
+                                <p id="dettaglioTitolo" class="testo-tecnico dettaglio-titolo-testo">--</p>
+                            </div>
                         </fieldset>
                     </div>
 

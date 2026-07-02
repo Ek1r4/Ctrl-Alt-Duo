@@ -17,33 +17,36 @@ function apriTicketOverlay(rma) {
     // Mostra un testo di caricamento
     document.getElementById('chatHistory').innerHTML = '<div class="testo-tecnico loading-text">CARICAMENTO MESSAGGI...</div>';
 
-	    // =========================================================
-	    // 1. MOCKUP TEMPORANEO (Per testare lo spacchettamento)
-	    // =========================================================
-	    setTimeout(() => {
-	        const mockupData = {
-	            rma: rma,
-	            dataApertura: "27/06/2026 14:30",
-	            motivo: "Il prodotto acquistato ha la lente graffiata e richiede sostituzione immediata.",
-	            stato: "In carico",
-	            adminAssegnato: "",
-	            messaggi: [
-	                { 
-	                    autore: "Tu", 
-	                    tipo: "User", 
-	                    testo: "Ordini Selezionati: ORD19512\nProdotti Selezionati: EOS R5, Z8, X-T5\n----------------------------------------\n\nCiao, volevo sapere lo stato del mio reso.", 
-	                    data: "27/06/2026 14:35" 
-	                },
-	                { 
-	                    autore: "Admin Erika", 
-	                    tipo: "Admin", 
-	                    testo: "Salve, il corriere ritirerà il pacco lunedì mattina.", 
-	                    data: "27/06/2026 16:00" 
-	                }
-	            ]
-	        };
-	        popolaOverlay(mockupData);
-	    }, 500);// Finto ritardo di rete di mezzo secondo
+    // =========================================================
+    // 1. MOCKUP TEMPORANEO ALLINEATO AL NUOVO DB
+    // =========================================================
+    setTimeout(() => {
+        const mockupData = {
+            rma: rma,
+            titolo: "Lente graffiata all'arrivo",
+            categoria: "prodotto",
+            descrizione: "Ordini Selezionati: ORD19512\nProdotti Selezionati: EOS R5, Z8, X-T5\n----------------------------------------\n\nIl prodotto è arrivato con evidenti graffi sulla lente principale. Richiedo sostituzione immediata.",
+            stato: "In carico",
+            dataApertura: "27/06/2026 14:30",
+            adminAssegnato: "admin_Erika",
+            // I messaggi qui riflettono ESCLUSIVAMENTE la tabella Ticket del DB
+            messaggi: [
+                { 
+                    autore: "Admin Erika", 
+                    tipo: "Admin", 
+                    testo: "Salve, abbiamo preso in carico la sua richiesta. Potrebbe inviare delle foto del danno?", 
+                    data: "27/06/2026 16:00" 
+                },
+                { 
+                    autore: "Tu", 
+                    tipo: "User", 
+                    testo: "Certamente, le ho appena caricate tramite l'apposito modulo.", 
+                    data: "27/06/2026 16:15" 
+                }
+            ]
+        };
+        popolaOverlay(mockupData);
+    }, 500); 
 
     // =========================================================
     // 2. CHIAMATA REALE (Da decommentare quando crei la Servlet)
@@ -69,59 +72,68 @@ function popolaOverlay(data) {
     // Info condivise base
     document.getElementById('dettaglioRma').innerText = data.rma;
     document.getElementById('dettaglioData').innerText = data.dataApertura;
-    document.getElementById('dettaglioMotivo').innerText = data.motivo;
+    
+    // Assegnazione Titolo e Categoria (al posto del vecchio Motivo)
+    if (document.getElementById('dettaglioTitolo')) document.getElementById('dettaglioTitolo').innerText = data.titolo;
+    if (document.getElementById('dettaglioCategoria')) document.getElementById('dettaglioCategoria').innerText = data.categoria.toUpperCase();
 
-    let htmlPills = '';
     const chatBox = document.getElementById('chatHistory');
     chatBox.innerHTML = '';
+    let htmlPills = '';
+
+    // --- DE-FORMATTAZIONE (Spacchettamento) DELLA DESCRIZIONE DALLA PRATICA ---
+    let testoDescrizione = data.descrizione;
+    const separator = "----------------------------------------";
     
+    if (testoDescrizione && testoDescrizione.includes(separator)) {
+        const parts = testoDescrizione.split(separator);
+        const intestazione = parts[0];
+        
+        // Ricongiungiamo il vero testo del problema
+        testoDescrizione = parts.slice(1).join(separator).trim();
+        
+        let tags = '';
+        const righe = intestazione.split('\n');
+        
+        righe.forEach(riga => {
+            const rigaPulita = riga.trim();
+            if (rigaPulita.startsWith("Ordini Selezionati:")) {
+                const ordini = rigaPulita.replace("Ordini Selezionati:", "").split(",");
+                ordini.forEach(o => {
+                    if (o.trim()) tags += `<span class="sel-tag-analog">Ordine #${o.trim()}</span>`;
+                });
+            } else if (rigaPulita.startsWith("Prodotti Selezionati:")) {
+                const prodotti = rigaPulita.replace("Prodotti Selezionati:", "").split(",");
+                prodotti.forEach(p => {
+                    if (p.trim()) tags += `<span class="sel-tag-analog">Prodotto: ${p.trim()}</span>`;
+                });
+            }
+        });
+        
+        if (tags !== '') {
+            htmlPills = `<div class="ticket-selections-analog">
+                            <span class="selection-label-analog">ORDINI E PRODOTTI CITATI:</span>
+                            ${tags}
+                         </div>`;
+        }
+    }
+
+    // Aggiungiamo la descrizione originale come primo "messaggio" della chat
+    if (testoDescrizione) {
+        testoDescrizione = testoDescrizione.replace(/\n/g, "<br>");
+        chatBox.innerHTML += `
+            <div class="msg msg-user">
+                <span class="msg-author">Apertura Pratica</span>
+                <p>${testoDescrizione}</p>
+                <small>${data.dataApertura}</small>
+            </div>
+        `;
+    }
+
+    // Aggiungiamo i successivi messaggi provenienti dalla tabella Ticket
     if (data.messaggi && data.messaggi.length > 0) {
         data.messaggi.forEach(msg => {
-            let testoDaMostrare = msg.testo;
-            
-            // --- DE-FORMATTAZIONE (Spacchettamento) ---
-            const separator = "----------------------------------------";
-            
-            if (testoDaMostrare.includes(separator)) {
-                const parts = testoDaMostrare.split(separator);
-                const intestazione = parts[0];
-                
-                // Ricongiungiamo il vero messaggio e togliamo gli spazi bianchi
-                testoDaMostrare = parts.slice(1).join(separator).trim();
-                
-                // Estraiamo i dati e costruiamo le pillole (solo per il messaggio che le contiene)
-                if (htmlPills === '') {
-                    let tags = '';
-                    const righe = intestazione.split('\n');
-                    
-                    righe.forEach(riga => {
-                        const rigaPulita = riga.trim();
-                        if (rigaPulita.startsWith("Ordini Selezionati:")) {
-                            const ordini = rigaPulita.replace("Ordini Selezionati:", "").split(",");
-                            ordini.forEach(o => {
-                                if (o.trim()) tags += `<span class="sel-tag-analog">Ordine #${o.trim()}</span>`;
-                            });
-                        } else if (rigaPulita.startsWith("Prodotti Selezionati:")) {
-                            const prodotti = rigaPulita.replace("Prodotti Selezionati:", "").split(",");
-                            prodotti.forEach(p => {
-                                if (p.trim()) tags += `<span class="sel-tag-analog">Prodotto: ${p.trim()}</span>`;
-                            });
-                        }
-                    });
-                    
-                    if (tags !== '') {
-                        htmlPills = `<div class="ticket-selections-analog">
-                                        <span class="selection-label-analog">ORDINI E PRODOTTI CITATI:</span>
-                                        ${tags}
-                                     </div>`;
-                    }
-                }
-            }
-
-            // Sostituiamo gli a capo classici con quelli HTML
-            testoDaMostrare = testoDaMostrare.replace(/\n/g, "<br>");
-            
-            // Inseriamo in chat
+            let testoDaMostrare = msg.testo.replace(/\n/g, "<br>");
             const isUser = msg.tipo === 'User'; 
             chatBox.innerHTML += `
                 <div class="msg ${isUser ? 'msg-user' : 'msg-admin'}">
@@ -131,9 +143,11 @@ function popolaOverlay(data) {
                 </div>
             `;
         });
-    } else {
-        chatBox.innerHTML = '<div class="testo-tecnico">Nessun messaggio presente.</div>';
+    } else if (!testoDescrizione) {
+        // Se non c'è né descrizione né messaggi (situazione anomala)
+        chatBox.innerHTML = '<div class="testo-tecnico">Nessun dettaglio presente.</div>';
     }
+    
     chatBox.scrollTop = chatBox.scrollHeight;
 
     // Popoliamo il pannello destro con le pillole ricavate
@@ -253,29 +267,62 @@ function inviaMessaggio(e) {
         chatBox.scrollTop = chatBox.scrollHeight;
     }, 500);
 }
-
-// 2. MOCKUP: Aggiornamento Stato (Admin) con Toggle Custom
+// 2. REALE: Aggiornamento Stato (Admin) con Toggle Custom e invio Email
 function aggiornaStato(e) {
     e.preventDefault();
+    
     const toggleStato = document.getElementById('toggleStatoAdmin');
+    const rma = document.getElementById('dettaglioRma').innerText; // Recuperiamo l'RMA dall'overlay
     
     // Se il checkbox è spuntato è "Chiusa", altrimenti è "In carico"
     const nuovoStato = toggleStato.checked ? 'Chiusa' : 'In carico';
     
-    // Falsifichiamo la risposta del server
-    setTimeout(() => {
-        showToast(`Stato aggiornato a: ${nuovoStato}`);
-        
-        // Se è stata chiusa, ricarichiamo la pagina per toglierla dall'elenco "In carico"
-        if(nuovoStato === 'Chiusa') {
-            setTimeout(() => chiudiOverlay(), 1500);
-            setTimeout(() => window.location.reload(), 1600);
+    // Disabilitiamo il pulsante per evitare doppi click durante il caricamento
+    const btnSubmit = e.target.querySelector('button[type="submit"]');
+    if (btnSubmit) {
+        btnSubmit.disabled = true;
+        btnSubmit.innerText = "AGGIORNAMENTO...";
+    }
+
+    // Chiamata vera e propria alla Servlet
+    fetch('../AggiornaStatoServlet', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        // Passiamo RMA e il nuovo stato al backend
+        body: new URLSearchParams({ rma: rma, stato: nuovoStato }) 
+    })
+    .then(response => {
+        if(response.ok) {
+            
+            // Gestione dei messaggi di successo differenziati
+            if(nuovoStato === 'Chiusa') {
+                showToast("Pratica CHIUSA. Email di notifica inviata al cliente!");
+                setTimeout(() => chiudiOverlay(), 1500);
+                setTimeout(() => window.location.reload(), 1600);
+            } else {
+                showToast("Pratica RIAPERTA. Email di avviso inviata al cliente!");
+                const warningMsg = document.getElementById('adminStatusWarning');
+                if (warningMsg) warningMsg.classList.remove('show');
+                
+                // Opzionale: ricarichiamo la pagina per aggiornare le tabelle della dashboard
+                setTimeout(() => window.location.reload(), 1600); 
+            }
+            
         } else {
-            // Se è stata solo riaperta, cancelliamo il warning
-            const warningMsg = document.getElementById('adminStatusWarning');
-            if (warningMsg) warningMsg.classList.remove('show');
+            showToast("Errore durante l'aggiornamento dello stato.");
+            if (btnSubmit) {
+                btnSubmit.disabled = false;
+                btnSubmit.innerText = "AGGIORNA STATO";
+            }
         }
-    }, 500);
+    })
+    .catch(() => {
+        showToast("Errore di connessione al server.");
+        if (btnSubmit) {
+            btnSubmit.disabled = false;
+            btnSubmit.innerText = "AGGIORNA STATO";
+        }
+    });
 }
 
 // ---------------------------------------------------------

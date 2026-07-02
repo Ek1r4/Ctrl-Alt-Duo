@@ -126,8 +126,11 @@
                             <!-- Colonna Dinamica: Stato (Admin) o Admin Assegnato (Superadmin) -->
                             <c:choose>
                                 <c:when test="${adminLevel == 2}">
-                                    <div class="pratica-col-right admin-badge">
-                                        ${pratica.admin}
+                                    <div class="pratica-col-right admin-badge ${pratica.admin == 'Da assegnare' ? 'badge-urgent-assign' : ''}">
+                                        <c:if test="${pratica.admin == 'Da assegnare'}">
+                                            <i class="ri-error-warning-line" style="margin-right: 4px;"></i>
+                                        </c:if>
+                                        ${pratica.admin.toUpperCase()}
                                     </div>
                                 </c:when>
                                 <c:otherwise>
