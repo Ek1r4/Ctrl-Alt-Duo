@@ -36,27 +36,38 @@
             <h3 class="product-name"><%= p.getNome() %></h3>
             
             <div class="card-bottom-row">
-    			<div class="product-price">€ <%= String.format("%.2f", p.getPrezzo()) %></div>
-    
-    			<% 
-        			// Mostriamo il carrello SOLO se NON è admin (quindi lo vedono i clienti loggati e gli ospiti non registrati)
-        			if (!isAdmin) { 
-    			%>
-    	<form action="<%= request.getContextPath() %>/Carrello" method="POST" class="quick-add-form">
-        	<input type="hidden" name="action" value="add">
-        	<input type="hidden" name="id" value="<%= p.getId() %>">
-        	<input type="hidden" name="quantita" value="1">
-        	<button type="submit" class="btn-quick-add" title="Aggiungi al carrello">
-            	<i class="fas fa-cart-plus"></i>
-        	</button>
-    	</form>
-    		<% } %>
-			</div>
+    <div class="product-price">&euro; <%= String.format("%.2f", p.getPrezzo()) %></div>
+
+    <% 
+        // Mostriamo le opzioni di acquisto SOLO se NON è admin
+        if (!isAdmin) { 
+            // Controllo dello stock
+            if (p.getInStock() > 0) { 
+    %>
+        <form action="<%= request.getContextPath() %>/Carrello" method="POST" class="quick-add-form">
+            <input type="hidden" name="action" value="add">
+            <input type="hidden" name="id" value="<%= p.getId() %>">
+            <input type="hidden" name="quantita" value="1">
+            <button type="submit" class="btn-quick-add" title="Aggiungi al carrello">
+                <i class="fas fa-cart-plus"></i>
+            </button>
+        </form>
+    <% 
+            } else { 
+    %>
+        <button type="button" class="btn-quick-add" title="Prodotto Esaurito" disabled style="opacity: 0.5; cursor: not-allowed; border-color: gray; color: gray;">
+            <i class="fas fa-box-open"></i>
+        </button>
+    <% 
+            } // Fine if(inStock > 0)
+        } // Fine if(!isAdmin)
+    %>
+</div>
             
-        </div>
+</div>
 <% 
-        }
-    } else { 
+    } // Fine del ciclo for (Prodotto p : lista)
+} else { // Ramo else di if(lista != null && !lista.isEmpty())
 %>
     <p class="empty-catalog-msg">Nessuna fotocamera corrisponde ai filtri selezionati.</p>
 <% } %>

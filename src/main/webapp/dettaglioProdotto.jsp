@@ -78,16 +78,21 @@
                 <input type="hidden" name="id" value="<%= p.getId() %>">
                 
                 <div class="add-to-cart-section">
-                    <div class="quantity-selector">
-                        <button type="button" class="qty-btn" id="btn-minus" <%= isAdmin ? "disabled" : "" %>>-</button>
-                        <input type="number" id="qty-input" name="quantita" class="qty-input" value="1" min="1" max="10" readonly>
-                        <button type="button" class="qty-btn" id="btn-plus" <%= isAdmin ? "disabled" : "" %>>+</button>
-                    </div>
-                    
-                    <button type="submit" class="btn-cta" <%= isAdmin ? "disabled-for-admin" : "" %>" <%= isAdmin ? "disabled" : "" %>>
-                        Aggiungi al Carrello
-                    </button>
-                </div>
+    				<div class="quantity-selector">
+        				<button type="button" class="qty-btn" id="btn-minus" <%= isAdmin ? "disabled" : "" %>>-</button>
+        
+        				<!-- Aggiunto max e data-stock collegati al DB -->
+        				<input type="number" id="qty-input" name="quantita" class="qty-input" value="1" min="1" 
+               				max="<%= p.getInStock() %>" data-stock="<%= p.getInStock() %>" readonly>
+               
+        				<button type="button" class="qty-btn" id="btn-plus" <%= isAdmin ? "disabled" : "" %>>+</button>
+    				</div>
+    
+    				<!-- Disabilita il tasto se lo stock è 0 -->
+    				<button type="submit" class="btn-cta" id="btn-add-cart" <%= (isAdmin || p.getInStock() <= 0) ? "disabled" : "" %>>
+        				<%= p.getInStock() > 0 ? "Aggiungi al Carrello" : "Attualmente Esaurito" %>
+    				</button>
+				</div>
             </form>
 
             <div class="product-details-accordion">

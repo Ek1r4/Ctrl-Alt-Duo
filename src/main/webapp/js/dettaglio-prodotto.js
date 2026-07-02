@@ -1,111 +1,129 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const btnMinus = document.getElementById('btn-minus');
-    const btnPlus = document.getElementById('btn-plus');
-    const inputQty = document.getElementById('qty-input');
+// Funzione generica per il Toast (messa globale in alto per comodità)
+function showToast(message) {
+    let toast = document.querySelector('.toast-notification');
+    
+    // Se non esiste il container nel DOM, lo creiamo al volo
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.className = 'toast-notification';
+        document.body.appendChild(toast);
+    }
+    
+    toast.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+    toast.classList.add('show');
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
+}
 
-    if (btnMinus && btnPlus && inputQty) {
-        btnMinus.addEventListener('click', () => {
-            let currentValue = parseInt(inputQty.value);
-            if (currentValue > 1) {
-                inputQty.value = currentValue - 1;
+// INIZIO DELL'UNICO BLOCCO DI CARICAMENTO PAGINA
+document.addEventListener('DOMContentLoaded', () => {
+    
+    // ==========================================
+    // 1. GESTIONE QUANTITÀ E STOCK
+    // ==========================================
+    const btnPlus = document.getElementById('btn-plus');
+    const btnMinus = document.getElementById('btn-minus');
+    const qtyInput = document.getElementById('qty-input');
+
+    if (btnPlus && btnMinus && qtyInput) {
+        // Preleviamo lo stock massimo arrivato dal DB
+        const maxStock = parseInt(qtyInput.getAttribute('data-stock'), 10);
+
+        btnPlus.addEventListener('click', () => {
+            let currentQty = parseInt(qtyInput.value, 10);
+            
+            if (currentQty < maxStock) {
+                qtyInput.value = currentQty + 1;
+            } else {
+                showToast("Stock esaurito! Hai raggiunto la quantità massima disponibile.");
             }
         });
 
-        btnPlus.addEventListener('click', () => {
-            let currentValue = parseInt(inputQty.value);
-            if (currentValue < 10) { // Limite massimo impostato a 10 pezzi
-                inputQty.value = currentValue + 1;
+        btnMinus.addEventListener('click', () => {
+            let currentQty = parseInt(qtyInput.value, 10);
+            if (currentQty > 1) {
+                qtyInput.value = currentQty - 1;
             }
         });
     }
-	
-	// ==========================================
-	    // GESTIONE MODALE EDIT (Solo Admin)
-	    // ==========================================
-	    const btnOpenEdit = document.getElementById('open-edit-modal');
-	    const btnCloseEdit = document.getElementById('close-edit-modal');
-	    const editModal = document.getElementById('edit-product-modal');
 
-	    if (btnOpenEdit && btnCloseEdit && editModal) {
-	        // Apri la modale cliccando la matita
-	        btnOpenEdit.addEventListener('click', () => {
-	            editModal.classList.add('active');
-	            document.body.style.overflow = 'hidden'; // Blocca lo scroll della pagina dietro
-	        });
+    // ==========================================
+    // 2. GESTIONE MODALE EDIT (Solo Admin)
+    // ==========================================
+    const btnOpenEdit = document.getElementById('open-edit-modal');
+    const btnCloseEdit = document.getElementById('close-edit-modal');
+    const editModal = document.getElementById('edit-product-modal');
 
-	        // Chiudi la modale cliccando la X
-	        btnCloseEdit.addEventListener('click', () => {
-	            editModal.classList.remove('active');
-	            document.body.style.overflow = 'auto'; // Riabilita lo scroll
-	        });
+    if (btnOpenEdit && btnCloseEdit && editModal) {
+        // Apri la modale cliccando la matita
+        btnOpenEdit.addEventListener('click', () => {
+            editModal.classList.add('active');
+            document.body.style.overflow = 'hidden'; // Blocca lo scroll
+        });
 
-	        // Chiudi la modale cliccando sullo sfondo scuro fuori dalla finestra
-	        editModal.addEventListener('click', (e) => {
-	            if (e.target === editModal) {
-	                editModal.classList.remove('active');
-	                document.body.style.overflow = 'auto';
-	            }
-	        });
-	    }
+        // Chiudi la modale cliccando la X
+        btnCloseEdit.addEventListener('click', () => {
+            editModal.classList.remove('active');
+            document.body.style.overflow = 'auto'; // Riabilita lo scroll
+        });
 
-		    // ==========================================
-		    // MODALE CONFERMA ELIMINAZIONE (RECENSIONI)
-		    // ==========================================
-		    
-		    // Cerca tutti i cestini delle recensioni
-		    const deleteReviewBtns = document.querySelectorAll('.btn-delete-review'); 
-		    
-		    // Elementi del modale (già presenti in dettaglioProdotto.jsp)
-		    const deleteModal = document.getElementById('delete-confirm-modal');
-		    const deleteMessage = document.getElementById('delete-confirm-message');
-		    const btnConfirmDelete = document.getElementById('btn-confirm-delete');
-		    const btnCancelDelete = document.getElementById('btn-cancel-delete');
-		    
-		    let formRecensioneDaInviare = null; // Memoria temporanea
+        // Chiudi la modale cliccando sullo sfondo scuro
+        editModal.addEventListener('click', (e) => {
+            if (e.target === editModal) {
+                editModal.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+        });
+    }
 
-		    if (deleteReviewBtns.length > 0 && deleteModal) {
-		        
-		        // Quando l'admin clicca il cestino...
-		        deleteReviewBtns.forEach(btn => {
-		            btn.addEventListener('click', function(e) {
-		                e.preventDefault(); // Blocca l'invio immediato del form
-		                
-		                formRecensioneDaInviare = this.closest('form'); // Salva il form specifico di quella recensione
-		                
-		                // Personalizza il testo del modale
-		                deleteMessage.innerHTML = "Sei sicuro di voler rimuovere definitivamente questa <strong>Recensione</strong>?";
-		                
-		                // Fa apparire il modale
-		                deleteModal.classList.add('active');
-		            });
-		        });
+    // ==========================================
+    // 3. MODALE CONFERMA ELIMINAZIONE (RECENSIONI)
+    // ==========================================
+    const deleteReviewBtns = document.querySelectorAll('.btn-delete-review'); 
+    const deleteModal = document.getElementById('delete-confirm-modal');
+    const deleteMessage = document.getElementById('delete-confirm-message');
+    const btnConfirmDelete = document.getElementById('btn-confirm-delete');
+    const btnCancelDelete = document.getElementById('btn-cancel-delete');
+    
+    let formRecensioneDaInviare = null; 
 
-		        // Funzione per chiudere e resettare
-		        const chiudiModale = () => {
-		            deleteModal.classList.remove('active');
-		            formRecensioneDaInviare = null;
-		        };
+    if (deleteReviewBtns.length > 0 && deleteModal) {
+        
+        // Cliccando il cestino...
+        deleteReviewBtns.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                formRecensioneDaInviare = this.closest('form'); 
+                deleteMessage.innerHTML = "Sei sicuro di voler rimuovere definitivamente questa <strong>Recensione</strong>?";
+                deleteModal.classList.add('active');
+            });
+        });
 
-		        // Click su "Annulla"
-		        if (btnCancelDelete) {
-		            btnCancelDelete.addEventListener('click', chiudiModale);
-		        }
+        // Funzione di chiusura
+        const chiudiModale = () => {
+            deleteModal.classList.remove('active');
+            formRecensioneDaInviare = null;
+        };
 
-		        // Click fuori dalla finestra (sullo sfondo scuro)
-		        deleteModal.addEventListener('click', (e) => {
-		            if (e.target === deleteModal) {
-		                chiudiModale();
-		            }
-		        });
+        if (btnCancelDelete) {
+            btnCancelDelete.addEventListener('click', chiudiModale);
+        }
 
-		        // Click su "Procedi"
-		        if (btnConfirmDelete) {
-		            btnConfirmDelete.addEventListener('click', () => {
-		                // Se c'è un form salvato in memoria, sparalo al server!
-		                if (formRecensioneDaInviare) {
-		                    formRecensioneDaInviare.submit(); 
-		                }
-		            });
-		        }
-		    }
-});
+        deleteModal.addEventListener('click', (e) => {
+            if (e.target === deleteModal) {
+                chiudiModale();
+            }
+        });
+
+        if (btnConfirmDelete) {
+            btnConfirmDelete.addEventListener('click', () => {
+                if (formRecensioneDaInviare) {
+                    formRecensioneDaInviare.submit(); 
+                }
+            });
+        }
+    }
+
+}); // <-- QUESTA GRAFFA CHIUDE FINALMENTE TUTTO IL BLOCCO DOMContentLoaded!

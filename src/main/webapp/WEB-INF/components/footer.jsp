@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/footer.css">
+    <%@ page import="reframe.model.beans.Utente" %>
+    <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <footer class="site-footer">
     <div class="footer-container">
         
@@ -23,6 +25,7 @@
                     <li><a href="${pageContext.request.contextPath}/ProdottoServlet?tipo=Nuovo">Nuove</a></li>
                     <li><a href="${pageContext.request.contextPath}/ProdottoServlet?tipo=Usato">Ricondizionate</a></li>
                     <li><a href="${pageContext.request.contextPath}/ProdottoServlet?tipo=Collezione">Collezionismo</a></li>
+                    <li><a href="${pageContext.request.contextPath}/ProdottoServlet?search=">Tutto il Catalogo</a></li>
                 </ul>
             </div>
 
@@ -32,8 +35,16 @@
                     <li><a href="#">Privacy Policy</a></li>
                     <li><a href="#">Cookie Policy</a></li>
                     <li><a href="#">Contatti</a></li>
-                    <li><a href="#">Legal</a></li>
-                    <li><a href="#">B2B</a></li>
+                    <c:if test="${not empty sessionScope.utente}">
+    <c:choose>
+        <c:when test="${sessionScope.utente.isAdmin > 0}">
+            <li><a href="${pageContext.request.contextPath}/PannelloAdminServlet">Pannello di Gestione</a></li>
+        </c:when>
+        <c:otherwise>
+            <li><a href="${pageContext.request.contextPath}/ProfiloServlet">Area Utente</a></li>
+        </c:otherwise>
+    </c:choose>
+</c:if>
                 </ul>
             </div>
             
