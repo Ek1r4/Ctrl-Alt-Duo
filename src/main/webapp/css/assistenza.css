@@ -643,13 +643,13 @@
     font-size: 14px;
 }
 
-.msg-admin {
+.msg-other {
     background-color: var(--beige-scuro);
     align-self: flex-start;
     border-bottom-left-radius: 0;
 }
 
-.msg-user {
+.msg-mine {
     background-color: color-mix(in srgb, var(--verde-ottanio) 15%, transparent);
     align-self: flex-end;
     border-bottom-right-radius: 0;
@@ -715,6 +715,29 @@
     margin-top: 15px;
 }
 
+/* =========================================
+   DIVISORE NOTIFICHE DI SISTEMA 
+   ========================================= */
+.chat-system-divider {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 15px 0;
+    width: 100%;
+}
+
+.chat-system-divider span {
+    background-color: var(--panna-carta);
+    color: var(--grigio-taupe);
+    font-size: 0.7rem;
+    font-family: var(--font-tecnico);
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1px dashed var(--grigio-taupe);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-align: center;
+}
 /* ===================================================
    TOGGLE SWITCH STATO ADMIN (SEGMENTED CONTROL)
    =================================================== */
@@ -899,6 +922,7 @@
     display: flex;
     align-items: center;
     gap: 15px; 
+    justify-content: space-between;
     flex-direction: row-reverse;
 }
 

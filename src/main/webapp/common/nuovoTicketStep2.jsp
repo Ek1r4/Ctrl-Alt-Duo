@@ -40,7 +40,7 @@
                 <span>DETTAGLI TICKET</span>
             </h1>
 
-            <form id="formTicketFinale" action="CreaTicketServlet" method="POST">
+            <form id="formTicketFinale" action="CreaPraticaServlet" method="POST">
                 
                 <%
                     String[] ordiniSelezionati = request.getParameterValues("ordineSelezionato");
@@ -76,12 +76,13 @@
                 <fieldset class="custom-input">
                     <legend>Categoria *</legend>
                     <div class="select-wrapper-analog">
-                        <select name="tag" id="categoriaTicket" required>
-                            <option value="" disabled selected hidden>Seleziona l'argomento...</option>
+                        <select name="categoria" id="categoriaTicket" required>
+                            <%-- Se ci sono selezioni, il default è vuoto. Altrimenti è "account" --%>
+                            <option value="" disabled <%= ciSonoSelezioni ? "selected" : "" %> hidden>Seleziona l'argomento...</option>
                             <option value="ordine">Ordine</option>
                             <option value="prodotto">Prodotto</option>
                             <option value="pagamento">Pagamento</option>
-                            <option value="account">Account</option>
+                            <option value="account" <%= !ciSonoSelezioni ? "selected" : "" %>>Account</option>
                         </select>
                         <i class="ri-arrow-down-s-line select-arrow-analog"></i>
                     </div>

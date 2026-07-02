@@ -1,123 +1,78 @@
 package reframe.model.dao;
 
 import reframe.model.beans.Ticket;
-import reframe.utils.*;
+import reframe.utils.ConnessioneDB;
 import java.sql.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-public class TicketDAO 
-{
-	// Dentro TicketDAO.java
+public class TicketDAO {
 
-	private Ticket estraiTicket(ResultSet rs) throws SQLException {
-	    Ticket ticket = new Ticket();
-	    ticket.setIdTicket(rs.getString("ID_ticket"));
-	    ticket.setTestoMessaggio(rs.getString("Testo_Messaggio"));
-	    ticket.setDataTicket(rs.getTimestamp("Data_ticket"));
-	    ticket.setRmaPratica(rs.getString("RMA_Pratica"));
-	    ticket.setAutoreMessaggio(rs.getString("Autore_Messaggio"));
-	    return ticket;
-	}
-
-	public boolean doSave(Ticket nuovoTicket) throws SQLException {
-	    // Aggiornata la query con le nuove colonne
-	    String query = "INSERT INTO Ticket (ID_ticket, Testo_Messaggio, Data_ticket, RMA_Pratica, Autore_Messaggio) VALUES (?, ?, ?, ?, ?, ?, ?)";
-	    
-	    Connection conn = null;
-	    PreparedStatement ps = null;
-	    
-	    try {
-	        conn = ConnessioneDB.getConnection(); 
-	        ps = conn.prepareStatement(query); 
-	        
-	        ps.setString(1, nuovoTicket.getIdTicket());
-	        ps.setString(4, nuovoTicket.getTestoMessaggio());
-	        ps.setTimestamp(5, nuovoTicket.getDataTicket());
-	        ps.setString(6, nuovoTicket.getRmaPratica());
-	        ps.setString(7, nuovoTicket.getAutoreMessaggio());
-	        
-	        return ps.executeUpdate() > 0;
-	    } finally {
-	        if (ps != null) ps.close();
-	        if (conn != null) ConnessioneDB.releaseConnection(conn);
-	    }
-	}
-
-    public Ticket doRetrieveByKey(String idTicket) throws SQLException 
-    {
-        String query = "SELECT * FROM Ticket WHERE ID_ticket = ?";
-        
-        Connection conn = null;
-        PreparedStatement ps = null;
-        Ticket ticketTrovato = null;
-        
-        try 
-        {
-            conn = ConnessioneDB.getConnection();
-            ps = conn.prepareStatement(query);
-            ps.setString(1, idTicket);
-            
-            try( ResultSet rs = ps.executeQuery() ) {
-                if(rs.next()) ticketTrovato = estraiTicket(rs);
-            }
-        } catch (SQLException e) { e.printStackTrace(); }
-        finally { 
-            try { if (ps != null) ps.close(); } catch (SQLException e) { e.printStackTrace(); }
-            if (conn != null) { ConnessioneDB.releaseConnection(conn); } 
-        }
-        
-        return ticketTrovato;
+    // UTILITY: Mappa la riga del ResultSet in un oggetto Ticket
+    private Ticket estraiTicket(ResultSet rs) throws SQLException {
+        Ticket ticket = new Ticket();
+        ticket.setIdTicket(rs.getString("ID_ticket"));
+        ticket.setRmaPratica(rs.getString("RMA_Pratica"));
+        ticket.setAutore(rs.getString("Autore"));
+        ticket.setTipo(rs.getString("Tipo"));
+        ticket.setMessaggio(rs.getString("Messaggio"));
+        ticket.setDataTicket(rs.getTimestamp("Data_ticket"));
+        return ticket;
     }
 
-    public List<Ticket> doRetrieveAll(String order) throws SQLException 
-    {
-        String query = "SELECT * FROM Ticket";
+    // CREATE: Inserisce un nuovo messaggio nella chat
+    public boolean doSave(Ticket ticket) throws SQLException {
+        String query = "INSERT INTO Ticket (ID_ticket, RMA_Pratica, Autore, Tipo, Messaggio) VALUES (?, ?, ?, ?, ?)";
         
         Connection conn = null;
         PreparedStatement ps = null;
-        List<Ticket> lista = new ArrayList<>();
         
-        if(order != null && !order.trim().isEmpty()) {
-            query += " ORDER BY " + order;
-        }
-
-        try 
-        {
+        try {
             conn = ConnessioneDB.getConnection();
             ps = conn.prepareStatement(query);
             
-            try( ResultSet rs = ps.executeQuery() ) {
-                while(rs.next()) lista.add(estraiTicket(rs));    
-            }
-        } catch (SQLException e) { e.printStackTrace(); }
-        finally { 
-            try { if (ps != null) ps.close(); } catch (SQLException e) { e.printStackTrace(); }
-            if (conn != null) { ConnessioneDB.releaseConnection(conn); } 
-        }
-        
-        return lista;
-    }
-    
-    public boolean doDelete(String idTicket) throws SQLException 
-    {
-        String query = "DELETE FROM Ticket WHERE ID_ticket = ?";
-        
-        Connection conn = null;
-        PreparedStatement ps = null;
-        
-        try 
-        {
-            conn = ConnessioneDB.getConnection();
-            ps = conn.prepareStatement(query);
-            ps.setString(1, idTicket);
+            ps.setString(1, ticket.getIdTicket());
+            ps.setString(2, ticket.getRmaPratica());
+            ps.setString(3, ticket.getAutore());
+            ps.setString(4, ticket.getTipo());
+            ps.setString(5, ticket.getMessaggio());
             
             int row = ps.executeUpdate();
             return row > 0;
             
-        } catch (SQLException e) { e.printStackTrace(); return false; }
-        finally { 
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
             try { if (ps != null) ps.close(); } catch (SQLException e) { e.printStackTrace(); }
-            if (conn != null) { ConnessioneDB.releaseConnection(conn); } 
+            if (conn != null) { ConnessioneDB.releaseConnection(conn); }
         }
+    }
+
+    // READ (Lista): Estrae l'intera cronologia chat di una singola Pratica, ordinata per data (dal più vecchio al più recente)
+    public List<Ticket> doRetrieveByRma(String rma) throws SQLException {
+        String query = "SELECT * FROM Ticket WHERE RMA_Pratica = ? ORDER BY Data_ticket ASC";
+        
+        Connection conn = null;
+        PreparedStatement ps = null;
+        List<Ticket> cronologia = new ArrayList<>();
+        
+        try {
+            conn = ConnessioneDB.getConnection();
+            ps = conn.prepareStatement(query);
+            ps.setString(1, rma);
+            
+            try(ResultSet rs = ps.executeQuery()) {
+                while(rs.next()) {
+                    cronologia.add(estraiTicket(rs));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try { if (ps != null) ps.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if (conn != null) { ConnessioneDB.releaseConnection(conn); }
+        }
+        return cronologia;
     }
 }

@@ -124,39 +124,6 @@
     </main>
 
     <jsp:include page="../WEB-INF/components/footer.jsp" />
-    <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const form = document.getElementById("formSelezioneOrdine");
-        const floatingSubmit = document.getElementById("floatingSubmit");
-        const ordiniItems = document.querySelectorAll(".ordine-item");
-
-        function checkVisibility() {
-            const anyChecked = form.querySelectorAll('input[type="checkbox"]:checked').length > 0;
-            if (anyChecked) {
-                floatingSubmit.classList.add("visible");
-            } else {
-                floatingSubmit.classList.remove("visible");
-            }
-        }
-
-        ordiniItems.forEach(item => {
-            const cbOrdine = item.querySelector(".cb-ordine");
-            const cbProdotti = item.querySelectorAll(".cb-prodotto");
-
-            cbOrdine.addEventListener("change", function() {
-                cbProdotti.forEach(cb => cb.checked = this.checked);
-                checkVisibility();
-            });
-
-            cbProdotti.forEach(cb => {
-                cb.addEventListener("change", function() {
-                    const anyProductChecked = Array.from(cbProdotti).some(p => p.checked);
-                    cbOrdine.checked = anyProductChecked;
-                    checkVisibility();
-                });
-            });
-        });
-    });
-    </script>
+    <script src="../js/assistenza.js"></script>
 </body>
 </html>
