@@ -764,6 +764,7 @@
     cursor: pointer;
     padding: 4px;
     box-sizing: border-box;
+    container-type: inline-size;
 }
 
 /* Il blocco scuro che scorre all'interno */
@@ -783,12 +784,15 @@
 .toggle-text {
     flex: 1;
     text-align: center;
-    font-size: 0.85rem;
+    /* NUOVO: Font fluido limitato tra 10px e 14px, che scala dinamicamente in base allo spazio (4.5cqw) */
+    font-size: clamp(10px, 4.5cqw, 14px);
     font-weight: 700;
-    z-index: 2; /* Rimane sopra al thumb */
+    z-index: 2; 
     transition: color 0.3s ease;
     user-select: none;
-    letter-spacing: 1px;
+    /* NUOVO: Leggermente ridotto per salvare spazio orizzontale senza perdere l'estetica brutalista */
+    letter-spacing: 0.5px; 
+    white-space: nowrap;
 }
 
 /* Colori di default (IN CARICO è attivo) */
@@ -823,7 +827,7 @@
 .status-warning-msg.show {
     opacity: 1;
     visibility: visible;
-    max-height: 60px; /* Si espande solo quando serve */
+    max-height: 150px; /* Si espande solo quando serve */
     margin-top: 15px; /* Aggiunge lo spazio tra il toggle e il testo solo se visibile */
     overflow: visible;
 }
