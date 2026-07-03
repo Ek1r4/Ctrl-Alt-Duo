@@ -80,7 +80,8 @@ public class CarrelloServlet extends HttpServlet {
                                 prodottoScelto.getNome(), 
                                 prodottoScelto.getPrezzo(), 
                                 prodottoScelto.getIva(), 
-                                quantitaRichiesta
+                                quantitaRichiesta,
+                                prodottoScelto.getInStock()
                             ));
                             request.setAttribute("successMessage", "Prodotto aggiunto al carrello con successo!");
                         }

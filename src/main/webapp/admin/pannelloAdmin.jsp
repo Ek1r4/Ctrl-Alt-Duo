@@ -60,6 +60,10 @@
 	
 <input type="hidden" id="triggerTab" value="<%= targetTab %>">
 
+	<!-- Nuovi campi per passare i messaggi al JavaScript -->
+    <input type="hidden" id="serverSuccess" value="<%= checkSuccess != null ? checkSuccess : "" %>">
+    <input type="hidden" id="serverError" value="<%= request.getParameter("errore") != null ? request.getParameter("errore") : "" %>">
+
     <aside class="sidebar">
         <div class="sidebar-header">
             <a href="${pageContext.request.contextPath}/index.jsp" class="header-logo">
@@ -93,6 +97,36 @@
         </section>
 
         <section id="prodotti" class="dashboard-section">
+        
+        <!-- NUOVA BARRA DI RICERCA CATALOGO -->
+            <div class="rect-card mb-20">
+                <h3>Cerca nel Catalogo</h3>
+                
+                <% 
+                   // Recuperiamo la stringa cercata per lasciarla scritta nella barra
+                   String parametroRicerca = request.getParameter("ricercaProdotto"); 
+                   String testoCercato = (parametroRicerca != null) ? parametroRicerca.replace("\"", "&quot;") : "";
+                %>
+                
+                <form action="<%= request.getContextPath() %>/PannelloAdminServlet" method="GET" class="filter-form">
+                    <!-- Campo nascosto per far capire al JS in quale tab tornare -->
+                    <input type="hidden" name="tab" value="prodotti">
+                    
+                    <!-- Campo di ricerca (ora mantiene in memoria il testo cercato) -->
+                    <input type="text" name="ricercaProdotto" placeholder="Cerca per Nome, Modello o Seriale..." class="search-input" value="<%= testoCercato %>">
+                    
+                    <!-- Bottone di invio -->
+                    <button type="submit" class="btn-cta"><i class="fas fa-search"></i> Cerca Prodotto</button>
+                    
+                    <!-- Tasto gomma per azzerare la ricerca (compare solo se c'è testo cercato) -->
+                    <% if (parametroRicerca != null && !parametroRicerca.trim().isEmpty()) { %>
+                        <a href="<%= request.getContextPath() %>/PannelloAdminServlet?tab=prodotti" class="btn-cta cancel-btn" title="Azzera ricerca" style="text-decoration: none; display: flex; align-items: center; justify-content: center; padding: 10px 15px;">
+                            <i class="fas fa-eraser" style="font-size: 1.1rem; color: #555;"></i>
+                        </a>
+                    <% } %>
+                </form>
+            </div>
+            
             <div class="rect-card">
                 <h3>Lista Prodotti</h3>
                 <table class="data-table">
@@ -242,21 +276,48 @@
     
     <div class="rect-card mb-20">
         <h3>Filtra Ordini</h3>
+        
+        <% 
+           // Recuperiamo i parametri per mantenerli nei campi
+           String parametroCliente = request.getParameter("cliente");
+           String parametroDataInizio = request.getParameter("dataInizio");
+           String parametroDataFine = request.getParameter("dataFine");
+           
+           String valCliente = (parametroCliente != null) ? parametroCliente.replace("\"", "&quot;") : "";
+           String valDataInizio = (parametroDataInizio != null) ? parametroDataInizio : "";
+           String valDataFine = (parametroDataFine != null) ? parametroDataFine : "";
+           
+           // Controlliamo se almeno un filtro è stato utilizzato
+           boolean filtriOrdiniAttivi = (parametroCliente != null && !parametroCliente.trim().isEmpty()) || 
+                                        (parametroDataInizio != null && !parametroDataInizio.trim().isEmpty()) || 
+                                        (parametroDataFine != null && !parametroDataFine.trim().isEmpty());
+        %>
+        
         <form action="<%= request.getContextPath() %>/PannelloAdminServlet" method="GET" class="filter-form">
         	<input type="hidden" name="tab" value="ordini">
-            <input type="text" name="cliente" placeholder="Cerca per Cliente..." class="search-input">
             
+            <!-- Campo Cliente con mantenimento del testo -->
+            <input type="text" name="cliente" placeholder="Cerca per Cliente..." class="search-input" value="<%= valCliente %>">
+            
+            <!-- Campi Data con mantenimento della selezione -->
             <div class="date-filter">
                 <label>Da:</label>
-                <input type="date" name="dataInizio" title="Data Inizio">
+                <input type="date" name="dataInizio" title="Data Inizio" value="<%= valDataInizio %>">
             </div>
             
             <div class="date-filter">
                 <label>A:</label>
-                <input type="date" name="dataFine" title="Data Fine">
+                <input type="date" name="dataFine" title="Data Fine" value="<%= valDataFine %>">
             </div>
             
             <button type="submit" class="btn-cta"><i class="fas fa-search"></i> Applica Filtri</button>
+            
+            <!-- Tasto gomma per azzerare i filtri (compare solo se almeno un filtro è attivo) -->
+            <% if (filtriOrdiniAttivi) { %>
+                <a href="<%= request.getContextPath() %>/PannelloAdminServlet?tab=ordini" class="btn-cta cancel-btn" title="Azzera filtri" style="text-decoration: none; display: flex; align-items: center; justify-content: center; padding: 10px 15px;">
+                    <i class="fas fa-eraser" style="font-size: 1.1rem; color: #555;"></i>
+                </a>
+            <% } %>
         </form>
     </div>
 
@@ -289,11 +350,15 @@
                             <input type="hidden" name="action" value="aggiornaStatoOrdine">
                             
                             <input type="hidden" name="idOrdine" value="<%= o.getIdOrdine() %>">
-                            <select name="nuovoStato" class="status-select">
-                                <option value="In lavorazione" <%= "In lavorazione".equals(o.getStato()) ? "selected" : "" %>>In lavorazione</option>
-                                <option value="In consegna" <%= "Spedito".equals(o.getStato()) ? "selected" : "" %>>In consegna</option>
-                                <option value="Consegnato" <%= "Consegnato".equals(o.getStato()) ? "selected" : "" %>>Consegnato</option>
-                            </select>
+                            			<% 
+    									// Mettiamo in sicurezza lo stato: evitiamo errori se è null, togliamo gli spazi extra e lo rendiamo facilmente confrontabile
+    									String statoAttuale = (o.getStato() != null) ? o.getStato().trim() : ""; 
+											%>
+									<select name="nuovoStato" class="status-select">
+    								<option value="In lavorazione" <%= "In lavorazione".equalsIgnoreCase(statoAttuale) ? "selected" : "" %>>In lavorazione</option>
+    								<option value="In consegna" <%= "In consegna".equalsIgnoreCase(statoAttuale) ? "selected" : "" %>>In consegna</option>
+    								<option value="Consegnato" <%= "Consegnato".equalsIgnoreCase(statoAttuale) ? "selected" : "" %>>Consegnato</option>
+								</select>
                             <button type="submit" class="btn-icon update" title="Aggiorna Stato"><i class="fas fa-check-circle"></i></button>
                         </form>
                     </td>

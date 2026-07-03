@@ -402,5 +402,45 @@ document.addEventListener('DOMContentLoaded', () => {
 				            }
 				        });
 				    }
-				
+					
+						// ==========================================
+					    // 8. TOAST NOTIFICHE GESTIONE ADMIN
+					    // ==========================================
+					    
+					    // Leggiamo i valori dai campi nascosti scritti dal Java
+					    const msgSuccess = document.getElementById('serverSuccess') ? document.getElementById('serverSuccess').value : '';
+					    const msgError = document.getElementById('serverError') ? document.getElementById('serverError').value : '';
+					    
+					    // Creazione e gestione del Toast dinamico
+					    function mostraToastAdmin(messaggio, isSuccess = true) {
+					        let toast = document.querySelector('.toast-notification');
+					        
+					        if (!toast) {
+					            toast = document.createElement('div');
+					            toast.className = 'toast-notification';
+					            document.body.appendChild(toast);
+					        }
+					        
+					        const icona = isSuccess ? 'fa-check-circle' : 'fa-exclamation-triangle';
+					        toast.innerHTML = `<i class="fas ${icona}"></i> ${messaggio}`;
+					        
+					        // Forza un piccolo ritardo (reflow) prima di aggiungere la classe per far partire l'animazione CSS
+					        setTimeout(() => {
+					            toast.classList.add('show');
+					        }, 10);
+					        
+					        setTimeout(() => {
+					            toast.classList.remove('show');
+					        }, 3000);
+					    }
+
+					    // Controlliamo se ci sono messaggi da mostrare
+					    if (msgSuccess === 'adminCreato') {
+					        mostraToastAdmin("Nuovo profilo Admin creato con successo!");
+					    } else if (msgSuccess === 'adminEliminato') {
+					        mostraToastAdmin("Accesso admin revocato correttamente.");
+					    } else if (msgError === 'Impossibile_revocare_accesso') {
+					        mostraToastAdmin("Errore: Impossibile revocare l'accesso.", false);
+					    }
+
 });

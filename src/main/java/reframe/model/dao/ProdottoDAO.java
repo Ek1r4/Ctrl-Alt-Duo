@@ -105,6 +105,39 @@ public class ProdottoDAO {
         }
         return prodotti;
     }
+    
+    public List<Prodotto> fetchProdottiPerAdmin(String parametro) throws SQLException {
+        // Cerca corrispondenze nel nome, marchio o seriale (inclusi i prodotti oscurati)
+        String query = "SELECT * FROM Prodotto WHERE nome LIKE ? OR marchio LIKE ? OR seriale LIKE ?";
+        List<Prodotto> prodottiTrovati = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement ps = null;
+        
+        try {
+            conn = ConnessioneDB.getConnection(); 
+            ps = conn.prepareStatement(query);
+            
+            // Creiamo il pattern per il LIKE aggiungendo i % prima e dopo la parola cercata
+            String searchPattern = "%" + parametro + "%";
+            
+            // Settiamo lo stesso pattern per tutti e tre i campi di ricerca
+            ps.setString(1, searchPattern);
+            ps.setString(2, searchPattern);
+            ps.setString(3, searchPattern);
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    prodottiTrovati.add(estraiProdotto(rs));
+                }
+            }
+        } catch (SQLException e) { 
+            e.printStackTrace(); 
+        } finally { 
+            if (ps != null) try { ps.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if (conn != null) { ConnessioneDB.releaseConnection(conn); } 
+        }
+        return prodottiTrovati;
+    }
 
     public void insertProdotto(Prodotto p) throws SQLException {
         // Il campo isAttivo sarà automaticamente TRUE grazie al DEFAULT impostato nel database

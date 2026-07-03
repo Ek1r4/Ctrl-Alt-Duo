@@ -41,7 +41,7 @@
                                 <button type="button" class="qty-btn" onclick="gestisciClickMeno('<%= item.getIdProdotto() %>')">
                                     <i id="icon-minus-<%= item.getIdProdotto() %>" class="<%= item.getQuantita() == 1 ? "fas fa-trash-alt" : "fas fa-minus" %>"></i>
                                 </button>
-                                <input type="number" id="qty-<%= item.getIdProdotto() %>" value="<%= item.getQuantita() %>" class="qty-input-field" readonly>
+                                <input type="number" id="qty-<%= item.getIdProdotto() %>" value="<%= item.getQuantita() %>" data-stock="<%= item.getInStock() %>" class="qty-input-field" readonly>
                                 <button type="button" class="qty-btn" onclick="modificaQuantita('<%= item.getIdProdotto() %>', 1)">
                                     <i class="fas fa-plus"></i>
                                 </button>
@@ -78,7 +78,25 @@
 
     <jsp:include page="/WEB-INF/components/footer.jsp" />
     
-    <script>const contestoReFrame = '<%= request.getContextPath() %>';</script>
-    <script src="<%= request.getContextPath() %>/js/carrello.js"></script>
+<!-- Modale di Conferma Eliminazione (Identica al Profilo) -->
+<div class="admin-modal-overlay" id="delete-confirm-modal">
+    <!-- Aggiunta la classe film-container per i bordi a pellicola -->
+    <div class="confirm-modal-box film-container">
+        
+        <h3>CONFERMA RIMOZIONE</h3>
+        
+        <p class="confirm-message" id="delete-confirm-message">
+            Sei sicuro di voler rimuovere questo articolo<br>dal carrello?
+        </p>
+        
+        <div class="confirm-actions">
+            <button type="button" class="btn-cta cancel-btn" id="btn-cancel-delete">ANNULLA</button>
+            <button type="button" class="btn-cta danger-btn" id="btn-confirm-delete">PROCEDI</button>
+        </div>
+        
+    </div>
+</div>
+    
+        <script src="<%= request.getContextPath() %>/js/carrello.js"></script>
 </body>
 </html>

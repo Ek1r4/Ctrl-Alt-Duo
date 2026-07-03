@@ -30,7 +30,7 @@
             
         </div>
         
-        <footer class="site-footer">
+        <footer class="site-footer-minimal">
             &copy; 2026 ReFrame
         </footer>
     </div>

@@ -44,10 +44,7 @@
             // Controllo dello stock
             if (p.getInStock() > 0) { 
     %>
-        <form action="<%= request.getContextPath() %>/Carrello" method="POST" class="quick-add-form">
-            <input type="hidden" name="action" value="add">
-            <input type="hidden" name="id" value="<%= p.getId() %>">
-            <input type="hidden" name="quantita" value="1">
+        <form class="quick-add-form" onsubmit="event.preventDefault(); aggiungiVeloceAJAX('<%= p.getId() %>');">
             <button type="submit" class="btn-quick-add" title="Aggiungi al carrello">
                 <i class="fas fa-cart-plus"></i>
             </button>

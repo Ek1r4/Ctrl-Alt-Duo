@@ -39,9 +39,17 @@ public class PannelloAdminServlet extends HttpServlet {
         }
 
         try {
-            // 1. RECUPERO PRODOTTI
-            ProdottoDAO prodottoDAO = new ProdottoDAO();
-            request.setAttribute("listaProdotti", prodottoDAO.fetchAllProdotti());
+        	// 1. RECUPERO PRODOTTI
+        	ProdottoDAO prodottoDAO = new ProdottoDAO();
+        	String ricercaProdotto = request.getParameter("ricercaProdotto");
+
+        	if (ricercaProdotto != null && !ricercaProdotto.trim().isEmpty()) {
+        	    // Se c'è una ricerca in corso, passiamo il parametro al DAO
+        	    request.setAttribute("listaProdotti", prodottoDAO.fetchProdottiPerAdmin(ricercaProdotto.trim()));
+        	} else {
+        	    // Altrimenti carica l'intero catalogo di default
+        	    request.setAttribute("listaProdotti", prodottoDAO.fetchAllProdotti());
+        	}
 
             // 2. RECUPERO ADMIN (se SuperAdmin)
             if (adminLoggato.getIsAdmin() == 2) {
@@ -61,9 +69,12 @@ public class PannelloAdminServlet extends HttpServlet {
             // Assicurati che il metodo nel DAO sia quello che abbiamo discusso
             request.setAttribute("listaOrdini", ordineDAO.getOrdiniFiltrati(cliente, dataInizio, dataFine));
 
-            // 4. FORZA IL TAB "ORDINI" SE SONO STATI USATI I FILTRI
+         // 4. FORZA IL TAB CORRETTO IN BASE AI FILTRI E ALLA RICERCA
             if (cliente != null || dataInizioStr != null || dataFineStr != null || "ordini".equals(request.getParameter("tab"))) {
                 request.setAttribute("targetTab", "ordini");
+            } else if (ricercaProdotto != null || "prodotti".equals(request.getParameter("tab"))) {
+                // Intercetta la ricerca prodotto o il tab nascosto e forza l'apertura del catalogo
+                request.setAttribute("targetTab", "prodotti");
             }
 
             request.getRequestDispatcher("/admin/pannelloAdmin.jsp").forward(request, response);

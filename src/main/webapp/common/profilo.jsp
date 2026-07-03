@@ -158,7 +158,7 @@
                         <div class="empty-message empty-history-container">
                             <i class="fas fa-box-open empty-history-icon"></i>
                             <p>Non hai ancora effettuato alcun acquisto.</p>
-                            <a href="${pageContext.request.contextPath}/index.jsp" class="btn-cta btn-explore">Esplora la Vetrina</a>
+                            <a href="${pageContext.request.contextPath}/ProdottoServlet?search=" class="btn-cta btn-explore">Esplora la Vetrina</a>
                         </div>
                     <% } %>
                 </div>

@@ -6,15 +6,17 @@ public class CarrelloItem {
     private double prezzo;
     private int iva; // NUOVO CAMPO OBBLIGATORIO
     private int quantita;
+    private int inStock;
 
     public CarrelloItem() {}
 
-    public CarrelloItem(String idProdotto, String nome, double prezzo, int iva, int quantita) {
+    public CarrelloItem(String idProdotto, String nome, double prezzo, int iva, int quantita, int inStock) {
         this.idProdotto = idProdotto;
         this.nome = nome;
         this.prezzo = prezzo;
         this.iva = iva;
         this.quantita = quantita;
+        this.inStock = inStock;
     }
 
     // Getter e Setter
@@ -32,6 +34,9 @@ public class CarrelloItem {
     
     public int getQuantita() { return quantita; }
     public void setQuantita(int quantita) { this.quantita = quantita; }
+    
+    public int getInStock() { return inStock; }
+    public void setInStock(int inStock) { this.inStock = inStock; }
 
  // Calcolo del totale per la riga: (Prezzo Singolo + IVA) * Quantità
     public double getPrezzoTotale() {

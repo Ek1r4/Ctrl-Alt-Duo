@@ -34,17 +34,19 @@
                 <ul class="footer-nav">
                     <li><a href="#">Privacy Policy</a></li>
                     <li><a href="#">Cookie Policy</a></li>
-                    <li><a href="#">Contatti</a></li>
+                    <li><a href="https://mail.google.com/mail/?view=cm&fs=1&to=noreply.reframe@gmail.com&su=Richiesta%20Informazioni" target="_blank">Scrivici una mail</a></li>
                     <c:if test="${not empty sessionScope.utente}">
-    <c:choose>
-        <c:when test="${sessionScope.utente.isAdmin > 0}">
-            <li><a href="${pageContext.request.contextPath}/PannelloAdminServlet">Pannello di Gestione</a></li>
-        </c:when>
-        <c:otherwise>
-            <li><a href="${pageContext.request.contextPath}/ProfiloServlet">Area Utente</a></li>
-        </c:otherwise>
-    </c:choose>
-</c:if>
+    					<c:choose>
+        				<c:when test="${sessionScope.utente.isAdmin > 0}">
+            				<li><a href="${pageContext.request.contextPath}/PannelloAdminServlet">Pannello di Gestione</a></li>
+            				<li><a href="${pageContext.request.contextPath}/admin/gestioneTicket.jsp">Gestione Ticket</a></li>
+        				</c:when>
+        					<c:otherwise>
+            				<li><a href="${pageContext.request.contextPath}/ProfiloServlet">Area Utente</a></li>
+            				<li><a href="${pageContext.request.contextPath}/common/centroAssistenza.jsp">Centro Assistenza</a></li>
+        					</c:otherwise>
+    					</c:choose>
+					</c:if>
                 </ul>
             </div>
             
