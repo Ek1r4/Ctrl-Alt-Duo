@@ -37,6 +37,11 @@
         <button class="btn-close-dialog" onclick="chiudiOverlay()" aria-label="Chiudi ticket">
             <i class="ri-close-large-line"></i>
         </button>
+        
+        <div class="mobile-ticket-tabs">
+        <button type="button" class="tab-btn active" onclick="switchMobileTab('chat')">CHAT</button>
+        <button type="button" class="tab-btn" onclick="switchMobileTab('dettagli')">DETTAGLI</button>
+    </div>
 
         <div class="ticket-dialog-content">
 

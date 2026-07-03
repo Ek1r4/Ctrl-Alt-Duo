@@ -228,6 +228,7 @@ function popolaOverlay(data) {
 function chiudiOverlay() {
     document.getElementById('ticketOverlay').close();
     document.body.style.overflow = 'auto';
+	switchMobileTab('chat');
 }
 
 function showToast(message) {
@@ -680,3 +681,27 @@ function renderizzaGriglia(pratiche, ruolo) {
         gridContainer.innerHTML += htmlRiga;
     });
 }
+
+// =========================================================
+// GESTIONE TABS MOBILE PER L'OVERLAY
+// =========================================================
+function switchMobileTab(tabName) {
+    const content = document.querySelector('.ticket-dialog-content');
+    const btns = document.querySelectorAll('.mobile-ticket-tabs .tab-btn');
+
+    if (!content || btns.length < 2) return;
+
+    if (tabName === 'dettagli') {
+        content.classList.add('show-dettagli');
+        btns[0].classList.remove('active'); // Spegne bottone Chat
+        btns[1].classList.add('active');    // Accende bottone Dettagli
+    } else {
+        content.classList.remove('show-dettagli');
+        btns[0].classList.add('active');    // Accende bottone Chat
+        btns[1].classList.remove('active'); // Spegne bottone Dettagli
+    }
+}
+
+// Opzionale ma consigliato: Resetta sempre la visuale su "Chat" quando si chiude l'overlay
+// Cerca la tua funzione chiudiOverlay() esistente e aggiungi questa riga:
+// switchMobileTab('chat');

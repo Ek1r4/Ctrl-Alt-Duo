@@ -755,7 +755,8 @@
     position: relative;
     display: flex;
     align-items: center;
-    width: 240px; 
+    width: 100%; 
+    max-width: 240px;
     height: 48px;
     background-color: color-mix(in srgb, var(--grigio-taupe) 15%, transparent); /* Grigio chiarissimo per lo sfondo */
     border: 2px solid color-mix(in srgb, var(--grigio-taupe) 30%, transparent);
@@ -827,15 +828,74 @@
     overflow: visible;
 }
 
+/* ===================================================
+   MOBILE 
+   =================================================== */
+.mobile-ticket-tabs {
+    display: none; /* Nascosto di default su Desktop */
+}
+
 @media (max-width: 992px) {
-    .ticket-dialog-content {
-        flex-direction: column-reverse;
+    .ticket-dialog-wrapper {
+        flex-direction: column;
+        padding-top: 50px; 
         align-items: center;
     }
-    
+
+    /* Mostriamo il selettore (Segmented Control) */
+    .mobile-ticket-tabs {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        width: 100%;
+        margin-bottom: 15px;
+        z-index: 10;
+    }
+
+    .tab-btn {
+        background: transparent;
+        border: 2px solid var(--grigio-taupe);
+        color: var(--grigio-taupe);
+        padding: 8px 24px;
+        border-radius: 30px;
+        font-family: var(--font-tecnico, monospace);
+        font-weight: 700;
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .tab-btn.active {
+        background: var(--verde-ottanio);
+        border-color: var(--verde-ottanio);
+        color: var(--panna-carta);
+    }
+
+    /* Sistemiamo il layout dei pannelli */
+    .ticket-dialog-content {
+        flex-direction: column !important; /* Riporta la chat in cima */
+        align-items: center;
+    }
+
+    /* Di default mostriamo solo il primo pannello (Chat) e nascondiamo i Dettagli */
+    .ticket-panel:nth-child(2) {
+        display: none !important;
+    }
+
+    /* Quando è attiva la classe 'show-dettagli' via JS, invertiamo la visibilità */
+    .ticket-dialog-content.show-dettagli .ticket-panel:nth-child(1) {
+        display: none !important;
+    }
+    .ticket-dialog-content.show-dettagli .ticket-panel:nth-child(2) {
+        display: flex !important;
+    }
+
+    /* Adattiamo l'altezza per far entrare la pellicola perfettamente nello schermo */
     .ticket-panel {
-        height: 60vh;
-        margin-bottom: 20px;
+        height: 70vh !important;
+        margin-bottom: 0 !important;
     }
 }
 /* ===================================================
