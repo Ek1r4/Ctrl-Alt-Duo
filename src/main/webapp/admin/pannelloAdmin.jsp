@@ -4,8 +4,9 @@
 <%@ page import="reframe.model.beans.Prodotto" %>
 <%@ page import="reframe.model.beans.Ordine" %>
 
+<%-- CONTROLLO ACCESSI (RBAC) E INIZIALIZZAZIONE --%>
 <%
-    // Protezione della rotta
+    // Verifica di sicurezza: blocca l'accesso alla rotta se la sessione non è autenticata o se il livello di privilegio (isAdmin) dell'utente è insufficiente (0 = Cliente standard).
     Utente adminLoggato = (Utente) session.getAttribute("utente");
     if (adminLoggato == null || adminLoggato.getIsAdmin() == 0) {
         response.sendRedirect(request.getContextPath() + "/login.jsp");
@@ -22,9 +23,11 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
+    <!-- CONFIGURAZIONE HEAD E STILI -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Admin - ReFrame</title>
+    
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/global.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/amministrazione.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/user-area.css">
@@ -34,46 +37,47 @@
 </head>
 <body class="admin-layout">
 
-	<%
-    String checkSuccess = request.getParameter("success");
-    String paramTab = request.getParameter("tab");
-    String targetTab = "";
+    <%-- GESTIONE ROUTING E STATO VISTA --%>
+    <%
+        String checkSuccess = request.getParameter("success");
+        String paramTab = request.getParameter("tab");
+        String targetTab = "";
+        
+        // Logica di persistenza della UI: interpreta i parametri della GET request originati dai redirect delle Servlet per ripristinare dinamicamente il tab corretto dopo un'operazione CRUD, impedendo il ritorno forzato alla vista predefinita.
+        if (paramTab != null && !paramTab.trim().isEmpty()) {
+            targetTab = paramTab;
+        }
+        else if ("filtroApplicato".equals(checkSuccess) || "filtroFallito".equals(checkSuccess)) {
+            targetTab = "ordini";
+        }
+        else if ("statoAggiornato".equals(checkSuccess) || "updateFallito".equals(checkSuccess)) {
+            targetTab = "ordini";
+        }
+        else if ("adminCreato".equals(checkSuccess) || "adminEliminato".equals(checkSuccess)) {
+            targetTab = "superadmin";
+        } 
+        else if (checkSuccess != null || request.getParameter("errore") != null) {
+            targetTab = "prodotti";
+        }
+    %>
     
-    // 1. Controllo primario: Se l'URL ci dice esplicitamente in che tab andare (proveniente dal form di filtro)
-    if (paramTab != null && !paramTab.trim().isEmpty()) {
-        targetTab = paramTab;
-    }
-    // 2. Controllo secondario: Gestione dei redirect dalle Servlet
-    else if ("filtroApplicato".equals(checkSuccess) || "filtroFallito".equals(checkSuccess)) {
-        targetTab = "ordini";
-    }
-    else if ("statoAggiornato".equals(checkSuccess) || "updateFallito".equals(checkSuccess)) {
-        targetTab = "ordini";
-    }
-    else if ("adminCreato".equals(checkSuccess) || "adminEliminato".equals(checkSuccess)) {
-        targetTab = "superadmin";
-    } 
-    else if (checkSuccess != null || request.getParameter("errore") != null) {
-        targetTab = "prodotti";
-    }
-	%>
-	
-<input type="hidden" id="triggerTab" value="<%= targetTab %>">
-
-	<!-- Nuovi campi per passare i messaggi al JavaScript -->
+    <!-- VARIABILI DI STATO PER IL JAVASCRIPT FRONTEND -->
+    <input type="hidden" id="triggerTab" value="<%= targetTab %>">
     <input type="hidden" id="serverSuccess" value="<%= checkSuccess != null ? checkSuccess : "" %>">
     <input type="hidden" id="serverError" value="<%= request.getParameter("errore") != null ? request.getParameter("errore") : "" %>">
 
+    <!-- SIDEBAR NAVIGAZIONE -->
     <aside class="sidebar">
         <div class="sidebar-header">
             <a href="${pageContext.request.contextPath}/index.jsp" class="header-logo">
-            <img src="${pageContext.request.contextPath}/assets/logoReFrame.png" alt="Logo ReFrame" class="logo-img"> 
-            <div class="logo-text">
-                <span class="logo-title">REFRAME</span>
-            </div>
-        </a><br>
+                <img src="${pageContext.request.contextPath}/assets/logoReFrame.png" alt="Logo ReFrame" class="logo-img"> 
+                <div class="logo-text">
+                    <span class="logo-title">REFRAME</span>
+                </div>
+            </a><br>
             <span class="role-badge"><%= isSuperAdmin ? "Super Admin" : "Admin" %></span>
         </div>
+        
         <nav class="sidebar-nav">
             <button class="tab-btn active" data-target="profilo"><i class="fas fa-user-circle"></i> Anagrafica</button>
             <button class="tab-btn" data-target="prodotti"><i class="fas fa-box-open"></i> Catalogo</button>
@@ -84,6 +88,7 @@
                 <button class="tab-btn" data-target="superadmin"><i class="fas fa-users-cog"></i> Gestione Admin</button>
             <% } %>
         </nav>
+        
         <div class="sidebar-footer">
             <a href="<%= request.getContextPath() %>/LogoutServlet" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
             <a href="<%= request.getContextPath() %>/index.jsp" class="btn-home"><i class="fas fa-home"></i> Home</a>
@@ -92,33 +97,30 @@
 
     <main class="main-content">
 
+        <!-- SEZIONE: PROFILO -->
         <section id="profilo" class="dashboard-section active">
             <%@ include file="/WEB-INF/components/anagrafia.jsp" %>
         </section>
 
+        <!-- SEZIONE: CATALOGO PRODOTTI -->
         <section id="prodotti" class="dashboard-section">
         
-        <!-- NUOVA BARRA DI RICERCA CATALOGO -->
             <div class="rect-card mb-20">
                 <h3>Cerca nel Catalogo</h3>
                 
                 <% 
-                   // Recuperiamo la stringa cercata per lasciarla scritta nella barra
+                   // Sanitizzazione base dell'input testuale per prevenire l'interruzione dei tag HTML (escaping delle virgolette) durante il reinserimento del valore nel campo value.
                    String parametroRicerca = request.getParameter("ricercaProdotto"); 
                    String testoCercato = (parametroRicerca != null) ? parametroRicerca.replace("\"", "&quot;") : "";
                 %>
                 
                 <form action="<%= request.getContextPath() %>/PannelloAdminServlet" method="GET" class="filter-form">
-                    <!-- Campo nascosto per far capire al JS in quale tab tornare -->
                     <input type="hidden" name="tab" value="prodotti">
                     
-                    <!-- Campo di ricerca (ora mantiene in memoria il testo cercato) -->
                     <input type="text" name="ricercaProdotto" placeholder="Cerca per Nome, Modello o Seriale..." class="search-input" value="<%= testoCercato %>">
                     
-                    <!-- Bottone di invio -->
                     <button type="submit" class="btn-cta"><i class="fas fa-search"></i> Cerca Prodotto</button>
                     
-                    <!-- Tasto gomma per azzerare la ricerca (compare solo se c'è testo cercato) -->
                     <% if (parametroRicerca != null && !parametroRicerca.trim().isEmpty()) { %>
                         <a href="<%= request.getContextPath() %>/PannelloAdminServlet?tab=prodotti" class="btn-cta cancel-btn" title="Azzera ricerca" style="text-decoration: none; display: flex; align-items: center; justify-content: center; padding: 10px 15px;">
                             <i class="fas fa-eraser" style="font-size: 1.1rem; color: #555;"></i>
@@ -192,11 +194,12 @@
             </div>
         </section>
 
+        <!-- SEZIONE: AGGIUNGI PRODOTTO -->
         <section id="aggiungi" class="dashboard-section">
             <div class="film-container">
                 <h1 class="form-title">Inserisci Nuovo Prodotto</h1>
                 
-                <!-- ATTENZIONE: Aggiunto enctype e cambiata la action verso la nuova Servlet -->
+                <%-- Configurazione multipart/form-data necessaria per supportare l'estrazione e il binding simultaneo di dati strutturati (Testo) e payload binari (Immagini/Modelli 3D) lato Servlet. --%>
                 <form action="<%= request.getContextPath() %>/PannelloAdminServlet" method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="aggiungiProdotto"> 
                     
@@ -250,7 +253,6 @@
                             <input type="text" name="condizioneCollezionistica" placeholder="es. Mint, Grade A...">
                         </fieldset>
 
-                        <!-- NUOVI CAMPI UPLOAD FILE (Immagine e Modello 3D) -->
                         <fieldset class="custom-file-input full-width">
                             <legend>Immagine Copertina (.jpg, .png)</legend>
                             <input type="file" name="immagineCopertina" accept="image/*" required>
@@ -272,112 +274,110 @@
             </div>
         </section>
 
+        <!-- SEZIONE: GESTIONE ORDINI -->
         <section id="ordini" class="dashboard-section">
-    
-    <div class="rect-card mb-20">
-        <h3>Filtra Ordini</h3>
-        
-        <% 
-           // Recuperiamo i parametri per mantenerli nei campi
-           String parametroCliente = request.getParameter("cliente");
-           String parametroDataInizio = request.getParameter("dataInizio");
-           String parametroDataFine = request.getParameter("dataFine");
-           
-           String valCliente = (parametroCliente != null) ? parametroCliente.replace("\"", "&quot;") : "";
-           String valDataInizio = (parametroDataInizio != null) ? parametroDataInizio : "";
-           String valDataFine = (parametroDataFine != null) ? parametroDataFine : "";
-           
-           // Controlliamo se almeno un filtro è stato utilizzato
-           boolean filtriOrdiniAttivi = (parametroCliente != null && !parametroCliente.trim().isEmpty()) || 
-                                        (parametroDataInizio != null && !parametroDataInizio.trim().isEmpty()) || 
-                                        (parametroDataFine != null && !parametroDataFine.trim().isEmpty());
-        %>
-        
-        <form action="<%= request.getContextPath() %>/PannelloAdminServlet" method="GET" class="filter-form">
-        	<input type="hidden" name="tab" value="ordini">
             
-            <!-- Campo Cliente con mantenimento del testo -->
-            <input type="text" name="cliente" placeholder="Cerca per Cliente..." class="search-input" value="<%= valCliente %>">
-            
-            <!-- Campi Data con mantenimento della selezione -->
-            <div class="date-filter">
-                <label>Da:</label>
-                <input type="date" name="dataInizio" title="Data Inizio" value="<%= valDataInizio %>">
-            </div>
-            
-            <div class="date-filter">
-                <label>A:</label>
-                <input type="date" name="dataFine" title="Data Fine" value="<%= valDataFine %>">
-            </div>
-            
-            <button type="submit" class="btn-cta"><i class="fas fa-search"></i> Applica Filtri</button>
-            
-            <!-- Tasto gomma per azzerare i filtri (compare solo se almeno un filtro è attivo) -->
-            <% if (filtriOrdiniAttivi) { %>
-                <a href="<%= request.getContextPath() %>/PannelloAdminServlet?tab=ordini" class="btn-cta cancel-btn" title="Azzera filtri" style="text-decoration: none; display: flex; align-items: center; justify-content: center; padding: 10px 15px;">
-                    <i class="fas fa-eraser" style="font-size: 1.1rem; color: #555;"></i>
-                </a>
-            <% } %>
-        </form>
-    </div>
-
-    <div class="rect-card">
-        <h3>Lista Ordini</h3>
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>N° Ordine</th>
-                    <th>Data</th>
-                    <th>Cliente</th>
-                    <th>Totale</th>
-                    <th>Stato Attuale</th>
-                    <th>Modifica Stato</th>
-                </tr>
-            </thead>
-            <tbody>
-                <%
-                   if (listaOrdini != null && !listaOrdini.isEmpty()) { 
-                       for (Ordine o : listaOrdini) { 
+            <div class="rect-card mb-20">
+                <h3>Filtra Ordini</h3>
+                
+                <% 
+                   String parametroCliente = request.getParameter("cliente");
+                   String parametroDataInizio = request.getParameter("dataInizio");
+                   String parametroDataFine = request.getParameter("dataFine");
+                   
+                   String valCliente = (parametroCliente != null) ? parametroCliente.replace("\"", "&quot;") : "";
+                   String valDataInizio = (parametroDataInizio != null) ? parametroDataInizio : "";
+                   String valDataFine = (parametroDataFine != null) ? parametroDataFine : "";
+                   
+                   boolean filtriOrdiniAttivi = (parametroCliente != null && !parametroCliente.trim().isEmpty()) || 
+                                                (parametroDataInizio != null && !parametroDataInizio.trim().isEmpty()) || 
+                                                (parametroDataFine != null && !parametroDataFine.trim().isEmpty());
                 %>
-                <tr>
-                    <td>#<%= o.getIdOrdine() %></td>
-                    <td><%= o.getDataOrdine() %></td>
-                    <td><%= o.getIdUtente() %></td>
-                    <td>&euro; <%= String.format("%.2f", o.getTotale()) %></td>
-                    <td><span class="status-badge"><%= o.getStato() %></span></td>
-                    <td>
-                        <form action="<%= request.getContextPath() %>/PannelloAdminServlet" method="POST" class="status-form">
-                            <input type="hidden" name="action" value="aggiornaStatoOrdine">
-                            
-                            <input type="hidden" name="idOrdine" value="<%= o.getIdOrdine() %>">
-                            			<% 
-    									// Mettiamo in sicurezza lo stato: evitiamo errori se è null, togliamo gli spazi extra e lo rendiamo facilmente confrontabile
-    									String statoAttuale = (o.getStato() != null) ? o.getStato().trim() : ""; 
-											%>
-									<select name="nuovoStato" class="status-select">
-    								<option value="In lavorazione" <%= "In lavorazione".equalsIgnoreCase(statoAttuale) ? "selected" : "" %>>In lavorazione</option>
-    								<option value="In consegna" <%= "In consegna".equalsIgnoreCase(statoAttuale) ? "selected" : "" %>>In consegna</option>
-    								<option value="Consegnato" <%= "Consegnato".equalsIgnoreCase(statoAttuale) ? "selected" : "" %>>Consegnato</option>
-								</select>
-                            <button type="submit" class="btn-icon update" title="Aggiorna Stato"><i class="fas fa-check-circle"></i></button>
-                        </form>
-                    </td>
-                </tr>
-                <%     } 
-                   } else { %>
-                <tr><td colspan="6" class="text-center">Nessun ordine trovato.</td></tr>
-                <% } %>
-            </tbody>
-        </table>
-    </div>
-</section>
+                
+                <form action="<%= request.getContextPath() %>/PannelloAdminServlet" method="GET" class="filter-form">
+                    <input type="hidden" name="tab" value="ordini">
+                    
+                    <input type="text" name="cliente" placeholder="Cerca per Cliente..." class="search-input" value="<%= valCliente %>">
+                    
+                    <div class="date-filter">
+                        <label>Da:</label>
+                        <input type="date" name="dataInizio" title="Data Inizio" value="<%= valDataInizio %>">
+                    </div>
+                    
+                    <div class="date-filter">
+                        <label>A:</label>
+                        <input type="date" name="dataFine" title="Data Fine" value="<%= valDataFine %>">
+                    </div>
+                    
+                    <button type="submit" class="btn-cta"><i class="fas fa-search"></i> Applica Filtri</button>
+                    
+                    <% if (filtriOrdiniAttivi) { %>
+                        <a href="<%= request.getContextPath() %>/PannelloAdminServlet?tab=ordini" class="btn-cta cancel-btn" title="Azzera filtri" style="text-decoration: none; display: flex; align-items: center; justify-content: center; padding: 10px 15px;">
+                            <i class="fas fa-eraser" style="font-size: 1.1rem; color: #555;"></i>
+                        </a>
+                    <% } %>
+                </form>
+            </div>
 
+            <div class="rect-card">
+                <h3>Lista Ordini</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>N° Ordine</th>
+                            <th>Data</th>
+                            <th>Cliente</th>
+                            <th>Totale</th>
+                            <th>Stato Attuale</th>
+                            <th>Modifica Stato</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <%
+                           if (listaOrdini != null && !listaOrdini.isEmpty()) { 
+                               for (Ordine o : listaOrdini) { 
+                        %>
+                        <tr>
+                            <td>#<%= o.getIdOrdine() %></td>
+                            <td><%= o.getDataOrdine() %></td>
+                            <td><%= o.getIdUtente() %></td>
+                            <td>&euro; <%= String.format("%.2f", o.getTotale()) %></td>
+                            <td><span class="status-badge"><%= o.getStato() %></span></td>
+                            <td>
+                                <form action="<%= request.getContextPath() %>/PannelloAdminServlet" method="POST" class="status-form">
+                                    <input type="hidden" name="action" value="aggiornaStatoOrdine">
+                                    <input type="hidden" name="idOrdine" value="<%= o.getIdOrdine() %>">
+                                    
+                                    <% 
+                                        // Estrazione e trim della stringa di stato dal DB per garantire l'esatta corrispondenza con i value delle option HTML, evitando problemi di render in caso di whitespaces anomali.
+                                        String statoAttuale = (o.getStato() != null) ? o.getStato().trim() : ""; 
+                                    %>
+                                    <select name="nuovoStato" class="status-select">
+                                        <option value="In lavorazione" <%= "In lavorazione".equalsIgnoreCase(statoAttuale) ? "selected" : "" %>>In lavorazione</option>
+                                        <option value="In consegna" <%= "In consegna".equalsIgnoreCase(statoAttuale) ? "selected" : "" %>>In consegna</option>
+                                        <option value="Consegnato" <%= "Consegnato".equalsIgnoreCase(statoAttuale) ? "selected" : "" %>>Consegnato</option>
+                                    </select>
+                                    <button type="submit" class="btn-icon update" title="Aggiorna Stato"><i class="fas fa-check-circle"></i></button>
+                                </form>
+                            </td>
+                        </tr>
+                        <%     } 
+                           } else { %>
+                        <tr><td colspan="6" class="text-center">Nessun ordine trovato.</td></tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- SEZIONE: GESTIONE SUPERADMIN -->
         <% if (isSuperAdmin) { %>
         <section id="superadmin" class="dashboard-section">
+            
             <div class="rect-card mb-20">
                 <h3>Crea nuovo profilo Admin</h3>
                 <form action="<%= request.getContextPath() %>/PannelloAdminServlet" method="POST" class="admin-form row-form">
-                	<input type="text" name="username" id="username" placeholder="Username" autocomplete="off" required>
+                    <input type="text" name="username" id="username" placeholder="Username" autocomplete="off" required>
                     <input type="text" name="nome" id="nome" placeholder="Nome" required>
                     <input type="text" name="cognome" id="cognome" placeholder="Cognome" required>
                     <input type="email" name="adminEmail" id="email" placeholder="Email aziendale" autocomplete="off" required>
@@ -423,8 +423,8 @@
         </section>
         <% } %>
 
-	<div id="edit-product-modal" class="admin-modal-overlay">
-            
+        <!-- MODALI DI GESTIONE -->
+        <div id="edit-product-modal" class="admin-modal-overlay">
             <div class="film-container modal-film-override">
                 
                 <div class="camera-icon">
@@ -437,60 +437,60 @@
                 <button type="button" class="btn-close-modal" id="close-edit-modal" title="Chiudi">&times;</button>
                 
                 <div class="modal-body-scroll">
-                <h1 class="form-title">Modifica Prodotto</h1>
-                
-                <form action="<%= request.getContextPath() %>/ProdottoServlet" method="POST">
-                    <input type="hidden" name="action" value="edit">
-                    <input type="hidden" name="idProdotto" id="modal-edit-id">
+                    <h1 class="form-title">Modifica Prodotto</h1>
                     
-                    <div class="form-grid">
-                        <fieldset class="custom-input">
-                            <legend>Nome / Modello</legend>
-                            <input type="text" name="nome" id="modal-edit-nome" required>
+                    <form action="<%= request.getContextPath() %>/ProdottoServlet" method="POST">
+                        <input type="hidden" name="action" value="edit">
+                        <input type="hidden" name="idProdotto" id="modal-edit-id">
+                        
+                        <div class="form-grid">
+                            <fieldset class="custom-input">
+                                <legend>Nome / Modello</legend>
+                                <input type="text" name="nome" id="modal-edit-nome" required>
+                            </fieldset>
+                            
+                            <fieldset class="custom-input">
+                                <legend>Prezzo (€)</legend>
+                                <input type="number" step="0.01" name="prezzo" id="modal-edit-prezzo" required>
+                            </fieldset>
+                            
+                            <fieldset class="custom-input">
+                                <legend>Quantità in Stock</legend>
+                                <input type="number" name="stock" id="modal-edit-stock" min="0" required>
+                            </fieldset>
+                            
+                            <fieldset class="custom-input">
+                                <legend>Tipologia</legend>
+                                <select name="tipo" id="modal-edit-tipo" required class="custom-select-film">
+                                    <option value="Nuovo">Nuovo</option>
+                                    <option value="Usato">Usato</option>
+                                    <option value="Collezione">Collezione</option>
+                                </select>
+                            </fieldset>
+                            
+                            <fieldset class="custom-input dynamic-field field-usato">
+                                <legend>Stato di Usura</legend>
+                                <input type="text" name="stato" id="modal-edit-stato" placeholder="es. Ottimo, Segni d'uso...">
+                            </fieldset>
+                            
+                            <fieldset class="custom-input dynamic-field field-usato">
+                                <legend>Numero Scatti</legend>
+                                <input type="number" name="numeroScatti" id="modal-edit-scatti" min="0">
+                            </fieldset>
+                            
+                            <fieldset class="custom-input full-width dynamic-field field-collezione">
+                                <legend>Condizione Collezionistica</legend>
+                                <input type="text" name="condizioneCollezionistica" id="modal-edit-condizione" placeholder="es. Mint, Grade A...">
+                            </fieldset>
+                        </div>
+                        
+                        <fieldset class="custom-input full-width">
+                            <legend>Descrizione</legend>
+                            <textarea name="descrizione" id="modal-edit-descrizione" rows="4" class="custom-textarea" required></textarea>
                         </fieldset>
                         
-                        <fieldset class="custom-input">
-                            <legend>Prezzo (€)</legend>
-                            <input type="number" step="0.01" name="prezzo" id="modal-edit-prezzo" required>
-                        </fieldset>
-                        
-                        <fieldset class="custom-input">
-                            <legend>Quantità in Stock</legend>
-                            <input type="number" name="stock" id="modal-edit-stock" min="0" required>
-                        </fieldset>
-                        
-                        <fieldset class="custom-input">
-                            <legend>Tipologia</legend>
-                            <select name="tipo" id="modal-edit-tipo" required class="custom-select-film">
-                                <option value="Nuovo">Nuovo</option>
-                                <option value="Usato">Usato</option>
-                                <option value="Collezione">Collezione</option>
-                            </select>
-                        </fieldset>
-                        
-                        <fieldset class="custom-input dynamic-field field-usato">
-                            <legend>Stato di Usura</legend>
-                            <input type="text" name="stato" id="modal-edit-stato" placeholder="es. Ottimo, Segni d'uso...">
-                        </fieldset>
-                        
-                        <fieldset class="custom-input dynamic-field field-usato">
-                            <legend>Numero Scatti</legend>
-                            <input type="number" name="numeroScatti" id="modal-edit-scatti" min="0">
-                        </fieldset>
-                        
-                        <fieldset class="custom-input full-width dynamic-field field-collezione">
-                            <legend>Condizione Collezionistica</legend>
-                            <input type="text" name="condizioneCollezionistica" id="modal-edit-condizione" placeholder="es. Mint, Grade A...">
-                        </fieldset>
-                    </div>
-                    
-                    <fieldset class="custom-input full-width">
-                        <legend>Descrizione</legend>
-                        <textarea name="descrizione" id="modal-edit-descrizione" rows="4" class="custom-textarea" required></textarea>
-                    </fieldset>
-                    
-                    <button type="submit" class="btn-cta">Salva Modifiche</button>
-                </form>
+                        <button type="submit" class="btn-cta">Salva Modifiche</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -509,6 +509,8 @@
         </div>
 
     </main>
+
+	<!-- COMPONENTI ESTERNI E SCRIPT -->
     <script>const contestoReFrame = '<%= request.getContextPath() %>';</script>
     <script src="<%= request.getContextPath() %>/js/profilo.js"></script>
     <script src="<%= request.getContextPath() %>/js/amministrazione.js"></script>

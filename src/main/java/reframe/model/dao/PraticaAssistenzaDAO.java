@@ -8,7 +8,8 @@ import java.util.List;
 
 public class PraticaAssistenzaDAO {
 
-    // UTILITY: Mappa i dati della riga corrente del ResultSet in un oggetto PraticaAssistenza
+    /* UTILITY E MAPPING RESULTSET */
+    
     private PraticaAssistenza estraiPratica(ResultSet rs) throws SQLException {
         PraticaAssistenza pratica = new PraticaAssistenza();
         
@@ -25,7 +26,9 @@ public class PraticaAssistenzaDAO {
         return pratica;
     }
 
-    // CREATE: Salva una nuova pratica (Le date sono gestite dal default TIMESTAMP di MySQL)
+    /* OPERAZIONI DI CREAZIONE (CREATE) */
+    
+    // Delega al DBMS la valorizzazione temporale: il campo Data_apertura viene omesso dalla query in quanto gestito tramite default TIMESTAMP lato database.
     public boolean doSave(PraticaAssistenza pratica) throws SQLException {
         String query = "INSERT INTO Pratica_Assistenza (RMA, Titolo, Categoria, Descrizione, Stato, ID_Utente) VALUES (?, ?, ?, ?, 'Aperta', ?)";
         
@@ -54,7 +57,8 @@ public class PraticaAssistenzaDAO {
         }
     }
 
-    // READ (Singolo): Recupera una pratica specifica tramite il suo RMA
+    /* OPERAZIONI DI RECUPERO DATI (READ) */
+    
     public PraticaAssistenza doRetrieveByRma(String rma) throws SQLException {
         String query = "SELECT * FROM Pratica_Assistenza WHERE RMA = ?";
         
@@ -80,7 +84,6 @@ public class PraticaAssistenzaDAO {
         return praticaTrovata;
     }
 
-    // READ (Lista): Recupera TUTTE le pratiche di uno specifico UTENTE (Per la sua area personale)
     public List<PraticaAssistenza> doRetrieveByUser(String idUtente) throws SQLException {
         String query = "SELECT * FROM Pratica_Assistenza WHERE ID_Utente = ? ORDER BY Data_apertura DESC";
         
@@ -106,8 +109,7 @@ public class PraticaAssistenzaDAO {
         return lista;
     }
 
-    // READ (Lista Filtri): Recupera le pratiche in base allo stato o all'admin (Per Dashboard Admin/Superadmin)
-    // Passa null come parametro se non vuoi applicare quel filtro
+    // Composizione dinamica della query SQL tramite StringBuilder per permettere l'applicazione condizionale di filtri di ricerca (stato e admin assegnato).
     public List<PraticaAssistenza> doRetrieveAll(String filtroStato, String idAdmin) throws SQLException {
         StringBuilder query = new StringBuilder("SELECT * FROM Pratica_Assistenza WHERE 1=1");
         
@@ -141,13 +143,14 @@ public class PraticaAssistenzaDAO {
         return lista;
     }
 
-    // UPDATE: Cambia lo stato della pratica. Se passa a "Chiusa", compila la data in automatico.
+    /* OPERAZIONI DI AGGIORNAMENTO (UPDATE) */
+    
     public boolean updateStato(String rma, String nuovoStato) throws SQLException {
         String query;
+        // Gestione automatizzata del timestamp di chiusura: azzera il valore su riapertura per preservare l'integrità referenziale richiesta dal check constraint a database.
         if ("Chiusa".equalsIgnoreCase(nuovoStato)) {
             query = "UPDATE Pratica_Assistenza SET Stato = ?, Data_chiusura = CURRENT_TIMESTAMP WHERE RMA = ?";
         } else {
-            // Se viene riaperta, svuotiamo la data di chiusura per rispettare il constraint del DB
             query = "UPDATE Pratica_Assistenza SET Stato = ?, Data_chiusura = NULL WHERE RMA = ?";
         }
         
@@ -171,10 +174,8 @@ public class PraticaAssistenzaDAO {
         }
     }
 
- // UPDATE: Assegna o cambia l'admin incaricato della pratica (Azione Superadmin)
     public boolean updateAdminAssegnato(String rma, String idAdmin) throws SQLException {
-        // Quando un admin viene assegnato, la pratica passa automaticamente "In carico"
-        // E svuotiamo la Data_chiusura per rispettare il check constraint 'chk_coerenza_data' del DB!
+        // Implementazione logica di business: l'assegnazione forza il passaggio di stato a 'In carico' e necessita dell'annullamento della Data_chiusura per non violare la regola chk_coerenza_data in MySQL.
         String query = "UPDATE Pratica_Assistenza SET Admin_Assegnato = ?, Stato = 'In carico', Data_chiusura = NULL WHERE RMA = ?";
         
         Connection conn = null;

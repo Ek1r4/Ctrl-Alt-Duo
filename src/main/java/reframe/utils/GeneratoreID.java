@@ -7,7 +7,7 @@ public class GeneratoreID {
     private static final String CARATTERI = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private static final SecureRandom random = new SecureRandom();
 
-    // Genera un codice Pratica, es: "RMA-A1B2C3"
+    // Genera un codice Pratica
     public static String generaRMA() {
         StringBuilder sb = new StringBuilder("RMA-");
         for (int i = 0; i < 6; i++) {

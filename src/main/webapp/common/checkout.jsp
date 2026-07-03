@@ -2,7 +2,12 @@
 <%@ page import="reframe.model.beans.*" %>
 <%@ page import="reframe.model.dao.*" %>
 <%@ page import="java.util.List" %>
+
+<%-- INIZIALIZZAZIONE E CONTROLLO ACCESSI --%>
 <%
+    // Implementazione del controllo di sessione e dell'integrità del flusso: 
+    // vincola l'accesso al checkout alla presenza di un token utente valido e di un carrello valorizzato, 
+    // reindirizzando forzatamente in caso di anomalie per prevenire eccezioni in fase di salvataggio ordine.
     Utente utente = (Utente) session.getAttribute("utente");
     Carrello carrello = (Carrello) session.getAttribute("carrello");
     
@@ -15,21 +20,29 @@
         return;
     }
 
+    // Caricamento asincrono dei dati utente per popolare le opzioni 
+    // di scelta rapida nel checkout (Indirizzi salvati e Carte di pagamento).
     SpedizioneDAO spedDAO = new SpedizioneDAO();
     PagamentoDAO pagDAO = new PagamentoDAO();
     List<Spedizione> spedizioni = null;
     List<Pagamento> pagamenti = null;
+    
     try {
         spedizioni = spedDAO.doRetrieveByUtente(utente.getUsername());
         pagamenti = pagDAO.doRetrieveByUtente(utente.getUsername());
-    } catch (Exception e) { e.printStackTrace(); }
+    } catch (Exception e) { 
+        e.printStackTrace(); 
+    }
 %>
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
+    <!-- CONFIGURAZIONE HEAD E STILI -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout Sicuro - ReFrame</title>
+    
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/global.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/form.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/checkout.css"> 
@@ -37,6 +50,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
+    
     <jsp:include page="/WEB-INF/components/header.jsp" />
 
     <form id="checkoutForm" action="${pageContext.request.contextPath}/Checkout" method="POST">
@@ -44,11 +58,16 @@
             
             <div class="checkout-form-column">
                 
+                <!-- GESTIONE SPEDIZIONE -->
                 <h2 class="section-title" style="margin-top:0;">1. Spedizione</h2>
                 
-                <% boolean firstSped = true;
+                <% 
+                   // Il flag firstSped gestisce l'auto-selezione del primo indirizzo utile o del form per un nuovo indirizzo 
+                   // per garantire che un radio button sia sempre attivo al caricamento del DOM.
+                   boolean firstSped = true;
                    if (spedizioni != null) {
-                   for (Spedizione ind : spedizioni) { %>
+                       for (Spedizione ind : spedizioni) { 
+                %>
                     <label style="display:block;">
                         <input type="radio" name="idSpedizione" class="hidden-radio sped-radio" value="<%= ind.getIdSpedizione() %>" <%= firstSped ? "checked" : "" %> required>
                         <div class="selectable-box">
@@ -58,7 +77,11 @@
                             </div>
                         </div>
                     </label>
-                <% firstSped = false; } } %>
+                <% 
+                           firstSped = false; 
+                       } 
+                   } 
+                %>
                 
                 <label style="display:block;">
                     <input type="radio" name="idSpedizione" class="hidden-radio sped-radio" value="nuovo" id="radioNewSped" <%= firstSped ? "checked" : "" %> required>
@@ -77,13 +100,16 @@
                     <fieldset class="custom-input full-width"><legend>Note per il corriere</legend><input type="text" name="note"></fieldset>
                 </div>
 
+                <!-- GESTIONE PAGAMENTO -->
                 <h2 class="section-title">2. Pagamento</h2>
                 
-                <% boolean firstPag = true;
+                <% 
+                   boolean firstPag = true;
                    if (pagamenti != null) {
-                   for (Pagamento pag : pagamenti) { 
-                       String carta = pag.getNumeroCarta();
-                       String mask = "****" + (carta.length() >= 4 ? carta.substring(carta.length() - 4) : carta);
+                       for (Pagamento pag : pagamenti) { 
+                           // Mascheramento di sicurezza dei dati della carta lato UI (Data Masking).
+                           String carta = pag.getNumeroCarta();
+                           String mask = "****" + (carta.length() >= 4 ? carta.substring(carta.length() - 4) : carta);
                 %>
                     <label style="display:block;">
                         <input type="radio" name="idPagamento" class="hidden-radio pag-radio" value="<%= pag.getIdPagamento() %>" <%= firstPag ? "checked" : "" %> required>
@@ -94,7 +120,11 @@
                             </div>
                         </div>
                     </label>
-                <% firstPag = false; } } %>
+                <% 
+                           firstPag = false; 
+                       } 
+                   } 
+                %>
 
                 <label style="display:block;">
                     <input type="radio" name="idPagamento" class="hidden-radio pag-radio" value="nuovo" id="radioNewPag" <%= firstPag ? "checked" : "" %> required>
@@ -119,6 +149,7 @@
                 </div>
             </div>
 
+            <!-- RIEPILOGO COSTI -->
             <div class="checkout-receipt-column">
                 <div class="receipt-box">
                     <div class="receipt-title">RICEVUTA</div>
@@ -143,7 +174,12 @@
     </form>
 
     <jsp:include page="/WEB-INF/components/footer.jsp" />
+    
+    <!-- GESTIONE UI DINAMICA (JAVASCRIPT) -->
     <script>
+    // Manipolazione dinamica del DOM per garantire il bypass della validazione HTML5 ('required') 
+    // sui fieldset nascosti e prevenire blocchi di invio form silenti in caso di selezione 
+    // di un indirizzo/carta già esistenti in rubrica.
     function aggiornaRequisitiForm() {
         const isSpedNuovo = document.getElementById('radioNewSped').checked;
         document.getElementById('formNuovaSpedizione').classList.toggle('hidden', !isSpedNuovo);
@@ -158,7 +194,6 @@
         radio.addEventListener('change', aggiornaRequisitiForm);
     });
 
-    // Esecuzione all'avvio
     aggiornaRequisitiForm();
     </script>
 </body>
