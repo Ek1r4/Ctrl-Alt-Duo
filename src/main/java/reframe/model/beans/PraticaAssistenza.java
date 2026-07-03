@@ -4,48 +4,44 @@ import java.sql.Timestamp;
 
 public class PraticaAssistenza {
     private String rma;
+    private String titolo;
+    private String categoria;
+    private String descrizione;
     private String stato;
-    private String motivo;
     private Timestamp dataApertura;
     private Timestamp dataChiusura;
-    private String idOrdine;
     private String idUtente;
-    private String adminInCarico; // NUOVO CAMPO
+    private String adminAssegnato;
 
     public PraticaAssistenza() {
+        // Costruttore vuoto
     }
 
-    // Getters
+    // --- GETTER E SETTER ---
     public String getRma() { return rma; }
-    public String getStato() { return stato; }
-    public String getMotivo() { return motivo; }
-    public Timestamp getDataApertura() { return dataApertura; }
-    public Timestamp getDataChiusura() { return dataChiusura; }
-    public String getIdOrdine() { return idOrdine; }
-    public String getIdUtente() { return idUtente; }
-    public String getAdminInCarico() { return adminInCarico; }
-
-    // Setters
     public void setRma(String rma) { this.rma = rma; }
-    public void setStato(String stato) { this.stato = stato; }
-    public void setMotivo(String motivo) { this.motivo = motivo; }
-    public void setDataApertura(Timestamp dataApertura) { this.dataApertura = dataApertura; }
-    public void setDataChiusura(Timestamp dataChiusura) { this.dataChiusura = dataChiusura; }
-    public void setIdOrdine(String idOrdine) { this.idOrdine = idOrdine; }
-    public void setIdUtente(String idUtente) { this.idUtente = idUtente; }
-    public void setAdminInCarico(String adminInCarico) { this.adminInCarico = adminInCarico; }
 
-    @Override
-    public String toString() {
-        return "PraticaAssistenza{" +
-                "rma='" + rma + '\'' +
-                ", stato='" + stato + '\'' +
-                ", motivo='" + motivo + '\'' +
-                ", dataApertura=" + dataApertura +
-                ", dataChiusura=" + dataChiusura +
-                ", idOrdine='" + idOrdine + '\'' +
-                ", idUtente='" + idUtente + '\'' +
-                ", adminInCarico='" + adminInCarico + '\'' +
-                '}';
-    }
+    public String getTitolo() { return titolo; }
+    public void setTitolo(String titolo) { this.titolo = titolo; }
+
+    public String getCategoria() { return categoria; }
+    public void setCategoria(String categoria) { this.categoria = categoria; }
+
+    public String getDescrizione() { return descrizione; }
+    public void setDescrizione(String descrizione) { this.descrizione = descrizione; }
+
+    public String getStato() { return stato; }
+    public void setStato(String stato) { this.stato = stato; }
+
+    public Timestamp getDataApertura() { return dataApertura; }
+    public void setDataApertura(Timestamp dataApertura) { this.dataApertura = dataApertura; }
+
+    public Timestamp getDataChiusura() { return dataChiusura; }
+    public void setDataChiusura(Timestamp dataChiusura) { this.dataChiusura = dataChiusura; }
+
+    public String getIdUtente() { return idUtente; }
+    public void setIdUtente(String idUtente) { this.idUtente = idUtente; }
+
+    public String getAdminAssegnato() { return adminAssegnato; }
+    public void setAdminAssegnato(String adminAssegnato) { this.adminAssegnato = adminAssegnato; }
 }

@@ -32,6 +32,7 @@
             <div class="footer-col links-col">
                 <h3 class="footer-title">INFO</h3>
                 <ul class="footer-nav">
+                    <li><a href="<%= request.getContextPath() %>/common/centroAssistenza.jsp" >Centro assistenza</a></li>
                     <li><a href="#">Privacy Policy</a></li>
                     <li><a href="#">Cookie Policy</a></li>
                     <li><a href="https://mail.google.com/mail/?view=cm&fs=1&to=noreply.reframe@gmail.com&su=Richiesta%20Informazioni" target="_blank">Scrivici una mail</a></li>
@@ -67,3 +68,4 @@
         
     </div>
 </footer>
+<div class="toast-notification"></div>

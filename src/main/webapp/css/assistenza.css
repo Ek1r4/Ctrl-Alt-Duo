@@ -83,6 +83,7 @@
     padding: 0.6rem 2rem;
     font-size: 0.9rem;
     text-transform: uppercase;
+    text-decoration: none;
     letter-spacing: 1px;
     cursor: pointer;
     border-radius: 4px;
@@ -370,7 +371,6 @@
 
 .pratica-grid-row {
     display: grid;
-    /* Grid dinamica: 1fr per il motivo (prende spazio avanzato), 150px per la colonna centrale (Utente), 150px per la colonna destra (Stato/Admin) */
     grid-template-columns: 1fr 150px 150px; 
     align-items: center;
     gap: 1rem;
@@ -391,8 +391,8 @@
 /* Header della griglia ticket (Allineamento perfetto) */
 .pratica-grid-header {
     display: grid;
-    grid-template-columns: 1fr 150px 150px; /* Stesse esatte colonne della riga */
-    gap: 1rem; /* Stesso esatto gap della riga */
+    grid-template-columns: 1fr 150px 150px; 
+    gap: 1rem; 
     padding: 0 1.5rem 0.8rem 1.5rem; 
     font-size: 0.95rem;
     font-style: italic;
@@ -430,8 +430,8 @@
 /* Stili specifici (Badge Superadmin e Colori Stato) */
 .admin-badge { color: var(--marrone-cuoio); }
 .status-aperta { color: var(--verde-ottanio); }
-.status-in-carico { color: #f59e0b; }
-.status-chiusa { color: #dc2626; }
+.status-in-carico { color: var(--antracite-scuro); }
+.status-chiusa { color: var(--verde-ottanio); text-decoration: line-through; }
 
 /* ===================================================
    RESPONSIVE GRID
@@ -643,13 +643,13 @@
     font-size: 14px;
 }
 
-.msg-admin {
+.msg-other {
     background-color: var(--beige-scuro);
     align-self: flex-start;
     border-bottom-left-radius: 0;
 }
 
-.msg-user {
+.msg-mine {
     background-color: color-mix(in srgb, var(--verde-ottanio) 15%, transparent);
     align-self: flex-end;
     border-bottom-right-radius: 0;
@@ -715,6 +715,29 @@
     margin-top: 15px;
 }
 
+/* =========================================
+   DIVISORE NOTIFICHE DI SISTEMA 
+   ========================================= */
+.chat-system-divider {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 15px 0;
+    width: 100%;
+}
+
+.chat-system-divider span {
+    background-color: var(--panna-carta);
+    color: var(--grigio-taupe);
+    font-size: 0.7rem;
+    font-family: var(--font-tecnico);
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1px dashed var(--grigio-taupe);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-align: center;
+}
 /* ===================================================
    TOGGLE SWITCH STATO ADMIN (SEGMENTED CONTROL)
    =================================================== */
@@ -732,7 +755,8 @@
     position: relative;
     display: flex;
     align-items: center;
-    width: 240px; 
+    width: 100%; 
+    max-width: 240px;
     height: 48px;
     background-color: color-mix(in srgb, var(--grigio-taupe) 15%, transparent); /* Grigio chiarissimo per lo sfondo */
     border: 2px solid color-mix(in srgb, var(--grigio-taupe) 30%, transparent);
@@ -774,7 +798,7 @@
 /* --- STATO "CHIUSA" (Checked - Spostato a destra) --- */
 #toggleStatoAdmin:checked + .status-toggle-pill .toggle-thumb {
     transform: translateX(100%); /* Si sposta esattamente della sua larghezza */
-    background-color: #dc2626; /* Diventa Rosso per indicare la chiusura */
+    background-color: var(--verde-ottanio); /* Diventa Rosso per indicare la chiusura */
 }
 
 /* Inversione dei colori del testo quando è checked */
@@ -784,7 +808,7 @@
 /* --- MESSAGGIO DI AVVISO DINAMICO --- */
 .status-warning-msg {
     font-size: 0.85rem;
-    color: var(--marrone-cuoio);
+    color: var(--grigio-taupe);
     margin-top: 0; /* Rimosso il margine fisso per non occupare spazio da nascosto */
     font-style: italic;
     text-align: center;
@@ -804,15 +828,74 @@
     overflow: visible;
 }
 
+/* ===================================================
+   MOBILE 
+   =================================================== */
+.mobile-ticket-tabs {
+    display: none; /* Nascosto di default su Desktop */
+}
+
 @media (max-width: 992px) {
-    .ticket-dialog-content {
-        flex-direction: column-reverse;
+    .ticket-dialog-wrapper {
+        flex-direction: column;
+        padding-top: 50px; 
         align-items: center;
     }
-    
+
+    /* Mostriamo il selettore (Segmented Control) */
+    .mobile-ticket-tabs {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        width: 100%;
+        margin-bottom: 15px;
+        z-index: 10;
+    }
+
+    .tab-btn {
+        background: transparent;
+        border: 2px solid var(--grigio-taupe);
+        color: var(--grigio-taupe);
+        padding: 8px 24px;
+        border-radius: 30px;
+        font-family: var(--font-tecnico, monospace);
+        font-weight: 700;
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .tab-btn.active {
+        background: var(--verde-ottanio);
+        border-color: var(--verde-ottanio);
+        color: var(--panna-carta);
+    }
+
+    /* Sistemiamo il layout dei pannelli */
+    .ticket-dialog-content {
+        flex-direction: column !important; /* Riporta la chat in cima */
+        align-items: center;
+    }
+
+    /* Di default mostriamo solo il primo pannello (Chat) e nascondiamo i Dettagli */
+    .ticket-panel:nth-child(2) {
+        display: none !important;
+    }
+
+    /* Quando è attiva la classe 'show-dettagli' via JS, invertiamo la visibilità */
+    .ticket-dialog-content.show-dettagli .ticket-panel:nth-child(1) {
+        display: none !important;
+    }
+    .ticket-dialog-content.show-dettagli .ticket-panel:nth-child(2) {
+        display: flex !important;
+    }
+
+    /* Adattiamo l'altezza per far entrare la pellicola perfettamente nello schermo */
     .ticket-panel {
-        height: 60vh;
-        margin-bottom: 20px;
+        height: 70vh !important;
+        margin-bottom: 0 !important;
     }
 }
 /* ===================================================
@@ -825,13 +908,13 @@
 .custom-input input.input-error, 
 .custom-input textarea.input-error,
 .custom-input select.input-error {
-    border-color: #dc2626; /* Rosso per l'errore */
+    border-color: var(--rosso-ruggine);
     background-color: rgba(220, 38, 38, 0.05);
 }
 
 .error-message {
     display: none;
-    color: #dc2626;
+    color: var(--rosso-ruggine);
     font-size: 0.8rem;
     margin-top: 5px;
     font-weight: 500;
@@ -892,4 +975,64 @@
 .ticket-popup-content p {
     color: var(--grigio-taupe);
     font-size: 1rem;
+}
+
+/* --- Allineamento Titolo e Badge Categoria --- */
+.titolo-categoria-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 15px; 
+    justify-content: space-between;
+    flex-direction: row-reverse;
+}
+
+/* --- Badge Brutalista: Linee spezzate, minimal e a pillola --- */
+.badge-categoria-brutal {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 8px;
+    border: 2px dashed var(--verde-ottanio);
+    border-radius: 50px;
+    background-color: transparent;
+    color: var(--verde-ottanio);
+    font-family: var(--font-tecnico);
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+/* --- Testo del Titolo --- */
+.dettaglio-titolo-testo {
+    margin: 0 !important;
+    font-size: 16px;
+    color: var(--antracite-scuro);
+    line-height: 1.4;
+}
+
+/* --- Evidenziatore Pratiche "Da Assegnare" (Superadmin) --- */
+.badge-urgent-assign {
+    color: var(--verde-ottanio) ;
+    background-color: transparent;
+    font-weight: 900;
+    letter-spacing: 1px;
+    animation: pulse-ottanio 2s infinite ease-in-out;
+    padding-right: 6px;
+}
+
+@keyframes pulse-ottanio {
+    0% { 
+        opacity: 1; 
+        box-shadow: 0 0 0 0 color-mix(in srgb, var(--verde-ottanio) 40%, transparent); 
+    }
+    50% { 
+        opacity: 0.8; 
+        box-shadow: 0 0 0 8px transparent; 
+    }
+    100% { 
+        opacity: 1; 
+        box-shadow: 0 0 0 0 transparent; 
+    }
 }

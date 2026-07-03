@@ -20,10 +20,9 @@
     %>
         <div class="empty-cart-container">
             <i class="fas fa-box-open empty-cart-icon"></i>
-            <h2>IL TUO CARRELLO È VUOTO</h2>  
+            <h2>IL TUO CARRELLO È VUOTO</h2>
         </div>
     <% } else { %>
-
         <div class="cart-page-layout">
             <div class="cart-items-column">
                 <h1 class="cart-page-title">Carrello</h1>
@@ -98,5 +97,6 @@
 </div>
     
         <script src="<%= request.getContextPath() %>/js/carrello.js"></script>
+
 </body>
 </html>
