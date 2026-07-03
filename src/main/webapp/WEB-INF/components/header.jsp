@@ -147,4 +147,5 @@
     </div>
 </header>
 
+<script>const contestoReFrame = '<%= request.getContextPath() %>';</script>
 <script src="${pageContext.request.contextPath}/js/header.js"></script>

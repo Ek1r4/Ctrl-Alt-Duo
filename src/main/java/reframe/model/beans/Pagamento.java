@@ -9,6 +9,7 @@ public class Pagamento {
     private String numeroCarta;
     private String dataScadenza;
     private String cvv;
+    private boolean isAttivo;
 
     // Costruttore vuoto
     public Pagamento() {
@@ -81,6 +82,14 @@ public class Pagamento {
 
     public void setCvv(String cvv) {
         this.cvv = cvv;
+    }
+    
+    public boolean isAttivo() {
+        return isAttivo;
+    }
+
+    public void setAttivo(boolean isAttivo) {
+        this.isAttivo = isAttivo;
     }
 
     // Override del toString

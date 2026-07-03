@@ -68,9 +68,10 @@ function aggiungiVeloceAJAX(idProdotto) {
 
             // 3. Spalanca la tendina per 3 secondi
             mostraTendinaCarrello();
-        } else if (data.status === 'error') {
-            alert(data.message); // Esempio: Stock esaurito
-        }
+			} else if (data.status === 'error') {
+			            // Sostituito il vecchio alert con la nostra notifica personalizzata (false = errore/rosso)
+			            window.mostraToastNotifica(data.message, false); 
+			        }
     })
     .catch(error => console.error('Errore Aggiunta Carrello:', error));
 }

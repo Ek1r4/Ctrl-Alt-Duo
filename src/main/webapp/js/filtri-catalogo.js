@@ -143,5 +143,38 @@ document.addEventListener("DOMContentLoaded", () => {
 	            });
 	        }
 	    }
-	
+		
+		/* ========================================== */
+		/* GESTIONE TOAST NOTIFICHE VETRINA           */
+		/* ========================================== */
+		window.mostraToastNotifica = function(messaggio, isSuccess = true) {
+		    let toast = document.querySelector('.toast-notification');
+		    
+		    if (!toast) {
+		        toast = document.createElement('div');
+		        toast.className = 'toast-notification';
+		        document.body.appendChild(toast);
+		    }
+		    
+		    // Icona spunta per successo, cerchio con esclamativo per l'errore/avviso
+		    const icona = isSuccess ? 'fa-check-circle' : 'fa-exclamation-circle';
+		    
+		    // Usiamo sempre il tuo verde ottanio, rimuovendo il rosso
+		    const colore = 'var(--verde-ottanio)'; 
+		    
+		    toast.innerHTML = `<i class="fas ${icona}" style="color: ${colore};"></i> <span>${messaggio}</span>`;
+		    toast.style.borderLeftColor = colore;
+		    
+		    toast.classList.remove('show');
+		    
+		    setTimeout(() => {
+		        toast.classList.add('show');
+		    }, 10);
+		    
+		    if (window.toastTimeout) clearTimeout(window.toastTimeout);
+		    
+		    window.toastTimeout = setTimeout(() => {
+		        toast.classList.remove('show');
+		    }, 3000);
+		};	
 });

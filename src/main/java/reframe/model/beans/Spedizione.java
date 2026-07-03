@@ -11,6 +11,7 @@ public class Spedizione {
     private String via;
     private String civico;
     private String note;
+    private boolean isAttivo;
 
     // Costruttore vuoto
     public Spedizione() {
@@ -101,6 +102,14 @@ public class Spedizione {
 
     public void setNote(String note) {
         this.note = note;
+    }
+    
+    public boolean isAttivo() {
+        return isAttivo;
+    }
+
+    public void setAttivo(boolean isAttivo) {
+        this.isAttivo = isAttivo;
     }
 
     // Override del toString

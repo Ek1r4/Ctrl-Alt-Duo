@@ -19,6 +19,7 @@ public class PagamentoDAO
 		pagamento.setNumeroCarta(rs.getString("Numero_carta"));
 		pagamento.setDataScadenza(rs.getString("Data_scadenza"));
 		pagamento.setCvv(rs.getString("CVV"));
+		pagamento.setAttivo(rs.getBoolean("isAttivo"));
 		
 		return pagamento;
 	}
@@ -97,7 +98,7 @@ public class PagamentoDAO
 	// READ (Lista): Recupera TUTTE le carte salvate da un utente tramite il suo Username
 	public List<Pagamento> doRetrieveByUtente(String usernameUtente) throws SQLException
 	{
-		String query = "SELECT * FROM Dati_Pagamento WHERE ID_Utente = ?";
+		String query = "SELECT * FROM Dati_Pagamento WHERE ID_Utente = ? AND isAttivo = true";
 		
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -167,17 +168,15 @@ public class PagamentoDAO
 		}
 	}
 
-	// DELETE: Rimuove un metodo di pagamento dal database
+	// SOFT DELETE
 	// (Ritorna TRUE se l'eliminazione avviene con successo, FALSE in caso di errore)
-	public boolean doDelete(int idPagamento) throws SQLException
-	{
-		String query = "DELETE FROM Dati_Pagamento WHERE ID_Pagamento = ?";
+	public boolean doDelete(int idPagamento) throws SQLException {
+		String query = "UPDATE Dati_Pagamento SET isAttivo = false WHERE ID_Pagamento = ?";
 		
 		Connection conn = null;
 		PreparedStatement ps = null;
 		
-		try
-		{
+		try {
 			conn = ConnessioneDB.getConnection();
 			ps = conn.prepareStatement(query);
 			
@@ -186,15 +185,19 @@ public class PagamentoDAO
 			int row = ps.executeUpdate();
 			return row > 0;
 			
-		} catch (SQLException e) { /* Errore in console */ e.printStackTrace(); 
+		} catch (SQLException e) { 
+			e.printStackTrace(); 
 			return false;
-		}
-		finally { 
+		} finally { 
 			try {
 				if (ps != null) ps.close(); 
-			} catch (SQLException e) { e.printStackTrace(); }
+			} catch (SQLException e) { 
+				e.printStackTrace(); 
+			}
 			
-			if (conn != null) { ConnessioneDB.releaseConnection(conn); } 
+			if (conn != null) { 
+				ConnessioneDB.releaseConnection(conn); 
+			} 
 		}
 	}
 	

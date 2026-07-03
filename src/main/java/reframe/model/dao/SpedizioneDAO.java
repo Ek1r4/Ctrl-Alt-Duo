@@ -21,6 +21,7 @@ public class SpedizioneDAO
 		spedizione.setVia(rs.getString("Via"));
 		spedizione.setCivico(rs.getString("Civico"));
 		spedizione.setNote(rs.getString("Note"));
+		spedizione.setAttivo(rs.getBoolean("isAttivo"));
 		
 		return spedizione;
 	}
@@ -101,7 +102,7 @@ public class SpedizioneDAO
 	// READ (Lista): Recupera TUTTI gli indirizzi salvati da un utente
 	public List<Spedizione> doRetrieveByUtente(String usernameUtente) throws SQLException
 	{
-		String query = "SELECT * FROM Dati_Spedizione WHERE ID_Utente = ?";
+		String query = "SELECT * FROM Dati_Spedizione WHERE ID_Utente = ? AND isAttivo = true";
 		
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -173,36 +174,38 @@ public class SpedizioneDAO
 		}
 	}
 
-	// DELETE: Rimuove un indirizzo dal database
-	// (Ritorna TRUE se l'eliminazione avviene con successo, FALSE in caso di errore)
-	public boolean doDelete(int idSpedizione) throws SQLException
-	{
-		String query = "DELETE FROM Dati_Spedizione WHERE ID_Spedizione = ?";
-		
-		Connection conn = null;
-		PreparedStatement ps = null;
-		
-		try
-		{
-			conn = ConnessioneDB.getConnection();
-			ps = conn.prepareStatement(query);
+		// SOFT DELETE
+		// (Ritorna TRUE se l'eliminazione avviene con successo, FALSE in caso di errore)
+		public boolean doDelete(int idSpedizione) throws SQLException {
+			String query = "UPDATE Dati_Spedizione SET isAttivo = false WHERE ID_Spedizione = ?";
 			
-			ps.setInt(1, idSpedizione);
+			Connection conn = null;
+			PreparedStatement ps = null;
 			
-			int row = ps.executeUpdate();
-			return row > 0;
-			
-		} catch (SQLException e) { /* Errore in console */ e.printStackTrace(); 
-			return false;
-		}
-		finally { 
 			try {
-				if (ps != null) ps.close(); 
-			} catch (SQLException e) { e.printStackTrace(); }
-			
-			if (conn != null) { ConnessioneDB.releaseConnection(conn); } 
+				conn = ConnessioneDB.getConnection();
+				ps = conn.prepareStatement(query);
+				
+				ps.setInt(1, idSpedizione);
+				
+				int row = ps.executeUpdate();
+				return row > 0;
+				
+			} catch (SQLException e) { 
+				e.printStackTrace(); 
+				return false;
+			} finally { 
+				try {
+					if (ps != null) ps.close(); 
+				} catch (SQLException e) { 
+					e.printStackTrace(); 
+				}
+				
+				if (conn != null) { 
+					ConnessioneDB.releaseConnection(conn); 
+				} 
+			}
 		}
-	}
 	
 	// Main per testing
 		/*
