@@ -55,7 +55,7 @@
                                     <i class="fas fa-plus"></i>
                                 </button>
                             </div>
-                        </div>
+                        </div> 
                     </div>
                 <% } %>
             </div> 
