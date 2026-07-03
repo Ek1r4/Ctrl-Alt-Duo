@@ -18,33 +18,27 @@ public class DettaglioProdottoServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         
-        // 1. Recuperiamo l'ID del prodotto passato nell'URL (es. ?idProdotto=NEW-001)
+        /* RECUPERO DETTAGLI PRODOTTO */
         String idProdotto = request.getParameter("idProdotto");
 
         if (idProdotto != null && !idProdotto.trim().isEmpty()) {
             ProdottoDAO dao = new ProdottoDAO();
             try {
-                // 2. Cerchiamo il prodotto nel database
                 Prodotto prodotto = dao.fetchProdottoById(idProdotto);
-                
-                // 3. Lo salviamo nella request per farlo leggere alla JSP
                 request.setAttribute("prodotto", prodotto);
-                
             } catch (SQLException e) {
                 e.printStackTrace();
-                // In caso di errore SQL, il prodotto rimarrà null e la JSP mostrerà il messaggio "Prodotto non trovato"
             }
         }
         
+        /* RECUPERO RECENSIONI ASSOCIATE */
         RecensioniDAO recDao = new RecensioniDAO();
-     // Passa le recensioni alla request usando il nome esatto che il fragment JSP si aspetta di leggere
         try {
-			request.setAttribute("recensioniProdotto", recDao.doRetrieveByProdotto(idProdotto));
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+            request.setAttribute("recensioniProdotto", recDao.doRetrieveByProdotto(idProdotto));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         
-        // 4. Inoltriamo alla pagina del dettaglio
         request.getRequestDispatcher("/dettaglioProdotto.jsp").forward(request, response);
     }
 }

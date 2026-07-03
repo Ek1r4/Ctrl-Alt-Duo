@@ -8,26 +8,31 @@ import java.util.List;
 public class Ordine implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    /* ATTRIBUTI BASE */
+    
     private String idOrdine;
     private String urlFattura;
-    private Date dataOrdine; // Usiamo java.sql.Date per perfetta compatibilità con JDBC
+    private Date dataOrdine; 
     private double totale;
     private boolean garanzia;
-    private String stato;    // ENUM nel DB: 'In lavorazione','In consegna','Consegnato'
     
-    // Chiavi Esterne
+    // Vincolato a livello di database tramite tipo ENUM ('In lavorazione', 'In consegna', 'Consegnato')
+    private String stato;    
+    
+    /* CHIAVI ESTERNE E RELAZIONI */
+    
     private String idUtente;
     private int idPagamento;
     private int idSpedizione;
 
-    // Lista dei prodotti acquistati all'interno di questo ordine
     private List<DettaglioOrdine> dettagli;
 
+    /* COSTRUTTORI */
+    
     public Ordine() {
         this.dettagli = new ArrayList<>();
     }
 
-    // Costruttore completo
     public Ordine(String idOrdine, String urlFattura, Date dataOrdine, double totale, 
                   boolean garanzia, String stato, String idUtente, int idPagamento, int idSpedizione) {
         this.idOrdine = idOrdine;
@@ -42,8 +47,8 @@ public class Ordine implements Serializable {
         this.dettagli = new ArrayList<>();
     }
 
-    // --- GETTER E SETTER ---
-
+    /* GETTER E SETTER */
+    
     public String getIdOrdine() { return idOrdine; }
     public void setIdOrdine(String idOrdine) { this.idOrdine = idOrdine; }
 

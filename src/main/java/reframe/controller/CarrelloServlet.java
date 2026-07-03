@@ -18,34 +18,35 @@ public class CarrelloServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Se si arriva tramite URL diretto, rimandiamo la richiesta al doPost per sicurezza
         doPost(request, response);
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        
+        /* GESTIONE SESSIONE CARRELLO */
         HttpSession session = request.getSession();
         Carrello carrello = (Carrello) session.getAttribute("carrello");
         
-        // Se il carrello non esiste in sessione, lo creiamo (Gestione sessioni OBBLIGATORIA)
         if (carrello == null) {
             carrello = new Carrello();
             session.setAttribute("carrello", carrello);
         }
 
+        /* ELABORAZIONE RICHIESTA E CHECK STOCK */
         String action = request.getParameter("action");
         String idProdotto = request.getParameter("id");
-        String isAjax = request.getParameter("ajax"); // Rileva se è una chiamata asincrona Fetch API
+        String isAjax = request.getParameter("ajax");
 
         if (action != null && idProdotto != null) {
             try {
-                // RECUPERO DAL DATABASE: Interroghiamo subito il DB per avere lo stock reale aggiornato al millisecondo
+                // Recupero dati DB in tempo reale per validazione stock
                 ProdottoDAO prodottoDAO = new ProdottoDAO();
                 Prodotto prodottoScelto = prodottoDAO.fetchProdottoById(idProdotto);
 
+                /* AZIONE: ADD */
                 if ("add".equals(action)) {
                     int quantitaRichiesta = Integer.parseInt(request.getParameter("quantita"));
                     
-                    // 1. Calcoliamo quanti pezzi di questo prodotto ci sono GIÀ nel carrello dell'utente
                     int quantitaGiaPresente = 0;
                     for (CarrelloItem item : carrello.getItems()) {
                         if (item.getIdProdotto().equals(idProdotto)) {
@@ -57,10 +58,9 @@ public class CarrelloServlet extends HttpServlet {
                     int quantitaTotale = quantitaGiaPresente + quantitaRichiesta;
 
                     if (prodottoScelto != null) {
-                        // 2. CONTROLLO STOCK IN AGGIUNTA
+                        // Validazione disponibilità magazzino in aggiunta
                         if (quantitaTotale > prodottoScelto.getInStock()) {
                             
-                            // Se la richiesta arriva tramite AJAX blocchiamo tutto e inviamo l'errore JSON
                             if ("true".equals(isAjax)) {
                                 String jsonError = "{"
                                     + "\"status\":\"error\", "
@@ -69,9 +69,8 @@ public class CarrelloServlet extends HttpServlet {
                                 response.setContentType("application/json");
                                 response.setCharacterEncoding("UTF-8");
                                 response.getWriter().write(jsonError);
-                                return; // BLOCCO IMMEDIATO
+                                return; 
                             } else {
-                                // Fallback se si usa un form HTML classico senza JS
                                 request.setAttribute("errorMessage", "Errore: Quantità non disponibile in magazzino. Massimo consentito: " + prodottoScelto.getInStock());
                             }
                         } else {
@@ -89,14 +88,16 @@ public class CarrelloServlet extends HttpServlet {
                         request.setAttribute("errorMessage", "Errore: Prodotto non trovato nel database.");
                     }
                     
+                /* AZIONE: REMOVE */
                 } else if ("remove".equals(action)) {
                     carrello.rimuoviProdotto(idProdotto);
                     request.setAttribute("successMessage", "Prodotto rimosso dal carrello.");
                     
+                /* AZIONE: UPDATE */
                 } else if ("update".equals(action)) {
                     int nuovaQuantita = Integer.parseInt(request.getParameter("quantita"));
                     
-                    // 3. CONTROLLO STOCK IN AGGIORNAMENTO (Click sul "+" nel carrello)
+                    // Validazione disponibilità magazzino in aggiornamento
                     if (prodottoScelto != null && nuovaQuantita > prodottoScelto.getInStock()) {
                         if ("true".equals(isAjax)) {
                             String jsonError = "{"
@@ -106,7 +107,7 @@ public class CarrelloServlet extends HttpServlet {
                             response.setContentType("application/json");
                             response.setCharacterEncoding("UTF-8");
                             response.getWriter().write(jsonError);
-                            return; // BLOCCO IMMEDIATO
+                            return; 
                         }
                     } else {
                         carrello.aggiornaQuantita(idProdotto, nuovaQuantita);
@@ -119,7 +120,7 @@ public class CarrelloServlet extends HttpServlet {
             }
         }
 
-     // --- BLOCCO AJAX: Risposta JSON per l'aggiornamento in tempo reale ---
+        /* RISPOSTA CLIENT (AJAX) */
         if ("true".equals(isAjax)) {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
@@ -128,7 +129,7 @@ public class CarrelloServlet extends HttpServlet {
             int nuovaQuantitaRiga = 0;
             String nomeProdottoRiga = "";
             
-            // Troviamo la riga appena aggiunta/aggiornata per estrarne i dati
+            // Recupero dati specifici della riga alterata per update parziale DOM
             if ("update".equals(action) || "add".equals(action)) {
                 for (CarrelloItem item : carrello.getItems()) {
                     if (item.getIdProdotto().equals(idProdotto)) {
@@ -140,7 +141,6 @@ public class CarrelloServlet extends HttpServlet {
                 }
             }
 
-            // Costruzione manuale della stringa JSON 
             String jsonResponse = "{"
                 + "\"status\":\"success\", "
                 + "\"totaleRiga\":" + String.valueOf(nuovoTotaleRiga) + ", "
@@ -155,7 +155,9 @@ public class CarrelloServlet extends HttpServlet {
             response.getWriter().write(jsonResponse);
             return; 
         }
-        // PATTERN PRG: Redirigiamo l'utente pulendo l'URL per evitare doppi inserimenti al refresh
+        
+        /* RISPOSTA CLIENT (PRG) */
+        // Pattern PRG (Post-Redirect-Get) per prevenire form resubmission
         response.sendRedirect(request.getContextPath() + "/common/carrello.jsp");
     }
 }

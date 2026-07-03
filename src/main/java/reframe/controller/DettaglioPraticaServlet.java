@@ -23,7 +23,7 @@ import reframe.model.dao.TicketDAO;
 public class DettaglioPraticaServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    // Utility interna per sfuggire i caratteri speciali nel JSON manuale
+    // Metodo di utility per sanificare le stringhe durante la serializzazione JSON manuale
     private String escapeJson(String data) {
         if (data == null) return "";
         return data.replace("\\", "\\\\")
@@ -37,7 +37,7 @@ public class DettaglioPraticaServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         
-        // 1. Sicurezza: Controllo Login
+        /* CONTROLLO ACCESSI E VALIDAZIONE INPUT */
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("utente") == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -57,7 +57,7 @@ public class DettaglioPraticaServlet extends HttpServlet {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
         try {
-            // 2. Recupero Pratica
+            /* RECUPERO DATI E PREVENZIONE IDOR */
             PraticaAssistenza pratica = praticaDAO.doRetrieveByRma(rma);
             
             if (pratica == null) {
@@ -65,22 +65,20 @@ public class DettaglioPraticaServlet extends HttpServlet {
                 return;
             }
 
-            // 3. Controllo Permessi (IDOR Prevention)
-            // Se l'utente non è admin (livello 0), deve essere il proprietario della pratica
+            // IDOR Prevention: Impedisce a un utente di livello base di forzare l'URL e leggere i ticket di altri clienti
             if (utenteLoggato.getIsAdmin() == 0 && !pratica.getIdUtente().equals(utenteLoggato.getUsername())) {
-                response.setStatus(HttpServletResponse.SC_FORBIDDEN); // 403
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN); 
                 return;
             }
 
-            // 4. Recupero Messaggi
             List<Ticket> messaggi = ticketDAO.doRetrieveByRma(rma);
             
-            // 5. Costruzione JSON Manuale
+            /* COSTRUZIONE E SERIALIZZAZIONE JSON */
             response.setContentType("application/json; charset=UTF-8");
             PrintWriter out = response.getWriter();
             StringBuilder json = new StringBuilder();
-			boolean isProprietario = pratica.getIdUtente().equals(utenteLoggato.getUsername());
-			
+            boolean isProprietario = pratica.getIdUtente().equals(utenteLoggato.getUsername());
+            
             json.append("{");
             json.append("\"isProprietario\":").append(isProprietario).append(",");
             json.append("\"rma\":\"").append(escapeJson(pratica.getRma())).append("\",");
@@ -95,13 +93,13 @@ public class DettaglioPraticaServlet extends HttpServlet {
             String adminStr = pratica.getAdminAssegnato() != null ? escapeJson(pratica.getAdminAssegnato()) : "";
             json.append("\"adminAssegnato\":\"").append(adminStr).append("\",");
 
-         // Array dei messaggi (Ticket)
+            // Costruzione iterativa dell'array dei messaggi scambiati nel ticket
             json.append("\"messaggi\":[");
             for (int i = 0; i < messaggi.size(); i++) {
                 Ticket t = messaggi.get(i);
                 json.append("{");
                 
-                // Determina se l'autore del messaggio è l'utente attualmente loggato
+                // Flag booleano per il frontend: determina la formattazione visiva lato client (messaggio inviato vs ricevuto)
                 boolean isMine = t.getAutore().equals(utenteLoggato.getUsername());
                 String displayAutore = isMine ? "Tu" : t.getAutore();
                 

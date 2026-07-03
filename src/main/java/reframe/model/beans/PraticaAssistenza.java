@@ -3,21 +3,26 @@ package reframe.model.beans;
 import java.sql.Timestamp;
 
 public class PraticaAssistenza {
+    
+    /* ATTRIBUTI */
     private String rma;
     private String titolo;
     private String categoria;
     private String descrizione;
     private String stato;
+    
+    // Utilizzo di java.sql.Timestamp per garantire il mapping diretto e accurato dei campi DATETIME/TIMESTAMP a livello di database
     private Timestamp dataApertura;
     private Timestamp dataChiusura;
+    
     private String idUtente;
     private String adminAssegnato;
 
+    /* COSTRUTTORI */
     public PraticaAssistenza() {
-        // Costruttore vuoto
     }
 
-    // --- GETTER E SETTER ---
+    /* GETTER E SETTER */
     public String getRma() { return rma; }
     public void setRma(String rma) { this.rma = rma; }
 

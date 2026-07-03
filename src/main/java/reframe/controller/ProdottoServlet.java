@@ -17,8 +17,9 @@ import reframe.model.beans.Utente;
 public class ProdottoServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
+    /* GESTIONE RICHIESTE GET (VISUALIZZAZIONE E FILTRAGGIO CATALOGO) */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // --- LOGICA DI VISUALIZZAZIONE CATALOGO (Invariata) ---
+        
         ProdottoDAO dao = new ProdottoDAO();
         
         String isAjax = request.getParameter("ajax");
@@ -34,8 +35,9 @@ public class ProdottoServlet extends HttpServlet {
                                 (prezziScelti != null && prezziScelti.length > 0) ||
                                 (searchTesto != null && !searchTesto.trim().isEmpty());
             
+            // Determinazione dinamica del dataset e del titolo della vetrina in base ai filtri applicati
             if (hasFiltri) {
-            	catalogo = dao.fetchProdottiFiltrati(marcheScelte, prezziScelti, searchTesto, tipoFiltro);
+                catalogo = dao.fetchProdottiFiltrati(marcheScelte, prezziScelti, searchTesto, tipoFiltro);
                 request.setAttribute("titoloVetrina", "Risultati Ricerca");
             } else if (tipoFiltro != null && !tipoFiltro.trim().isEmpty()) {
                 catalogo = dao.fetchProdottiByTipo(tipoFiltro);
@@ -45,6 +47,7 @@ public class ProdottoServlet extends HttpServlet {
                 request.setAttribute("titoloVetrina", "Tutto il Catalogo");
             }
             
+            // Sanitizzazione lato server del catalogo: omette dinamicamente dalla visualizzazione i prodotti esauriti
             if (catalogo != null) {
                 catalogo.removeIf(p -> p.getInStock() <= 0);
             }
@@ -54,6 +57,7 @@ public class ProdottoServlet extends HttpServlet {
             List<String> marcheDisponibili = dao.fetchDistinctMarche(); 
             request.setAttribute("marcheDisponibili", marcheDisponibili);
             
+            // Gestione del rendering parziale (Pattern AJAX/Fragment) per aggiornare solo la griglia prodotti nel DOM senza ricaricare la pagina
             if ("true".equals(isAjax)) {
                 request.getRequestDispatcher("/WEB-INF/components/griglia-prodotti.jsp").forward(request, response);
                 return; 
@@ -67,11 +71,10 @@ public class ProdottoServlet extends HttpServlet {
         request.getRequestDispatcher("/vetrina.jsp").forward(request, response);
     }
     
-    
+    /* GESTIONE RICHIESTE POST (AMMINISTRAZIONE PRODOTTI) */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         
-        // 1. CONTROLLO SICUREZZA GLOBALE PER TUTTE LE AZIONI POST
-        // Nessun utente normale o non loggato deve poter aggiungere o eliminare nulla.
+        // RBAC (Role-Based Access Control): blocca le operazioni di scrittura a database per utenti non loggati o sprovvisti di privilegi amministrativi
         Utente utenteLoggato = (Utente) request.getSession().getAttribute("utente");
         if (utenteLoggato == null || utenteLoggato.getIsAdmin() == 0) {
             response.sendRedirect(request.getContextPath() + "/accessoNegato.jsp");
@@ -79,20 +82,15 @@ public class ProdottoServlet extends HttpServlet {
         }
 
         String action = request.getParameter("action");
-        
         ProdottoDAO dao = new ProdottoDAO();
         
-        
-        // ==========================================
-        // AZIONE: ELIMINA PRODOTTO
-        // ==========================================
+        /* AZIONE: ELIMINAZIONE PRODOTTO */
         if ("delete".equals(action)) {
             String idProdotto = request.getParameter("idProdotto");
             
             if (idProdotto != null && !idProdotto.trim().isEmpty()) {
                 try {
                     dao.deleteProdotto(idProdotto);
-                    // Modificato: Ora rimanda alla Dashboard Admin e non più alla Vetrina!
                     response.sendRedirect(request.getContextPath() + "/PannelloAdminServlet?success=eliminato");
                 } catch (SQLException e) {
                     e.printStackTrace();
@@ -104,16 +102,12 @@ public class ProdottoServlet extends HttpServlet {
             return; 
         }
         
-     // ==========================================
-        // AZIONE: RIPRISTINA PRODOTTO OSCURATO
-        // ==========================================
+        /* AZIONE: RIPRISTINO PRODOTTO */
         if ("ripristina".equals(action)) {
             String idProdotto = request.getParameter("idProdotto");
             
             try {
                 dao.ripristinaProdotto(idProdotto);
-                
-                // Ricarica la pagina tornando sulla scheda dei Prodotti
                 response.sendRedirect(request.getContextPath() + "/PannelloAdminServlet?tab=prodotti&success=prodottoRipristinato");
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -122,12 +116,9 @@ public class ProdottoServlet extends HttpServlet {
             return;
         }
     
-     // ==========================================
-        // AZIONE: MODIFICA PRODOTTO
-        // ==========================================
+        /* AZIONE: MODIFICA PRODOTTO */
         if ("edit".equals(action)) {
             try {
-                // 1. Recupero i dati base
                 String idProdotto = request.getParameter("idProdotto");
                 String nome = request.getParameter("nome");
                 String prezzoStr = request.getParameter("prezzo");
@@ -135,7 +126,6 @@ public class ProdottoServlet extends HttpServlet {
                 String tipo = request.getParameter("tipo");
                 String descrizione = request.getParameter("descrizione");
                 
-                // Recupero i nuovi campi specifici
                 String stato = request.getParameter("stato");
                 String scattiStr = request.getParameter("numeroScatti");
                 String condizione = request.getParameter("condizioneCollezionistica");
@@ -143,23 +133,22 @@ public class ProdottoServlet extends HttpServlet {
                 double prezzo = Double.parseDouble(prezzoStr);
                 int stock = Integer.parseInt(stockStr);
 
-                // 2. Recupero il prodotto originale
                 Prodotto prodottoDaModificare = dao.fetchProdottoById(idProdotto); 
                 
                 if (prodottoDaModificare != null) {
-                    // 3. Sovrascrivo i dati di base
                     prodottoDaModificare.setNome(nome);
                     prodottoDaModificare.setPrezzo(prezzo);
                     prodottoDaModificare.setInStock(stock);
                     prodottoDaModificare.setTipo(tipo);
                     prodottoDaModificare.setDescrizione(descrizione);
                     
-                    // 4. Reset dei campi specifici per tenere il DB pulito
+                    // Normalizzazione dei metadati specifici: azzera i campi correlati alle sottocategorie ("Usato", "Collezione")
+                    // per evitare la persistenza di dati incoerenti a database nel caso in cui la categoria principale venga modificata dall'admin.
                     prodottoDaModificare.setStato(null);
                     prodottoDaModificare.setNumeroScatti(Integer.valueOf(0)); 
                     prodottoDaModificare.setCondizioneCollezionistica(null);
                     
-                    // 5. Assegnazione condizionale in base al Tipo
+                    // Ripopolamento condizionale vincolato al tipo di prodotto confermato
                     if ("Usato".equalsIgnoreCase(tipo)) {
                         prodottoDaModificare.setStato(stato);
                         if (scattiStr != null && !scattiStr.trim().isEmpty()) {
@@ -169,7 +158,6 @@ public class ProdottoServlet extends HttpServlet {
                         prodottoDaModificare.setCondizioneCollezionistica(condizione);
                     }
                     
-                    // 6. Salvo su DB
                     dao.updateProdotto(prodottoDaModificare); 
                 }
                 
@@ -180,7 +168,8 @@ public class ProdottoServlet extends HttpServlet {
             }
             return;
         }
-        // Se arriva un'azione non riconosciuta, rimandiamo alla dashboard
+        
+        // Fallback catch-all per manipolazioni errate del parametro action
         response.sendRedirect(request.getContextPath() + "/PannelloAdminServlet");
     }
 }

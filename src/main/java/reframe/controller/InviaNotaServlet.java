@@ -16,25 +16,28 @@ import java.io.IOException;
 public class InviaNotaServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        
+        /* CONTROLLO ACCESSI E PERMESSI */
         HttpSession session = request.getSession();
         Utente superadmin = (Utente) session.getAttribute("utente");
 
-        // Controllo di sicurezza: solo il Superadmin (isAdmin = 2) può inviare note
+        // RBAC (Role-Based Access Control): Restringe l'esecuzione esclusivamente agli utenti con privilegi di Livello 2 (Superadmin)
         if (superadmin == null || superadmin.getIsAdmin() != 2) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
 
+        /* ELABORAZIONE NOTA E INVIO EMAIL */
         String rma = request.getParameter("rma");
         String nota = request.getParameter("nota");
         
         try {
-            // TODO: Recupera l'username dell'admin in carico tramite PraticaDAO
+            // TODO: Sostituire il mockup di test con il recupero dinamico dell'operatore in carico
             // String usernameAdmin = praticaDAO.getAdminInCarico(rma);
-            String usernameAdmin = "admin_Erika"; // Mockup
+            String usernameAdmin = "admin_Erika"; 
 
             UtenteDAO utenteDAO = new UtenteDAO();
-            Utente adminTarget = utenteDAO.doRetrieveByKey(usernameAdmin); // Devi avere questo metodo nel DAO
+            Utente adminTarget = utenteDAO.doRetrieveByKey(usernameAdmin); 
 
             if (adminTarget != null && adminTarget.getEmail() != null) {
                 String oggetto = "Reframe - Nota Superadmin per Pratica " + rma;

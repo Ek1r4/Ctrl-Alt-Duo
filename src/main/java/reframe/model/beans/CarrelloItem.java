@@ -1,13 +1,16 @@
 package reframe.model.beans;
 
 public class CarrelloItem {
+    
+    /* ATTRIBUTI */
     private String idProdotto;
     private String nome;
     private double prezzo;
-    private int iva; // NUOVO CAMPO OBBLIGATORIO
+    private int iva; 
     private int quantita;
     private int inStock;
 
+    /* COSTRUTTORI */
     public CarrelloItem() {}
 
     public CarrelloItem(String idProdotto, String nome, double prezzo, int iva, int quantita, int inStock) {
@@ -19,7 +22,7 @@ public class CarrelloItem {
         this.inStock = inStock;
     }
 
-    // Getter e Setter
+    /* GETTER E SETTER */
     public String getIdProdotto() { return idProdotto; }
     public void setIdProdotto(String idProdotto) { this.idProdotto = idProdotto; }
     
@@ -38,15 +41,14 @@ public class CarrelloItem {
     public int getInStock() { return inStock; }
     public void setInStock(int inStock) { this.inStock = inStock; }
 
- // Calcolo del totale per la riga: (Prezzo Singolo + IVA) * Quantità
+    /* LOGICA DI BUSINESS */
+    
+    // Calcola l'importo totale della riga ordine maggiorando dinamicamente il prezzo base netto con l'aliquota IVA
     public double getPrezzoTotale() {
-        // 1. Calcoliamo a quanto ammonta l'IVA in euro per il singolo prodotto
         double importoIva = this.prezzo * (this.iva / 100.0);
         
-        // 2. Sommiamo l'IVA al prezzo netto
         double prezzoLordo = this.prezzo + importoIva;
         
-        // 3. Moltiplichiamo per la quantità
         return prezzoLordo * this.quantita;
     }
 }

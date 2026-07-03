@@ -2,20 +2,25 @@ package reframe.model.beans;
 
 public class Pagamento {
     
+    /* ATTRIBUTI */
+    
     private int idPagamento;
-    private String idUtente; //Username dell'Utente
+    private String idUtente; 
     private String nomeIntestatario;
     private String circuito;
     private String numeroCarta;
     private String dataScadenza;
     private String cvv;
+    
+    // Flag per il soft-delete: disattiva il metodo di pagamento per l'utente nel frontend 
+    // mantenendo però l'integrità referenziale a database per lo storico degli ordini passati.
     private boolean isAttivo;
 
-    // Costruttore vuoto
+    /* COSTRUTTORI */
+    
     public Pagamento() {
     }
 
-    // Costruttore pieno
     public Pagamento(int idPagamento, String idUtente, String nomeIntestatario, String circuito, 
                      String numeroCarta, String dataScadenza, String cvv) {
         this.idPagamento = idPagamento;
@@ -27,7 +32,8 @@ public class Pagamento {
         this.cvv = cvv;
     }
 
-    // Getter e Setter
+    /* GETTER E SETTER */
+    
     public int getIdPagamento() {
         return idPagamento;
     }
@@ -92,7 +98,8 @@ public class Pagamento {
         this.isAttivo = isAttivo;
     }
 
-    // Override del toString
+    /* METODI OVERRIDE */
+    
     @Override
     public String toString() {
         return "Pagamento [idPagamento=" + idPagamento + ", idUtente=" + idUtente 

@@ -24,6 +24,7 @@ import reframe.model.dao.PraticaAssistenzaDAO;
 public class ListaPraticheServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
+    // Metodo di utility per sanificare le stringhe durante la serializzazione JSON manuale
     private String escapeJson(String data) {
         if (data == null) return "";
         return data.replace("\\", "\\\\")
@@ -33,6 +34,8 @@ public class ListaPraticheServlet extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        
+        /* SETUP E CONTROLLO ACCESSI */
         request.setCharacterEncoding("UTF-8");
         response.setContentType("application/json; charset=UTF-8");
         
@@ -52,33 +55,35 @@ public class ListaPraticheServlet extends HttpServlet {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
         try {
-            // Estraiamo TUTTE le pratiche dal DB (il DAO dovrebbe avere un metodo tipo doRetrieveAll())
-            // Se il tuo metodo si chiama diversamente, adattalo qui sotto.
+            /* RECUPERO DATI E FILTRAGGIO (RBAC E RICERCA) */
             List<PraticaAssistenza> tuttePratiche = dao.doRetrieveAll(null, null); 
             List<PraticaAssistenza> filtrate = new ArrayList<>();
 
             for (PraticaAssistenza p : tuttePratiche) {
-                // 1. Filtro di Base per Ruolo
+                
+                // RBAC: Restringe la visibilità del record in base ai privilegi dell'utente.
+                // Ruolo 0 (Cliente): limitato alle proprie pratiche. Ruolo 1 (Admin): limitato alle pratiche a lui assegnate.
                 if (ruolo == 0 && !p.getIdUtente().equals(utente.getUsername())) continue;
                 if (ruolo == 1 && !utente.getUsername().equals(p.getAdminAssegnato())) continue;
 
-                // 2. Filtro della Barra di Ricerca
                 boolean match = false;
                 if (q.isEmpty()) {
                     match = true;
                 } else {
-                    // Ricerca base per tutti: RMA, Titolo, Categoria, Stato
+                    // Applicazione filtri di ricerca progressivi basati sui campi base
                     if (p.getRma().toLowerCase().contains(q) ||
                         p.getTitolo().toLowerCase().contains(q) ||
                         p.getCategoria().toLowerCase().contains(q) ||
                         p.getStato().toLowerCase().contains(q)) {
                         match = true;
                     }
-                    // Ricerca aggiuntiva per Admin e Superadmin: Utente
+                    
+                    // Ricerca estesa ai riferimenti dell'utente, concessa solo a privilegi >= 1
                     if (!match && ruolo >= 1 && p.getIdUtente() != null && p.getIdUtente().toLowerCase().contains(q)) {
                         match = true;
                     }
-                    // Ricerca esclusiva per Superadmin: Admin Assegnato (incluso "da assegnare")
+                    
+                    // Ricerca estesa all'amministratore in carico, esclusiva per il Superadmin (Livello 2)
                     if (!match && ruolo == 2 && p.getAdminAssegnato() != null && p.getAdminAssegnato().toLowerCase().contains(q)) {
                         match = true;
                     }
@@ -89,11 +94,12 @@ public class ListaPraticheServlet extends HttpServlet {
                 }
             }
 
-         // 3. Ordinamento (Superadmin: "Da assegnare" in cima, poi Data decrescente)
+            /* ORDINAMENTO RISULTATI */
             Collections.sort(filtrate, new Comparator<PraticaAssistenza>() {
                 public int compare(PraticaAssistenza p1, PraticaAssistenza p2) {
+                    
+                    // Override per Superadmin: forza i ticket "Da assegnare" all'apice dei risultati scavalcando l'ordinamento cronologico
                     if (ruolo == 2) {
-                        // Un ticket è "Da assegnare" se il campo è null, vuoto, o contiene la stringa esatta
                         boolean isDaAssegnare1 = (p1.getAdminAssegnato() == null || p1.getAdminAssegnato().trim().isEmpty() || "Da assegnare".equalsIgnoreCase(p1.getAdminAssegnato()));
                         boolean isDaAssegnare2 = (p2.getAdminAssegnato() == null || p2.getAdminAssegnato().trim().isEmpty() || "Da assegnare".equalsIgnoreCase(p2.getAdminAssegnato()));
                         
@@ -101,16 +107,15 @@ public class ListaPraticheServlet extends HttpServlet {
                         if (!isDaAssegnare1 && isDaAssegnare2) return 1;
                     }
                     
-                    // A parità di assegnazione, si ordina per data decrescente
                     if (p1.getDataApertura() == null && p2.getDataApertura() == null) return 0;
                     if (p1.getDataApertura() == null) return 1;
                     if (p2.getDataApertura() == null) return -1;
                     
-                    return p2.getDataApertura().compareTo(p1.getDataApertura()); // DESC
+                    return p2.getDataApertura().compareTo(p1.getDataApertura()); 
                 }
             });
 
-            // 4. Costruzione Manuale JSON
+            /* COSTRUZIONE E SERIALIZZAZIONE JSON */
             PrintWriter out = response.getWriter();
             StringBuilder json = new StringBuilder();
 
@@ -118,6 +123,7 @@ public class ListaPraticheServlet extends HttpServlet {
             json.append("\"ruolo\":").append(ruolo).append(",");
             json.append("\"risultati\":[");
 
+            // Costruzione iterativa dell'array JSON dei risultati filtrati e ordinati
             for (int i = 0; i < filtrate.size(); i++) {
                 PraticaAssistenza p = filtrate.get(i);
                 json.append("{");
