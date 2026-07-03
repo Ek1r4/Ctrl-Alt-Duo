@@ -42,14 +42,11 @@
         			// Mostriamo il carrello SOLO se NON è admin (quindi lo vedono i clienti loggati e gli ospiti non registrati)
         			if (!isAdmin) { 
     			%>
-    	<form action="<%= request.getContextPath() %>/Carrello" method="POST" class="quick-add-form">
-        	<input type="hidden" name="action" value="add">
-        	<input type="hidden" name="id" value="<%= p.getId() %>">
-        	<input type="hidden" name="quantita" value="1">
+    	<form class="quick-add-form" onsubmit="event.preventDefault(); aggiungiVeloceAJAX('<%= p.getId() %>');">
         	<button type="submit" class="btn-quick-add" title="Aggiungi al carrello">
             	<i class="fas fa-cart-plus"></i>
         	</button>
-        	</form>
+        </form>
     			<% } %>
 			</div>
             

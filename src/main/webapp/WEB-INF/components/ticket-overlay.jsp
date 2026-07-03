@@ -1,4 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="reframe.model.dao.UtenteDAO" %>
+<%@ page import="java.util.List" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <%
@@ -11,6 +13,16 @@
     if (utenteLoggatoOverlay != null) {
         if (utenteLoggatoOverlay.getIsAdmin() == 2) {
             ruoloReale = "superadmin";
+            
+            // OTTIMIZZAZIONE: Recuperiamo gli admin dal DB SOLO se l'utente è un Superadmin
+            UtenteDAO uDao = new UtenteDAO();
+            try {
+                List<reframe.model.beans.Utente> listaAdmins = uDao.doRetrieveAllAdmins();
+                request.setAttribute("listaAdmins", listaAdmins);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            
         } else if (utenteLoggatoOverlay.getIsAdmin() == 1) {
             ruoloReale = "admin";
         }
@@ -25,6 +37,11 @@
         <button class="btn-close-dialog" onclick="chiudiOverlay()" aria-label="Chiudi ticket">
             <i class="ri-close-large-line"></i>
         </button>
+        
+        <div class="mobile-ticket-tabs">
+        <button type="button" class="tab-btn active" onclick="switchMobileTab('chat')">CHAT</button>
+        <button type="button" class="tab-btn" onclick="switchMobileTab('dettagli')">DETTAGLI</button>
+    </div>
 
         <div class="ticket-dialog-content">
 
@@ -136,13 +153,18 @@
                                 <form id="formAssegna" onsubmit="assegnaAdmin(event)">
                                     <fieldset class="custom-input">
                                         <legend>Assegna ad Admin</legend>
-                                        <input type="text" id="adminInCarico" list="adminList" placeholder="Es. admin_erika">
+                                        <input type="text" id="adminInCarico" list="adminList" placeholder="Es. admin_mario">
+                                        
+                                        <!-- LISTA DINAMICA DEGLI ADMIN DAL DATABASE -->
                                         <datalist id="adminList">
-                                            <option value="admin_Erika">
-                                            <option value="admin_Mirko">
-                                            <option value="admin_Marco">
-                                            <option value="admin_Paolo">
+                                            <c:forEach var="admin" items="${listaAdmins}">
+                                                <%-- FILTRO: Mostra come opzione SOLO gli admin di livello 1 (Esclude i Superadmin) --%>
+                                                <c:if test="${admin.isAdmin == 1}">
+                                                    <option value="${admin.username}">${admin.nome} ${admin.cognome}</option>
+                                                </c:if>
+                                            </c:forEach>
                                         </datalist>
+                                        
                                     </fieldset>
                                     <button type="submit" class="btn-cta btn-chat-compact" style="margin-top:5px;">ASSEGNA E NOTIFICA</button>
                                 </form>

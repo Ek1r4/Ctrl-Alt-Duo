@@ -415,7 +415,6 @@ fieldset.custom-input input[type="password"]::-ms-clear { display: none; }
     background-color: var(--antracite-scuro);
     border-color: var(--antracite-scuro);
     color: var(--panna-carta);
-    margin-top: 30px; /* Distanzia la card da quella dell'anagrafica */
 }
 
 .support-card .card-header h2 {

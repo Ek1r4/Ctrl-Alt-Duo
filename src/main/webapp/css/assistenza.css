@@ -643,13 +643,13 @@
     font-size: 14px;
 }
 
-.msg-admin {
+.msg-other {
     background-color: var(--beige-scuro);
     align-self: flex-start;
     border-bottom-left-radius: 0;
 }
 
-.msg-user {
+.msg-mine {
     background-color: color-mix(in srgb, var(--verde-ottanio) 15%, transparent);
     align-self: flex-end;
     border-bottom-right-radius: 0;
@@ -715,6 +715,29 @@
     margin-top: 15px;
 }
 
+/* =========================================
+   DIVISORE NOTIFICHE DI SISTEMA 
+   ========================================= */
+.chat-system-divider {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 15px 0;
+    width: 100%;
+}
+
+.chat-system-divider span {
+    background-color: var(--panna-carta);
+    color: var(--grigio-taupe);
+    font-size: 0.7rem;
+    font-family: var(--font-tecnico);
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1px dashed var(--grigio-taupe);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-align: center;
+}
 /* ===================================================
    TOGGLE SWITCH STATO ADMIN (SEGMENTED CONTROL)
    =================================================== */
@@ -732,7 +755,8 @@
     position: relative;
     display: flex;
     align-items: center;
-    width: 240px; 
+    width: 100%; 
+    max-width: 240px;
     height: 48px;
     background-color: color-mix(in srgb, var(--grigio-taupe) 15%, transparent); /* Grigio chiarissimo per lo sfondo */
     border: 2px solid color-mix(in srgb, var(--grigio-taupe) 30%, transparent);
@@ -804,15 +828,74 @@
     overflow: visible;
 }
 
+/* ===================================================
+   MOBILE 
+   =================================================== */
+.mobile-ticket-tabs {
+    display: none; /* Nascosto di default su Desktop */
+}
+
 @media (max-width: 992px) {
-    .ticket-dialog-content {
-        flex-direction: column-reverse;
+    .ticket-dialog-wrapper {
+        flex-direction: column;
+        padding-top: 50px; 
         align-items: center;
     }
-    
+
+    /* Mostriamo il selettore (Segmented Control) */
+    .mobile-ticket-tabs {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        width: 100%;
+        margin-bottom: 15px;
+        z-index: 10;
+    }
+
+    .tab-btn {
+        background: transparent;
+        border: 2px solid var(--grigio-taupe);
+        color: var(--grigio-taupe);
+        padding: 8px 24px;
+        border-radius: 30px;
+        font-family: var(--font-tecnico, monospace);
+        font-weight: 700;
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .tab-btn.active {
+        background: var(--verde-ottanio);
+        border-color: var(--verde-ottanio);
+        color: var(--panna-carta);
+    }
+
+    /* Sistemiamo il layout dei pannelli */
+    .ticket-dialog-content {
+        flex-direction: column !important; /* Riporta la chat in cima */
+        align-items: center;
+    }
+
+    /* Di default mostriamo solo il primo pannello (Chat) e nascondiamo i Dettagli */
+    .ticket-panel:nth-child(2) {
+        display: none !important;
+    }
+
+    /* Quando è attiva la classe 'show-dettagli' via JS, invertiamo la visibilità */
+    .ticket-dialog-content.show-dettagli .ticket-panel:nth-child(1) {
+        display: none !important;
+    }
+    .ticket-dialog-content.show-dettagli .ticket-panel:nth-child(2) {
+        display: flex !important;
+    }
+
+    /* Adattiamo l'altezza per far entrare la pellicola perfettamente nello schermo */
     .ticket-panel {
-        height: 60vh;
-        margin-bottom: 20px;
+        height: 70vh !important;
+        margin-bottom: 0 !important;
     }
 }
 /* ===================================================
@@ -899,6 +982,7 @@
     display: flex;
     align-items: center;
     gap: 15px; 
+    justify-content: space-between;
     flex-direction: row-reverse;
 }
 

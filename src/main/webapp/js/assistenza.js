@@ -16,56 +16,20 @@ function apriTicketOverlay(rma) {
     
     // Mostra un testo di caricamento
     document.getElementById('chatHistory').innerHTML = '<div class="testo-tecnico loading-text">CARICAMENTO MESSAGGI...</div>';
-
-    // =========================================================
-    // 1. MOCKUP TEMPORANEO ALLINEATO AL NUOVO DB
-    // =========================================================
-    setTimeout(() => {
-        const mockupData = {
-            rma: rma,
-            titolo: "Lente graffiata all'arrivo",
-            categoria: "prodotto",
-            descrizione: "Ordini Selezionati: ORD19512\nProdotti Selezionati: EOS R5, Z8, X-T5\n----------------------------------------\n\nIl prodotto è arrivato con evidenti graffi sulla lente principale. Richiedo sostituzione immediata.",
-            stato: "In carico",
-            dataApertura: "27/06/2026 14:30",
-            adminAssegnato: "admin_Erika",
-            // I messaggi qui riflettono ESCLUSIVAMENTE la tabella Ticket del DB
-            messaggi: [
-                { 
-                    autore: "Admin Erika", 
-                    tipo: "Admin", 
-                    testo: "Salve, abbiamo preso in carico la sua richiesta. Potrebbe inviare delle foto del danno?", 
-                    data: "27/06/2026 16:00" 
-                },
-                { 
-                    autore: "Tu", 
-                    tipo: "User", 
-                    testo: "Certamente, le ho appena caricate tramite l'apposito modulo.", 
-                    data: "27/06/2026 16:15" 
-                }
-            ]
-        };
-        popolaOverlay(mockupData);
-    }, 500); 
-
-    // =========================================================
-    // 2. CHIAMATA REALE (Da decommentare quando crei la Servlet)
-    // =========================================================
-    /*
-    fetch('DettaglioTicketServlet?rma=' + rma)
-        .then(response => {
-            if (!response.ok) throw new Error("Errore nel recupero del ticket");
-            return response.json();
-        })
-        .then(data => {
-            popolaOverlay(data);
-        })
-        .catch(error => {
-            console.error(error);
-            showToast("Errore di connessione al server.");
-            chiudiOverlay();
-        });
-    */
+    
+	fetch('../DettaglioPraticaServlet?rma=' + rma)
+	        .then(response => {
+	            if (!response.ok) throw new Error("Errore nel recupero della pratica");
+	            return response.json();
+	        })
+	        .then(data => {
+	            popolaOverlay(data);
+	        })
+	        .catch(error => {
+	            console.error(error);
+	            showToast("Errore di connessione al server.");
+	            chiudiOverlay();
+	        });
 }
 
 function popolaOverlay(data) {
@@ -73,7 +37,7 @@ function popolaOverlay(data) {
     document.getElementById('dettaglioRma').innerText = data.rma;
     document.getElementById('dettaglioData').innerText = data.dataApertura;
     
-    // Assegnazione Titolo e Categoria (al posto del vecchio Motivo)
+    // Assegnazione Titolo e Categoria
     if (document.getElementById('dettaglioTitolo')) document.getElementById('dettaglioTitolo').innerText = data.titolo;
     if (document.getElementById('dettaglioCategoria')) document.getElementById('dettaglioCategoria').innerText = data.categoria.toUpperCase();
 
@@ -118,33 +82,61 @@ function popolaOverlay(data) {
         }
     }
 
-    // Aggiungiamo la descrizione originale come primo "messaggio" della chat
-    if (testoDescrizione) {
-        testoDescrizione = testoDescrizione.replace(/\n/g, "<br>");
-        chatBox.innerHTML += `
-            <div class="msg msg-user">
-                <span class="msg-author">Apertura Pratica</span>
-                <p>${testoDescrizione}</p>
-                <small>${data.dataApertura}</small>
-            </div>
-        `;
-    }
+	// Aggiungiamo la descrizione originale come primo "messaggio" della chat
+	    if (testoDescrizione) {
+	        testoDescrizione = testoDescrizione.replace(/\n/g, "<br>");
+	        
+	        // Se chi sta guardando è il proprietario, va a destra (msg-mine), altrimenti a sinistra (msg-other)
+	        const classeApertura = data.isProprietario ? 'msg-mine' : 'msg-other';
+	        
+	        chatBox.innerHTML += `
+	            <div class="msg ${classeApertura}">
+	                <span class="msg-author">Apertura Pratica</span>
+	                <p>${testoDescrizione}</p>
+	                <small>${data.dataApertura}</small>
+	            </div>
+	        `;
+	    }
 
     // Aggiungiamo i successivi messaggi provenienti dalla tabella Ticket
     if (data.messaggi && data.messaggi.length > 0) {
         data.messaggi.forEach(msg => {
-            let testoDaMostrare = msg.testo.replace(/\n/g, "<br>");
-            const isUser = msg.tipo === 'User'; 
-            chatBox.innerHTML += `
-                <div class="msg ${isUser ? 'msg-user' : 'msg-admin'}">
-                    <span class="msg-author">${msg.autore}</span>
-                    <p>${testoDaMostrare}</p>
-                    <small>${msg.data}</small>
-                </div>
-            `;
-        });
+            
+            // TRUCCHETTO WHATSAPP: Intercetta i messaggi di sistema
+            if (msg.testo.startsWith('[NOTIFICA DI SISTEMA]')) {
+                const testoPulito = msg.testo.replace('[NOTIFICA DI SISTEMA] - ', '').replace('[NOTIFICA DI SISTEMA]', '');
+                
+                chatBox.innerHTML += `
+                    <div class="chat-system-divider">
+                        <span><i class="ri-information-line" style="margin-right: 4px;"></i>${testoPulito}</span>
+                    </div>
+                `;
+				} else {
+				                let testoDaMostrare = msg.testo.replace(/\n/g, "<br>");
+				                
+				                // LOGICA DI PROSPETTIVA (Agenzia vs Cliente)
+				                let classeMessaggio = 'msg-other'; // Default a sinistra (Marroncino)
+				                
+				                if (data.isProprietario) {
+				                    // Se sto guardando la MIA pratica (Lato Cliente)
+				                    // I messaggi User vanno a destra, gli Admin a sinistra
+				                    classeMessaggio = (msg.tipo === 'User') ? 'msg-mine' : 'msg-other';
+				                } else {
+				                    // Se sto guardando una pratica DI ALTRI (Lato Superadmin / Admin)
+				                    // I messaggi Admin/Superadmin vanno a destra, il Cliente a sinistra
+				                    classeMessaggio = (msg.tipo === 'Admin') ? 'msg-mine' : 'msg-other';
+				                }
+				                
+				                chatBox.innerHTML += `
+				                    <div class="msg ${classeMessaggio}">
+				                        <span class="msg-author">${msg.autore}</span>
+				                        <p>${testoDaMostrare}</p>
+				                        <small>${msg.data}</small>
+				                    </div>
+				                `;
+				            }
+				});
     } else if (!testoDescrizione) {
-        // Se non c'è né descrizione né messaggi (situazione anomala)
         chatBox.innerHTML = '<div class="testo-tecnico">Nessun dettaglio presente.</div>';
     }
     
@@ -160,10 +152,15 @@ function popolaOverlay(data) {
     if (document.getElementById('dettaglioStatoSuper')) document.getElementById('dettaglioStatoSuper').innerText = data.stato;
     if (document.getElementById('adminInCarico')) document.getElementById('adminInCarico').value = data.adminAssegnato;
     
-    if (document.getElementById('utenteTicketChiuso') && data.stato === 'Chiusa') {
-        document.getElementById('utenteTicketChiuso').style.display = 'flex';
-    } else if (document.getElementById('utenteTicketChiuso')) {
-        document.getElementById('utenteTicketChiuso').style.display = 'none';
+    // GESTIONE CHIUSURA TICKET E BLOCCO CHAT
+    const formChat = document.getElementById('formChat');
+    
+    if (data.stato === 'Chiusa') {
+        if (document.getElementById('utenteTicketChiuso')) document.getElementById('utenteTicketChiuso').style.display = 'flex';
+        if (formChat) formChat.style.display = 'none'; // Nasconde form chat
+    } else {
+        if (document.getElementById('utenteTicketChiuso')) document.getElementById('utenteTicketChiuso').style.display = 'none';
+        if (formChat) formChat.style.display = 'block'; // Mostra form chat
     }
 
     // --- TOGGLE ADMIN ---
@@ -231,6 +228,7 @@ function popolaOverlay(data) {
 function chiudiOverlay() {
     document.getElementById('ticketOverlay').close();
     document.body.style.overflow = 'auto';
+	switchMobileTab('chat');
 }
 
 function showToast(message) {
@@ -246,55 +244,72 @@ function showToast(message) {
 
 // === AZIONI FORM VIA AJAX COLLEGATE ALLE SERVLET ===
 
-// 1. MOCKUP: Invio Messaggio Chat
+// 1. REALE: Invio Messaggio Chat
 function inviaMessaggio(e) {
     e.preventDefault();
-    const testo = document.getElementById('nuovoMessaggio').value;
     
-    // Falsifichiamo il caricamento del server con un timeout di mezzo secondo
-    setTimeout(() => {
-        showToast("Messaggio inviato correttamente!");
-        document.getElementById('nuovoMessaggio').value = '';
-        
-        // Aggiungiamo il messaggio direttamente in UI per vedere la grafica
-        const chatBox = document.getElementById('chatHistory');
-        chatBox.innerHTML += `
-            <div class="msg msg-user">
-                <span class="msg-author">Tu</span>
-                <p>${testo}</p>
-                <small>Ora</small>
-            </div>`;
-        chatBox.scrollTop = chatBox.scrollHeight;
-    }, 500);
+    const inputTesto = document.getElementById('nuovoMessaggio');
+    const testo = inputTesto.value.trim();
+    const rma = document.getElementById('dettaglioRma').innerText; 
+    const btnInvia = e.target.querySelector('button[type="submit"]');
+
+    if (!testo) return;
+
+    btnInvia.disabled = true;
+    inputTesto.disabled = true;
+
+    fetch('../ChatServlet', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ rma: rma, testo: testo })
+    })
+    .then(response => {
+        if(response.ok) {
+            inputTesto.value = '';
+            inputTesto.disabled = false;
+            btnInvia.disabled = false;
+            
+            // Richiede i dati freschi al server e aggiorna l'UI
+            fetch('../DettaglioPraticaServlet?rma=' + rma)
+                .then(res => res.json())
+                .then(data => popolaOverlay(data));
+                
+        } else if (response.status === 403) {
+            showToast("La pratica è chiusa. Non è possibile inviare messaggi.");
+            chiudiOverlay();
+        } else {
+            throw new Error();
+        }
+    })
+    .catch(() => {
+        showToast("Errore durante l'invio del messaggio.");
+        inputTesto.disabled = false;
+        btnInvia.disabled = false;
+    });
 }
-// 2. REALE: Aggiornamento Stato (Admin) con Toggle Custom e invio Email
+
+// 2. REALE: Aggiornamento Stato (Admin)
 function aggiornaStato(e) {
     e.preventDefault();
     
     const toggleStato = document.getElementById('toggleStatoAdmin');
-    const rma = document.getElementById('dettaglioRma').innerText; // Recuperiamo l'RMA dall'overlay
+    const rma = document.getElementById('dettaglioRma').innerText; 
     
-    // Se il checkbox è spuntato è "Chiusa", altrimenti è "In carico"
     const nuovoStato = toggleStato.checked ? 'Chiusa' : 'In carico';
     
-    // Disabilitiamo il pulsante per evitare doppi click durante il caricamento
     const btnSubmit = e.target.querySelector('button[type="submit"]');
     if (btnSubmit) {
         btnSubmit.disabled = true;
         btnSubmit.innerText = "AGGIORNAMENTO...";
     }
 
-    // Chiamata vera e propria alla Servlet
-    fetch('../AggiornaStatoServlet', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        // Passiamo RMA e il nuovo stato al backend
-        body: new URLSearchParams({ rma: rma, stato: nuovoStato }) 
-    })
+	fetch('../AggiornaPraticaServlet', {
+	        method: 'POST',
+	        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+	        body: new URLSearchParams({ action: 'aggiornaStato', rma: rma, stato: nuovoStato }) 
+	    })
     .then(response => {
         if(response.ok) {
-            
-            // Gestione dei messaggi di successo differenziati
             if(nuovoStato === 'Chiusa') {
                 showToast("Pratica CHIUSA. Email di notifica inviata al cliente!");
                 setTimeout(() => chiudiOverlay(), 1500);
@@ -304,10 +319,8 @@ function aggiornaStato(e) {
                 const warningMsg = document.getElementById('adminStatusWarning');
                 if (warningMsg) warningMsg.classList.remove('show');
                 
-                // Opzionale: ricarichiamo la pagina per aggiornare le tabelle della dashboard
                 setTimeout(() => window.location.reload(), 1600); 
             }
-            
         } else {
             showToast("Errore durante l'aggiornamento dello stato.");
             if (btnSubmit) {
@@ -325,29 +338,44 @@ function aggiornaStato(e) {
     });
 }
 
-// ---------------------------------------------------------
-// CHIAMATE REALI: Queste puntano alle tue Servlet delle Email
-// ---------------------------------------------------------
-
 // 3. REALE: Assegnazione Admin (Superadmin)
 function assegnaAdmin(e) {
     e.preventDefault();
     const nuovoAdmin = document.getElementById('adminInCarico').value;
     const rma = document.getElementById('dettaglioRma').innerText;
     
-    fetch('../AssegnaAdminServlet', {
+    const btnSubmit = e.target.querySelector('button[type="submit"]');
+    if (btnSubmit) {
+        btnSubmit.disabled = true;
+        btnSubmit.innerText = "ASSEGNAZIONE...";
+    }
+    
+    fetch('../AggiornaPraticaServlet', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ rma: rma, nuovoAdmin: nuovoAdmin })
+        body: new URLSearchParams({ action: 'assegnaAdmin', rma: rma, nuovoAdmin: nuovoAdmin })
     })
     .then(response => {
         if(response.ok) {
             showToast(`Admin ${nuovoAdmin} assegnato. Email automatica inviata!`);
+            
+            setTimeout(() => chiudiOverlay(), 1500);
+            setTimeout(() => window.location.reload(), 1600);
         } else {
             showToast("Errore durante l'assegnazione.");
+            if (btnSubmit) {
+                btnSubmit.disabled = false;
+                btnSubmit.innerText = "ASSEGNA E NOTIFICA";
+            }
         }
     })
-    .catch(() => showToast("Errore di connessione."));
+    .catch(() => {
+        showToast("Errore di connessione.");
+        if (btnSubmit) {
+            btnSubmit.disabled = false;
+            btnSubmit.innerText = "ASSEGNA E NOTIFICA";
+        }
+    });
 }
 
 // 4. REALE: Invio Nota Privata (Superadmin)
@@ -372,7 +400,49 @@ function inviaNota(e) {
     .catch(() => showToast("Errore di connessione."));
 }
 
+// =========================================================
+// GESTIONE CREAZIONE NUOVO TICKET (STEP 1)
+// =========================================================
+document.addEventListener("DOMContentLoaded", function() {
+    const formSelezioneOrdine = document.getElementById("formSelezioneOrdine");
+    
+    // Esegue il codice solo se ci troviamo nella pagina dello Step 1
+    if (formSelezioneOrdine) {
+        const floatingSubmit = document.getElementById("floatingSubmit");
+        const ordiniItems = document.querySelectorAll(".ordine-item");
 
+        function checkVisibility() {
+            const anyChecked = formSelezioneOrdine.querySelectorAll('input[type="checkbox"]:checked').length > 0;
+            if (anyChecked) {
+                floatingSubmit.classList.add("visible");
+            } else {
+                floatingSubmit.classList.remove("visible");
+            }
+        }
+
+        ordiniItems.forEach(item => {
+            const cbOrdine = item.querySelector(".cb-ordine");
+            const cbProdotti = item.querySelectorAll(".cb-prodotto");
+
+            if (cbOrdine) {
+                cbOrdine.addEventListener("change", function() {
+                    cbProdotti.forEach(cb => cb.checked = this.checked);
+                    checkVisibility();
+                });
+            }
+
+            if (cbProdotti.length > 0) {
+                cbProdotti.forEach(cb => {
+                    cb.addEventListener("change", function() {
+                        const anyProductChecked = Array.from(cbProdotti).some(p => p.checked);
+                        if (cbOrdine) cbOrdine.checked = anyProductChecked;
+                        checkVisibility();
+                    });
+                });
+            }
+        });
+    }
+});
 // =========================================================
 // GESTIONE CREAZIONE NUOVO TICKET (STEP 2)
 // =========================================================
@@ -384,7 +454,6 @@ if (formTicketFinale) {
     const inputCategoria = document.getElementById('categoriaTicket');
     const inputDescrizione = document.getElementById('descrizioneTicket');
 
-    // Funzione di validazione Regex
     function validaCampo(campo, regex, errorId) {
         const isValid = regex.test(campo.value.trim());
         const errorMsg = document.getElementById(errorId);
@@ -399,7 +468,6 @@ if (formTicketFinale) {
         return isValid;
     }
 
-    // Validazione "Live" all'uscita dal campo (blur) o input
     const regexTitolo = /^.{5,50}$/;
     const regexDescrizione = /^[\s\S]{20,1024}$/;
     
@@ -416,77 +484,65 @@ if (formTicketFinale) {
         }
     });
 
-    // Intercetta il Submit per l'invio AJAX
-    formTicketFinale.addEventListener('submit', function(e) {
-        e.preventDefault();
+	// Intercetta il Submit per l'invio AJAX
+	    formTicketFinale.addEventListener('submit', function(e) {
+	        e.preventDefault();
 
-        const isTitoloValid = validaCampo(inputTitolo, regexTitolo, 'errorTitolo');
-        const isDescrizioneValid = validaCampo(inputDescrizione, regexDescrizione, 'errorDescrizione');
-        let isCategoriaValid = inputCategoria.value !== "";
-        
-        if(!isCategoriaValid) {
-            inputCategoria.classList.add('input-error');
-            document.getElementById('errorCategoria').classList.add('show');
-        }
+	        const isTitoloValid = validaCampo(inputTitolo, regexTitolo, 'errorTitolo');
+	        const isDescrizioneValid = validaCampo(inputDescrizione, regexDescrizione, 'errorDescrizione');
+	        let isCategoriaValid = inputCategoria.value !== "";
+	        
+	        if(!isCategoriaValid) {
+	            inputCategoria.classList.add('input-error');
+	            document.getElementById('errorCategoria').classList.add('show');
+	        }
 
-        // Se un campo fallisce la validazione, blocchiamo l'invio
-        if (!isTitoloValid || !isDescrizioneValid || !isCategoriaValid) {
-            return; 
-        }
+	        if (!isTitoloValid || !isDescrizioneValid || !isCategoriaValid) {
+	            return; 
+	        }
 
-        // 1. Formattazione: uniamo selezioni e descrizione
-        let selezioniText = "";
-        const ordiniNodes = document.querySelectorAll('.hidden-selezione-ordine');
-        const prodottiNodes = document.querySelectorAll('.hidden-selezione-prodotto');
-        
-        const ordiniValues = Array.from(ordiniNodes).map(n => n.value);
-        const prodottiValues = Array.from(prodottiNodes).map(n => n.value);
+	        let selezioniText = "";
+	        const ordiniNodes = document.querySelectorAll('.hidden-selezione-ordine');
+	        const prodottiNodes = document.querySelectorAll('.hidden-selezione-prodotto');
+	        
+	        const ordiniValues = Array.from(ordiniNodes).map(n => n.value);
+	        const prodottiValues = Array.from(prodottiNodes).map(n => n.value);
 
-        if (ordiniValues.length > 0 || prodottiValues.length > 0) {
-            if (ordiniValues.length > 0) selezioniText += "Ordini Selezionati: " + ordiniValues.join(", ") + "\n";
-            if (prodottiValues.length > 0) selezioniText += "Prodotti Selezionati: " + prodottiValues.join(", ") + "\n";
-            selezioniText += "----------------------------------------\n\n";
-        }
-        
-        const descrizioneFormattata = selezioniText + inputDescrizione.value.trim();
+	        if (ordiniValues.length > 0 || prodottiValues.length > 0) {
+	            if (ordiniValues.length > 0) selezioniText += "Ordini Selezionati: " + ordiniValues.join(", ") + "\n";
+	            if (prodottiValues.length > 0) selezioniText += "Prodotti Selezionati: " + prodottiValues.join(", ") + "\n";
+	            selezioniText += "----------------------------------------\n\n";
+	        }
+	        
+	        const descrizioneFormattata = selezioniText + inputDescrizione.value.trim();
 
-        // 2. Disabilitiamo il bottone per mostrare il caricamento fittizio
-        const submitBtn = formTicketFinale.querySelector('button[type="submit"]');
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = "INVIO IN CORSO...";
+	        const submitBtn = formTicketFinale.querySelector('button[type="submit"]');
+	        submitBtn.disabled = true;
+	        submitBtn.innerHTML = "INVIO IN CORSO...";
 
-        // 3. MOCKUP: Simuliamo una chiamata di rete che ci mette 800 millisecondi
-        setTimeout(() => {
-            console.log("Dati che verrebbero inviati alla Servlet:");
-            console.log("Titolo:", inputTitolo.value.trim());
-            console.log("Categoria:", inputCategoria.value);
-            console.log("Descrizione Finale:\n", descrizioneFormattata);
-            
-            mostraSuccessoERedirect();
-        }, 800);
-    });
-
-    // 4. Chiamata Reale (Mockata con un Timeout temporaneo per farti testare l'UX)
-    /* DECOMMENTA QUESTO BLOCCO QUANDO LA SERVLET SARÀ PRONTA E RIMUOVI IL MOCKUP SOPRA
-    fetch('../CreaTicketServlet', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: formData
-    })
-    .then(response => {
-        if(response.ok) {
-            mostraSuccessoERedirect();
-        } else {
-            showToast("Errore durante la creazione del ticket.");
-            riabilitaBottone(submitBtn);
-        }
-    })
-    .catch(() => {
-        showToast("Errore di connessione.");
-        riabilitaBottone(submitBtn);
-    });
-    */
-
+	        fetch('../CreaPraticaServlet', {
+	            method: 'POST',
+	            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+	            body: new URLSearchParams({ 
+	                titolo: inputTitolo.value.trim(), 
+	                categoria: inputCategoria.value, 
+	                descrizione: descrizioneFormattata 
+	            })
+	        })
+	        .then(response => {
+	            if(response.ok) {
+	                mostraSuccessoERedirect();
+	            } else {
+	                showToast("Errore durante la creazione della pratica.");
+	                riabilitaBottone(submitBtn);
+	            }
+	        })
+	        .catch(() => {
+	            showToast("Errore di connessione al server.");
+	            riabilitaBottone(submitBtn);
+	        });
+	    });
+    
     function riabilitaBottone(btn) {
         btn.disabled = false;
         btn.innerHTML = "INVIA TICKET";
@@ -496,9 +552,156 @@ if (formTicketFinale) {
         const popup = document.getElementById("popupConferma");
         popup.classList.add("active");
         
-        // Aspetta 2 secondi per far leggere il feedback, poi ricarica
         setTimeout(() => {
             window.location.href = "centroAssistenza.jsp";
         }, 2000);
     }
 }
+
+// =========================================================
+// LIVE SEARCH & CARICAMENTO DINAMICO DELLA GRIGLIA
+// =========================================================
+document.addEventListener("DOMContentLoaded", () => {
+    const searchInput = document.querySelector('.assistenza-search-box input[name="query"]');
+    const searchForm = document.querySelector('.assistenza-search-box');
+    const clearIcon = document.querySelector('.clear-icon');
+    
+    if (searchInput) {
+        
+        if(searchForm) {
+            searchForm.addEventListener('submit', (e) => e.preventDefault());
+        }
+
+        const caricaPratiche = (query = "") => {
+            fetch('../ListaPraticheServlet?q=' + encodeURIComponent(query))
+                .then(response => {
+                    if (!response.ok) throw new Error("Errore nel recupero lista");
+                    return response.json();
+                })
+                .then(data => {
+                    gestisciVisibilita(data.ruolo, query);
+                    renderizzaGriglia(data.risultati, data.ruolo);
+                })
+                .catch(err => console.error("Errore fetch dashboard:", err));
+        };
+
+        function gestisciVisibilita(ruolo, query) {
+            const resultsContainer = document.querySelector('.pratiche-results-container');
+            const quickButtons = document.querySelector('.quick-search-buttons');
+
+            if (ruolo === 0) {
+                if (query === '') {
+                    if (resultsContainer) resultsContainer.style.display = 'none';
+                    if (quickButtons) quickButtons.style.display = 'flex'; 
+                } else {
+                    if (resultsContainer) resultsContainer.style.display = 'block';
+                    if (quickButtons) quickButtons.style.display = 'none';
+                }
+            } else {
+                if (resultsContainer) resultsContainer.style.display = 'block';
+                if (quickButtons) quickButtons.style.display = 'none';
+            }
+            
+            if (clearIcon) {
+                clearIcon.style.display = query === '' ? 'none' : 'block';
+            }
+        }
+
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.trim();
+            caricaPratiche(query);
+        });
+
+        if(clearIcon) {
+            clearIcon.addEventListener('click', () => {
+                searchInput.value = '';
+                caricaPratiche(''); 
+                window.history.replaceState({}, document.title, window.location.pathname);
+            });
+        }
+
+        const quickFilters = document.querySelectorAll('.quick-filter');
+        if (quickFilters.length > 0) {
+            quickFilters.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const termine = btn.getAttribute('data-filter');
+                    searchInput.value = termine; 
+                    caricaPratiche(termine);     
+                });
+            });
+        }
+        
+        caricaPratiche(searchInput.value.trim());
+    }
+});
+
+function renderizzaGriglia(pratiche, ruolo) {
+    const gridContainer = document.querySelector('.pratiche-grid');
+    if (!gridContainer) return;
+
+    gridContainer.innerHTML = ''; 
+
+    if (pratiche.length === 0) {
+        gridContainer.innerHTML = '<div class="testo-tecnico" style="text-align:center; padding: 20px;">Nessun ticket trovato.</div>';
+        return;
+    }
+
+    pratiche.forEach(pratica => {
+        
+        let htmlRiga = `<a href="?rma=${pratica.rma}" class="pratica-grid-row">
+                            <div class="pratica-titolo">${pratica.titolo}</div>`;
+        
+        if (ruolo === 0) {
+            const cssStato = pratica.stato.toLowerCase().replace(' ', '-');
+            htmlRiga += `   <div class="pratica-col-center">${pratica.data}</div>
+                            <div class="pratica-col-right status-${cssStato}">
+                                ${pratica.stato.toUpperCase()}
+                            </div>`;
+        } else {
+            htmlRiga += `   <div class="pratica-col-center">
+                                <i class="ri-user-line" style="margin-right: 5px;"></i>${pratica.utente}
+                            </div>`;
+                            
+            if (ruolo === 2) {
+                const isUrgent = (pratica.admin === 'Da assegnare') ? 'badge-urgent-assign' : '';
+                const warningIcon = (pratica.admin === 'Da assegnare') ? '<i class="ri-error-warning-line" style="margin-right: 4px;"></i>' : '';
+                
+                htmlRiga += `<div class="pratica-col-right admin-badge ${isUrgent}">
+                                ${warningIcon}${pratica.admin.toUpperCase()}
+                             </div>`;
+            } else {
+                const cssStato = pratica.stato.toLowerCase().replace(' ', '-');
+                htmlRiga += `<div class="pratica-col-right status-${cssStato}">
+                                ${pratica.stato.toUpperCase()}
+                             </div>`;
+            }
+        }
+        
+        htmlRiga += `</a>`;
+        gridContainer.innerHTML += htmlRiga;
+    });
+}
+
+// =========================================================
+// GESTIONE TABS MOBILE PER L'OVERLAY
+// =========================================================
+function switchMobileTab(tabName) {
+    const content = document.querySelector('.ticket-dialog-content');
+    const btns = document.querySelectorAll('.mobile-ticket-tabs .tab-btn');
+
+    if (!content || btns.length < 2) return;
+
+    if (tabName === 'dettagli') {
+        content.classList.add('show-dettagli');
+        btns[0].classList.remove('active'); // Spegne bottone Chat
+        btns[1].classList.add('active');    // Accende bottone Dettagli
+    } else {
+        content.classList.remove('show-dettagli');
+        btns[0].classList.add('active');    // Accende bottone Chat
+        btns[1].classList.remove('active'); // Spegne bottone Dettagli
+    }
+}
+
+// Opzionale ma consigliato: Resetta sempre la visuale su "Chat" quando si chiude l'overlay
+// Cerca la tua funzione chiudiOverlay() esistente e aggiungi questa riga:
+// switchMobileTab('chat');

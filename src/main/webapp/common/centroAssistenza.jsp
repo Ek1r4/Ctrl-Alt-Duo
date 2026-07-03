@@ -1,46 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.*" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-
-<%
-    // ==========================================
-    // MOCKUP DATI - LATO CLIENTE
-    // ==========================================
-    
-    String query = request.getParameter("query");
-    String filtro = request.getParameter("filtro");
-    
-    boolean ricercaEffettuata = (query != null && !query.trim().isEmpty()) || 
-                                (filtro != null && !filtro.trim().isEmpty());
-    
-    List<Map<String, String>> praticheMock = new ArrayList<>();
-    
-    if(ricercaEffettuata) {
-        Map<String, String> p1 = new HashMap<>();
-        p1.put("rma", "RMA-001");
-        p1.put("motivo", "Prodotto difettoso all'arrivo");
-        p1.put("data", "24/06/2026");
-        p1.put("stato", "Aperta");
-        praticheMock.add(p1);
-
-        Map<String, String> p2 = new HashMap<>();
-        p2.put("rma", "RMA-002");
-        p2.put("motivo", "Pacco smarrito dal corriere");
-        p2.put("data", "20/06/2026");
-        p2.put("stato", "In carico");
-        praticheMock.add(p2);
-
-        Map<String, String> p3 = new HashMap<>();
-        p3.put("rma", "RMA-003");
-        p3.put("motivo", "Richiesta di reso merce");
-        p3.put("data", "15/05/2026");
-        p3.put("stato", "Chiusa");
-        praticheMock.add(p3);
-    }
-    
-    request.setAttribute("pratiche", praticheMock);
-    request.setAttribute("ricercaEffettuata", ricercaEffettuata);
-%>
 
 <!DOCTYPE html>
 <html lang="it">
@@ -68,48 +27,28 @@
             <!-- Barra di ricerca Cliente -->
             <form action="" method="GET" class="assistenza-search-box">
                 <i class="ri-search-2-line search-icon"></i>
-                <input type="text" name="query" placeholder="inserisci il titolo di un ticket..." value="${param.query}">
-                 <i class="ri-eraser-line clear-icon" onclick="window.location.href = window.location.pathname;"></i>
+                <input type="text" name="query" placeholder="inserisci il titolo di un ticket..." value="">
+                 <i class="ri-eraser-line clear-icon"></i>
             </form>
 
-            <c:choose>
-                <c:when test="${ricercaEffettuata}">
-                    <!-- RISULTATI RICERCA (GRID CLIENTE) -->
-                    <div class="pratiche-results-container">
-                        
-                        <!-- Intestazione colonne allineata al backoffice -->
-                        <div class="results-subtitle" style="display: flex; justify-content: space-between; padding: 0 1.5rem;">
-                            <span style="flex: 1;">I TUOI TICKET</span>
-                            <span style="width: 150px; text-align: left;">DATA APERTURA</span>
-                            <span style="width: 150px; text-align: right;">STATO</span>
-                        </div>
-                        
-                        <div class="pratiche-grid">
-                            <c:forEach var="pratica" items="${pratiche}">
-                                <a href="?rma=${pratica.rma}" class="pratica-grid-row">
-                                    <div class="pratica-titolo">${pratica.motivo}</div>
-                                    
-                                    <!-- Nuove classi generiche CSS -->
-                                    <div class="pratica-col-center">${pratica.data}</div>
-                                    <div class="pratica-col-right status-${pratica.stato.toLowerCase().replace(' ', '-')}">
-                                        ${pratica.stato}
-                                    </div>
-                                </a>
-                            </c:forEach>
-                        </div>
-                    </div>
-                </c:when>
-                <c:otherwise>
-                    <!-- Bottoni Ricerca Rapida (Esclusivi per il cliente) -->
-                    <div class="quick-search-buttons">
-                        <button class="btn-outline">ORDINI</button>
-                        <button class="btn-outline">PRODOTTI</button>
-                        <button class="btn-outline">ACCOUNT</button>
-                        <button class="btn-outline">PAGAMENTI</button>
-                    </div>
-                </c:otherwise>
-            </c:choose>
-            
+            <!-- Bottoni Ricerca Rapida Ripristinati e Potenziati -->
+            <div class="quick-search-buttons">
+                <button type="button" class="btn-outline quick-filter" data-filter="ordine">ORDINI</button>
+                <button type="button" class="btn-outline quick-filter" data-filter="prodotto">PRODOTTI</button>
+                <button type="button" class="btn-outline quick-filter" data-filter="account">ACCOUNT</button>
+                <button type="button" class="btn-outline quick-filter" data-filter="pagamento">PAGAMENTI</button>
+            </div>
+
+            <!-- Griglia Risultati -->
+            <div class="pratiche-results-container" style="display: none;">
+                <div class="results-subtitle" style="display: flex; justify-content: space-between; padding: 0 1.5rem;">
+                    <span style="flex: 1;">I TUOI TICKET</span>
+                    <span style="width: 150px; text-align: left;">DATA APERTURA</span>
+                    <span style="width: 150px; text-align: right;">STATO</span>
+                </div>
+                <!-- Griglia popolata dinamicamente da assistenza.js -->
+                <div class="pratiche-grid"></div>
+            </div>
         </div>
 
         <!-- CTA sul fondo per creare un nuovo ticket (Esclusiva per il cliente) -->
