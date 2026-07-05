@@ -9,7 +9,6 @@ window.addEventListener('DOMContentLoaded', () => {
 function stampaFatturaNascosta(idOrdine, contextPath) {
     const iframe = document.getElementById('iframeFattura');
     if (iframe) {
-        // Usa il contextPath passato dalla JSP per evitare errori di path
         iframe.src = contextPath + '/Fattura?id=' + idOrdine;
     }
 }

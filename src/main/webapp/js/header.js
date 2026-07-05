@@ -1,16 +1,20 @@
+/* INIZIALIZZAZIONE E GESTIONE MENU MOBILE */
+
+// Listener globale per l'apertura/chiusura del menu mobile.
 document.addEventListener('DOMContentLoaded', function() {
     const mobileMenuBtn = document.getElementById('mobileMenuBtn');
     const siteHeader = document.querySelector('.site-header');
     
     if (mobileMenuBtn && siteHeader) {
         mobileMenuBtn.addEventListener('click', function() {
-            // Aggiunge o toglie la classe "menu-open" all'header
             siteHeader.classList.toggle('menu-open');
         });
     }
 });
 
-// Funzione globale che aggiorna il pallino del carrello da altre pagine
+/* AGGIORNAMENTO GLOBALE BADGE CARRELLO */
+
+// Funzione globale invocabile cross-pagina per l'update del contatore articoli visibile sull'icona del carrello header.
 function aggiornaBadgeCarrello(quantitaTotale) {
     const badge = document.querySelector('.cart-badge');
     if (!badge) return;
@@ -23,7 +27,9 @@ function aggiornaBadgeCarrello(quantitaTotale) {
     }
 }
 
-// Logica per rimuovere un prodotto dalla tendina della preview
+/* AZIONI MINICART (RIMOZIONE E AGGIUNTA AJAX) */
+
+// Rimuove l'articolo selezionato interagendo asincronamente con la Servlet.
 function rimuoviDaMiniCart(idProdotto) {
     const formData = new URLSearchParams();
     formData.append('action', 'remove');
@@ -38,13 +44,13 @@ function rimuoviDaMiniCart(idProdotto) {
     .then(response => response.json())
     .then(data => {
         if(data.status === 'success') {
-            // Ricarica per mantenere la preview e la pagina sincronizzate
             window.location.reload(); 
         }
     })
     .catch(error => console.error('Errore:', error));
 }
-// Aggiunta prodotto dalla griglia senza ricaricare la pagina
+
+// Implementa il pattern "Add to Cart" asincrono: aggiorna il backend, il badge header e innesca la ricostruzione dell'UI del minicart senza interrompere l'UX corrente.
 function aggiungiVeloceAJAX(idProdotto) {
     const formData = new URLSearchParams();
     formData.append('action', 'add');
@@ -60,39 +66,32 @@ function aggiungiVeloceAJAX(idProdotto) {
     .then(response => response.json())
     .then(data => {
         if(data.status === 'success') {
-            // 1. Aggiorna il pallino rosso
             aggiornaBadgeCarrello(data.quantitaTotale);
-
-            // 2. Aggiorna l'HTML dentro la tendina del mini-cart
             aggiornaDOMMiniCart(idProdotto, data);
-
-            // 3. Spalanca la tendina per 3 secondi
             mostraTendinaCarrello();
-			} else if (data.status === 'error') {
-			            // Sostituito il vecchio alert con la nostra notifica personalizzata (false = errore/rosso)
-			            window.mostraToastNotifica(data.message, false); 
-			        }
+        } else if (data.status === 'error') {
+            window.mostraToastNotifica(data.message, false); 
+        }
     })
     .catch(error => console.error('Errore Aggiunta Carrello:', error));
 }
 
-// Ricostruisce dinamicamente i dati nella tendina preview
+/* MANIPOLAZIONE DINAMICA DEL DOM MINICART */
+
+// Funzione core di re-rendering parziale: analizza la presenza del nodo DOM dell'articolo e ne aggiorna i valori quantitativi, o inietta una nuova riga HTML se l'articolo è nuovo.
 function aggiornaDOMMiniCart(idProdotto, data) {
     const miniCartItems = document.querySelector('.mini-cart-items');
     if(!miniCartItems) return;
 
-    // Rimuovi il messaggio "Nessun articolo presente" se il carrello era vuoto
     const emptyMsg = miniCartItems.querySelector('.empty-mc');
     if (emptyMsg) emptyMsg.remove();
 
-    // Cerca se la riga esiste già (aggiorniamo solo le quantità)
     let rigaEsistente = document.getElementById('mc-item-' + idProdotto);
 
     if (rigaEsistente) {
         rigaEsistente.querySelector('.mc-qty').innerText = 'Quantità: ' + data.quantitaRiga;
         rigaEsistente.querySelector('.mc-price').innerText = '€ ' + data.totaleRiga.toFixed(2);
     } else {
-        // Al altrimenti, crea il blocco HTML del nuovo prodotto da zero
         const nuovaRiga = document.createElement('div');
         nuovaRiga.className = 'mc-item';
         nuovaRiga.id = 'mc-item-' + idProdotto;
@@ -111,10 +110,9 @@ function aggiornaDOMMiniCart(idProdotto, data) {
         miniCartItems.appendChild(nuovaRiga);
     }
 
-    // Gestione del Footer (il totale e il bottone Checkout)
     let miniCartFooter = document.querySelector('.mini-cart-footer');
     
-    // Se non esisteva (perché il carrello era vuoto prima), lo creiamo e lo appendiamo
+    // Gestione condizionale del footer: se il carrello cambia da stato vuoto a popolato, inietta la struttura HTML del totale e del bottone checkout, altrimenti aggiorna solo l'innerText monetario.
     if (!miniCartFooter) {
         const preview = document.querySelector('.mini-cart-preview');
         miniCartFooter = document.createElement('div');
@@ -128,19 +126,19 @@ function aggiornaDOMMiniCart(idProdotto, data) {
         `;
         preview.appendChild(miniCartFooter);
     } else {
-        // Se esisteva già, aggiorniamo solo il prezzo
         const totaleSpan = document.getElementById('mc-totale-complessivo');
         if(totaleSpan) totaleSpan.innerText = '€ ' + data.totaleCarrello.toFixed(2);
     }
 }
 
-// Timer di 3 secondi per aprire/chiudere l'animazione
+/* GESTIONE ANIMAZIONI E TIMEOUT */
+
+// Forza l'apertura visiva del minicart tramite l'iniezione della classe 'force-open'.
 function mostraTendinaCarrello() {
     const cartWrapper = document.querySelector('.cart-wrapper');
     if(cartWrapper) {
         cartWrapper.classList.add('force-open');
         
-        // Se l'utente clicca più volte velocemente, resettiamo il timer
         if (window.cartTimeout) clearTimeout(window.cartTimeout);
         
         window.cartTimeout = setTimeout(() => {

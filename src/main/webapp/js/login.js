@@ -1,16 +1,15 @@
 document.addEventListener("DOMContentLoaded", function() {
     
-    // SETUP E INIZIALIZZAZIONE
+    /* INIZIALIZZAZIONE E GESTIONE URL */
+    
     const form = document.getElementById("loginForm");
     const btnSubmit = document.getElementById("btnSubmit");
     const email = document.getElementById("email");
     const password = document.getElementById("password");
 
-    // RICEZIONE PARAMETRI URL
     const urlParams = new URLSearchParams(window.location.search);
     let urlCleanNeeded = false;
 
-    // TOAST: Solo per i successi
     if (urlParams.get("success") === "registrazione") {
         mostraNotifica("Registrazione completata con successo! Ora puoi accedere.");
         urlCleanNeeded = true;
@@ -20,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function() {
         urlCleanNeeded = true;
     }
 
-    // Pulizia dell'URL per nascondere i parametri all'utente
+    /* Sfrutta l'History API nativa per effettuare il push di un nuovo stato all'URL corrente rimuovendo i parametri di query (es. ?success=login) in modo completamente trasparente, evitando un reload. */
     if (urlCleanNeeded) {
         const cleanUrl = window.location.pathname;
         window.history.replaceState({}, document.title, cleanUrl);
@@ -28,7 +27,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
     btnSubmit.disabled = true;
 
-    // CONFIGURAZIONE VALIDATORI
+    /* CONFIGURAZIONE VALIDATORI E LISTENER */
+    
     const validatori = {
         email: () => validaEmail(email, "emailError"),
         password: () => validaPassword(password, "passwordError")
@@ -37,13 +37,16 @@ document.addEventListener("DOMContentLoaded", function() {
     const campi = [email, password];
     campi.forEach(campo => {
         campo.addEventListener("input", controllaFormInTempoReale);
+        
+        /* Delega la sanitizzazione della stringa (trim) all'evento blur per impedire che l'utente subisca alterazioni involontarie del cursore durante la fase attiva di digitazione. */
         campo.addEventListener("blur", () => {
             campo.value = campo.value.trim();
             controllaFormInTempoReale();
         });
     });
 
-    // FUNZIONI DI VALIDAZIONE
+    /* FUNZIONI DI VALIDAZIONE E STATO FORM */
+    
     function validaEmail(input, errorId) {
         const value = input.value.trim();
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -70,13 +73,13 @@ document.addEventListener("DOMContentLoaded", function() {
         return true;
     }
 
-    // GESTIONE STATO DEL FORM
     function controllaFormInTempoReale() {
         const formValido = Object.keys(validatori).every(key => validatori[key]());
         btnSubmit.disabled = !formValido;
     }
 
-    // UTILITY GRAFICHE (ERRORI INLINE ORIGINALI)
+    /* UTILITY GRAFICHE DOM */
+    
     function mostraErrore(id, messaggio) {
         const el = document.getElementById(id);
         if(el) {
@@ -87,21 +90,24 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function nascondiErrore(id) {
         const el = document.getElementById(id);
-        if(el) { el.classList.remove("visible"); }
+        if(el) { 
+            el.classList.remove("visible"); 
+        }
     }
 });
 
-// UTILITY GRAFICHE (NOTIFICHE GLOBALI TOAST - SOLO SUCCESSO)
+/* SISTEMA NOTIFICHE GLOBALI (TOAST) */
+
 function mostraNotifica(messaggio) {
     const toast = document.createElement("div");
     toast.className = "toast-notification";
     
-    // Stile fisso verde di successo
     toast.style.borderLeft = "5px solid #4CAF50";
     toast.innerHTML = `<i class="fas fa-check-circle" style="color: #4CAF50; font-size: 24px;"></i> <span>${messaggio}</span>`;
     
     document.body.appendChild(toast);
 
+    /* Richiede un ritardo minimo per consentire al browser di completare l'inserimento dell'elemento nel DOM (reflow) prima di innescare l'animazione di entrata associata alla classe CSS, prevenendo l'apparizione istantanea del pop-up senza transizione. */
     setTimeout(() => toast.classList.add("show"), 10);
 
     setTimeout(() => {

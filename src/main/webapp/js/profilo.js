@@ -1,24 +1,24 @@
+/* NOTIFICHE E MESSAGGI DI SISTEMA */
+
+function showToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'toast-notification';
+    toast.innerHTML = `<i class="fas fa-check-circle"></i> <span>${message}</span>`;
+    document.body.appendChild(toast);
+
+    /* Sfrutta il ritardo di esecuzione (10ms) per forzare il reflow del DOM, garantendo che la transizione CSS di entrata associata alla classe 'show' venga renderizzata correttamente dal browser. */
+    setTimeout(() => toast.classList.add('show'), 10);
+
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 400); 
+    }, 3500);
+}
+
 document.addEventListener("DOMContentLoaded", function() {
 
-    // --- 0. FUNZIONE TOAST NOTIFICATION (MESSAGGI DI CONFERMA) ---
-    function showToast(message) {
-        // Crea il div del toast
-        const toast = document.createElement('div');
-        toast.className = 'toast-notification';
-        toast.innerHTML = `<i class="fas fa-check-circle"></i> <span>${message}</span>`;
-        document.body.appendChild(toast);
+    /* INIZIALIZZAZIONE DOM E GESTIONE URL */
 
-        // Anima l'entrata dopo un istante
-        setTimeout(() => toast.classList.add('show'), 10);
-
-        // Dopo 3.5 secondi lo nasconde e poi lo distrugge
-        setTimeout(() => {
-            toast.classList.remove('show');
-            setTimeout(() => toast.remove(), 400); // Aspetta che finisca l'animazione CSS
-        }, 3500);
-    }
-
-    // --- 1. SETUP E INIZIALIZZAZIONE ---
     const btnEditProfile = document.getElementById("btnEditProfile");
     const btnCancelProfile = document.getElementById("btnCancelProfile");
     const btnSaveProfile = document.getElementById("btnSaveProfile");
@@ -35,11 +35,8 @@ document.addEventListener("DOMContentLoaded", function() {
     const inputVecchia = document.getElementById("inputVecchiaPassword");
     const hintVecchia = document.getElementById("hintVecchiaPassword");
 
-
-    // --- RICEZIONE MESSAGGI (ERRORE O SUCCESSO) DAL SERVER AL CARICAMENTO ---
     const urlParams = new URLSearchParams(window.location.search);
     
-    // Gestione Errore Password
     if (urlParams.get("error") === "vecchiaPasswordErrata") { 
         const btnToggle = document.getElementById("btnPasswordToggle");
         const formContainer = document.getElementById("formPasswordContainer");
@@ -53,7 +50,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
-    // Gestione Successi (Form standard ricaricati dal Server)
     const successParam = urlParams.get("success");
     if (successParam) {
         let msg = "";
@@ -64,7 +60,7 @@ document.addEventListener("DOMContentLoaded", function() {
         if (msg) setTimeout(() => showToast(msg), 400);
     }
 
-    // Pulizia dell'URL
+    /* Utilizza la History API per effettuare la pulizia della query string (parametri GET) in modo silente, preservando lo stato senza innescare un ricaricamento completo della pagina. */
     if (urlParams.has("error") || urlParams.has("success")) {
         const cleanUrl = window.location.pathname;
         window.history.replaceState({}, document.title, cleanUrl);
@@ -76,8 +72,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-
-    // --- 2. VALIDAZIONE IN TEMPO REALE ---
+    /* VALIDAZIONE FORM IN TEMPO REALE */
     
     function checkAnagraficaValidity() {
         if (!inputTelefono || !textareaBio) return;
@@ -112,7 +107,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
     if (inputTelefono) inputTelefono.addEventListener("input", checkAnagraficaValidity);
     if (textareaBio) textareaBio.addEventListener("input", checkAnagraficaValidity);
-
 
     const allForms = document.querySelectorAll("form");
     allForms.forEach(form => {
@@ -191,8 +185,8 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
+    /* GESTIONE UI PROFILO (TOGGLE E MODIFICA INLINE) */
 
-    // --- 3. GESTIONE TOGGLE MODIFICA INLINE (MATITA) ---
     if (btnEditProfile) {
         btnEditProfile.addEventListener("click", function() {
             txtTelefono.classList.add("hidden");
@@ -231,8 +225,8 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
+    /* CHIAMATE AJAX (AGGIORNAMENTO ANAGRAFICA) */
 
-    // --- 4. AGGIORNAMENTO ANAGRAFICA TRAMITE AJAX ---
     if (btnSaveProfile) {
         btnSaveProfile.addEventListener("click", async function() {
             const telValue = inputTelefono.value.trim();
@@ -273,120 +267,110 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
+    /* CHIAMATE AJAX (CANCELLAZIONE RISORSE E MODALE) */
 
-    // --- 5. CANCELLAZIONE RISORSE TRAMITE AJAX (CESTINO + MODALE) ---
-        const deleteButtons = document.querySelectorAll(".btn-delete");
-        const deleteModal = document.getElementById('delete-confirm-modal');
-        const deleteMessage = document.getElementById('delete-confirm-message');
-        const btnConfirmDelete = document.getElementById('btn-confirm-delete');
-        const btnCancelDelete = document.getElementById('btn-cancel-delete');
+    const deleteButtons = document.querySelectorAll(".btn-delete");
+    const deleteModal = document.getElementById('delete-confirm-modal');
+    const deleteMessage = document.getElementById('delete-confirm-message');
+    const btnConfirmDelete = document.getElementById('btn-confirm-delete');
+    const btnCancelDelete = document.getElementById('btn-cancel-delete');
+
+    let elementoDaEliminare = null; 
+
+    if (deleteButtons.length > 0 && deleteModal) {
         
-        let elementoDaEliminare = null; // Variabile per "ricordare" cosa stiamo eliminando
+        deleteButtons.forEach(button => {
+            button.addEventListener("click", function() {
+                const rowItem = button.closest(".info-row-item");
+                const itemId = rowItem.getAttribute("data-item-id");
+                const itemType = rowItem.getAttribute("data-type");
 
-        if (deleteButtons.length > 0 && deleteModal) {
-            
-            // Quando l'utente clicca il cestino sull'indirizzo o sul pagamento
-            deleteButtons.forEach(button => {
-                button.addEventListener("click", function() {
-                    const rowItem = button.closest(".info-row-item");
-                    const itemId = rowItem.getAttribute("data-item-id");
-                    const itemType = rowItem.getAttribute("data-type");
+                elementoDaEliminare = { button, rowItem, itemId, itemType };
 
-                    // Salviamo tutti i dati necessari per la chiamata AJAX
-                    elementoDaEliminare = { button, rowItem, itemId, itemType };
+                if (itemType === "shipping") {
+                    deleteMessage.innerHTML = "Sei sicuro di voler eliminare questo <strong>indirizzo di spedizione</strong>?<br>Non potrai usarlo per i prossimi ordini.";
+                } else {
+                    deleteMessage.innerHTML = "Sei sicuro di voler eliminare questo <strong>metodo di pagamento</strong>?<br>Dovrai reinserirlo al prossimo acquisto.";
+                }
 
-                    // Personalizziamo il messaggio
-                    if (itemType === "shipping") {
-                        deleteMessage.innerHTML = "Sei sicuro di voler eliminare questo <strong>indirizzo di spedizione</strong>?<br>Non potrai usarlo per i prossimi ordini.";
-                    } else {
-                        deleteMessage.innerHTML = "Sei sicuro di voler eliminare questo <strong>metodo di pagamento</strong>?<br>Dovrai reinserirlo al prossimo acquisto.";
-                    }
-
-                    // Mostriamo il modale
-                    deleteModal.classList.add('active');
-                });
+                deleteModal.classList.add('active');
             });
+        });
 
-            // 2. Se clicca su Annulla (o fuori dal modale)
-            const chiudiModale = () => {
+        const chiudiModale = () => {
+            deleteModal.classList.remove('active');
+            elementoDaEliminare = null; 
+        };
+
+        if (btnCancelDelete) btnCancelDelete.addEventListener('click', chiudiModale);
+        deleteModal.addEventListener('click', (e) => {
+            if (e.target === deleteModal) chiudiModale();
+        });
+
+        if (btnConfirmDelete) {
+            btnConfirmDelete.addEventListener('click', async () => {
+                if (!elementoDaEliminare) return;
+
+                const { button, rowItem, itemId, itemType } = elementoDaEliminare;
+                
                 deleteModal.classList.remove('active');
-                elementoDaEliminare = null; // Svuotiamo la memoria
-            };
 
-            if (btnCancelDelete) btnCancelDelete.addEventListener('click', chiudiModale);
-            deleteModal.addEventListener('click', (e) => {
-                if (e.target === deleteModal) chiudiModale();
-            });
+                button.disabled = true;
+                button.style.opacity = "0.5";
+                button.style.cursor = "not-allowed";
 
-            // 3. Se clicca su Procedi (Parte la chiamata AJAX!)
-            if (btnConfirmDelete) {
-                btnConfirmDelete.addEventListener('click', async () => {
-                    if (!elementoDaEliminare) return;
+                try {
+                    const formData = new URLSearchParams();
+                    formData.append("action", "eliminaRisorsa"); 
+                    formData.append("id", itemId);
+                    formData.append("type", itemType);
 
-                    // Estraiamo i dati salvati prima
-                    const { button, rowItem, itemId, itemType } = elementoDaEliminare;
-                    
-                    // Chiudiamo subito il modale
-                    deleteModal.classList.remove('active');
+                    const response = await fetch(contestoReFrame + "/ProfiloServlet", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                        body: formData.toString()
+                    });
 
-                    // Effetto visivo di caricamento sul cestino originale
-                    button.disabled = true;
-                    button.style.opacity = "0.5";
-                    button.style.cursor = "not-allowed";
+                    if (response.url.includes("success=eliminazione")) {
+                        rowItem.style.opacity = "0";
+                        setTimeout(() => { 
+                            const parentContainer = rowItem.parentElement;
+                            rowItem.remove(); 
+                            
+                            const remainingItems = parentContainer.querySelectorAll(".info-row-item");
+                            if (remainingItems.length === 0) {
+                                const emptyMsg = document.createElement("p");
+                                emptyMsg.className = "empty-message";
+                                emptyMsg.textContent = itemType === "shipping" 
+                                    ? "Nessun indirizzo di spedizione salvato." 
+                                    : "Nessun metodo di pagamento salvato.";
+                                parentContainer.appendChild(emptyMsg);
+                            }
+                            
+                            showToast(itemType === "shipping" ? "Indirizzo rimosso!" : "Metodo di pagamento rimosso!");
 
-                    try {
-                        const formData = new URLSearchParams();
-                        formData.append("action", "eliminaRisorsa"); 
-                        formData.append("id", itemId);
-                        formData.append("type", itemType);
-
-                        const response = await fetch(contestoReFrame + "/ProfiloServlet", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                            body: formData.toString()
-                        });
-
-                        if (response.url.includes("success=eliminazione")) {
-                            rowItem.style.opacity = "0";
-                            setTimeout(() => { 
-                                const parentContainer = rowItem.parentElement;
-                                rowItem.remove(); 
-                                
-                                // Se era l'ultimo elemento, mostriamo il messaggio "Nessun indirizzo salvato"
-                                const remainingItems = parentContainer.querySelectorAll(".info-row-item");
-                                if (remainingItems.length === 0) {
-                                    const emptyMsg = document.createElement("p");
-                                    emptyMsg.className = "empty-message";
-                                    emptyMsg.textContent = itemType === "shipping" 
-                                        ? "Nessun indirizzo di spedizione salvato." 
-                                        : "Nessun metodo di pagamento salvato.";
-                                    parentContainer.appendChild(emptyMsg);
-                                }
-                                
-                                showToast(itemType === "shipping" ? "Indirizzo rimosso!" : "Metodo di pagamento rimosso!");
-
-                            }, 300);
-                        } 
-                        else {
-                            alert("Si è verificato un errore durante l'eliminazione.");
-                            button.disabled = false;
-                            button.style.opacity = "1";
-                            button.style.cursor = "pointer";
-                        }
-                    } catch (error) {
-                        console.error("Errore AJAX:", error);
+                        }, 300);
+                    } 
+                    else {
+                        alert("Si è verificato un errore durante l'eliminazione.");
                         button.disabled = false;
                         button.style.opacity = "1";
                         button.style.cursor = "pointer";
-                    } finally {
-                        // Puliamo la variabile per la prossima volta
-                        elementoDaEliminare = null;
                     }
-                });
-            }
+                } catch (error) {
+                    console.error("Errore AJAX:", error);
+                    button.disabled = false;
+                    button.style.opacity = "1";
+                    button.style.cursor = "pointer";
+                } finally {
+                    elementoDaEliminare = null;
+                }
+            });
         }
+    }
     
-    // --- 6. GESTIONE FORM AGGIUNTA RISORSE E RESET ---
+    /* GESTIONE FORM AGGIUNTIVI E PASSWORD */
+
     const resetFormState = (formContainer) => {
         const form = formContainer.querySelector("form");
         if (form) {
@@ -431,7 +415,6 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
     
-    // --- 7. GESTIONE FORM CAMBIO PASSWORD E RESET ---
     const btnPasswordToggle = document.getElementById("btnPasswordToggle");
     const formPasswordContainer = document.getElementById("formPasswordContainer");
     const btnCancelPassword = document.getElementById("btnCancelPassword");
@@ -453,7 +436,8 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
     
-    // --- 8. MENU A TENDINA PER CELLULARI (ACCORDION) ---
+    /* COMPONENTI MOBILE E CARD ASSISTENZA */
+
     const accordionCards = document.querySelectorAll('.scrollable-column .profile-card');
     
     accordionCards.forEach(card => {
@@ -470,39 +454,36 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-	
-	// --- 9. INIEZIONE DINAMICA CARD ASSISTENZA ---
-	    const rightColumn = document.querySelector('.fixed-column');
-	    const supportCard = document.getElementById('supportCardTemplate');
-	    
-	    if (rightColumn && supportCard) {
-	        rightColumn.appendChild(supportCard);
-	        supportCard.style.display = 'block'; // Rende visibile la card dopo lo spostamento
-	        
-	        // NUOVO: Sincronizza l'altezza non appena la card fa allungare la colonna destra
-	        sincronizzaAltezzaColonne();
-	    }
+    const rightColumn = document.querySelector('.fixed-column');
+    const supportCard = document.getElementById('supportCardTemplate');
+    
+    if (rightColumn && supportCard) {
+        rightColumn.appendChild(supportCard);
+        supportCard.style.display = 'block'; 
+        
+        sincronizzaAltezzaColonne();
+    }
 
-	}); // <-- Fine del DOMContentLoaded esistente
+}); 
+
+/* MODALI E FILTRI STORICO ORDINI */
 
 function openOrderModal(id) {
     const modale = document.getElementById('modal-' + id);
     if (modale) {
         modale.classList.remove('hidden');
-        document.body.style.overflow = 'hidden'; // Blocca lo scroll della pagina dietro
+        document.body.style.overflow = 'hidden'; 
     }
 }
 
-// 3. Logica di chiusura Modali Ordini
 function closeOrderModal(id) {
     const modale = document.getElementById('modal-' + id);
     if (modale) {
         modale.classList.add('hidden');
-        document.body.style.overflow = 'auto'; // Riattiva lo scroll
+        document.body.style.overflow = 'auto'; 
     }
 }
 
-// 4. Chiudi il modale se l'utente clicca fuori (sullo sfondo scuro)
 window.addEventListener('click', function(event) {
     if (event.target.classList.contains('order-modal-overlay')) {
         event.target.classList.add('hidden');
@@ -510,7 +491,6 @@ window.addEventListener('click', function(event) {
     }
 });
 
-// 1. Funzione per filtrare lo storico ordini in tempo reale
 function filtraOrdini() {
     const inputElement = document.getElementById("searchHistory");
     if (!inputElement) return;
@@ -522,19 +502,16 @@ function filtraOrdini() {
     let righeVisibili = 0;
 
     righe.forEach(riga => {
-        // Legge tutto il testo della riga
         const testoRiga = riga.innerText.toUpperCase();
         
-        // Controlla se c'è un match
         if (testoRiga.indexOf(input) > -1) {
             riga.style.display = "flex"; 
-            righeVisibili++; // Contiamo quante righe restano visibili
+            righeVisibili++; 
         } else {
             riga.style.display = "none";
         }
     });
 
-    // Se abbiamo righe in totale, ma nessuna è visibile, mostriamo il messaggio di errore
     if (messaggioVuoto) {
         if (righe.length > 0 && righeVisibili === 0) {
             messaggioVuoto.classList.remove("hidden");
@@ -544,23 +521,20 @@ function filtraOrdini() {
     }
 }
 
-// --- 10. SINCRONIZZAZIONE ALTEZZA COLONNE (SCROLL COLUMN) ---
+/* SINCRONIZZAZIONE LAYOUT COLONNE */
+
+/* Sincronizza dinamicamente le altezze calcolate sovrascrivendo i limiti imposti da user-area.css su viewport desktop, permettendo uno scorrimento indipendente del pannello di sinistra. */
 function sincronizzaAltezzaColonne() {
     const fixedCol = document.querySelector('.fixed-column');
     const scrollCol = document.querySelector('.scrollable-column');
     
-    // Controlliamo che entrambe esistano e che siamo su Desktop
     if (fixedCol && scrollCol && window.innerWidth > 1024) {
-        // Legge l'altezza totale in pixel della colonna di destra
         const altezzaDestra = fixedCol.offsetHeight;
-        // Assegna quell'esatta altezza come limite massimo alla colonna di sinistra
         scrollCol.style.maxHeight = altezzaDestra + 'px';
     } else if (scrollCol) {
-        // Su dispositivi mobili sblocchiamo l'altezza per far fluire i blocchi
         scrollCol.style.maxHeight = 'none';
     }
 }
 
-// Assicuriamoci che la sincronizzazione avvenga al caricamento completo e se l'utente ridimensiona la finestra
 window.addEventListener('load', sincronizzaAltezzaColonne);
 window.addEventListener('resize', sincronizzaAltezzaColonne);

@@ -1,4 +1,5 @@
-/* Container principale della pagina */
+/* LAYOUT PRINCIPALE ASSISTENZA */
+
 .assistenza-main {
     background-color: var(--panna-carta);
     color: var(-antracite-scuro);
@@ -20,7 +21,6 @@
     margin-top: 2rem;
 }
 
-/* Titoli */
 .assistenza-title {
     text-align: center;
     font-size: 2.5rem;
@@ -35,7 +35,8 @@
     color: var(--marrone-cuoio);
 }
 
-/* Search bar */
+/* RICERCA E NAVIGAZIONE */
+
 .assistenza-search-box {
     display: flex;
     align-items: center;
@@ -68,7 +69,6 @@
     cursor: pointer;
 }
 
-/* Bottoni 4 categorie */
 .quick-search-buttons {
     display: flex;
     gap: 1rem;
@@ -94,12 +94,11 @@
     background-color: rgba(0, 0, 0, 0.1);
 }
 
-/* Container CTA in fondo */
 .assistenza-cta-container {
     margin-top: 4rem;
     margin-bottom: 2rem;
 }
-/* Barra di navigazione superiore dello step (Indietro / Salta) */
+
 .step-nav {
     width: 100%;
     max-width: 700px;
@@ -127,7 +126,9 @@
 .btn-step-nav:hover {
     opacity: 1;
 }
-/* Container principale dell'accordion */
+
+/* ACCORDION E LISTA ORDINI */
+
 .assistenza-accordion-container {
     width: 100%;
     margin: 4vh 0;
@@ -136,7 +137,6 @@
     gap: 1rem;
 }
 
-/* Struttura del singolo blocco Ordine */
 .ordine-item {
     width: 100%;
     border: 2px solid var(--beige-scuro);
@@ -145,7 +145,6 @@
     overflow: hidden;
 }
 
-/* Header dell'ordine (la riga cliccabile) */
 .ordine-header {
     display: flex;
     justify-content: space-between;
@@ -157,11 +156,11 @@
     list-style: none;
 }
 
+/* Nasconde il marker nativo del tag HTML details per implementare un'icona personalizzata */
 .ordine-header::-webkit-details-marker {
     display: none;
 }
 
-/* Informazioni a sinistra (ID e Data) */
 .ordine-meta {
     display: flex;
     gap: 1.5rem;
@@ -177,7 +176,6 @@
     color:var(--grigio-taupe);
 }
 
-/* Elementi di controllo a destra (Testo + Icona) */
 .ordine-trigger {
     display: flex;
     align-items: center;
@@ -196,12 +194,11 @@
     color: var(--grigio-taupe);
 }
 
-/* Rotazione della freccia quando l'accordion è aperto */
+/* Sfrutta lo stato aperto nativo del tag HTML details per innescare la trasformazione CSS e ruotare l'icona freccia */
 .ordine-item[open] .arrow-icon {
     transform: rotate(180deg);
 }
 
-/* Box interno contenente i prodotti dell'ordine */
 .ordine-products {
     padding: 0 1.5rem 1.5rem 1.5rem;
     border-top: 1px dashed color-mix(in srgb, var(--beige-scuro) 70%, transparent);
@@ -216,7 +213,6 @@
     font-weight: 500;
 }
 
-/* Link di navigazione sul fondo */
 .assistenza-link-container {
     margin-top: 2vh;
     text-align: center;
@@ -234,14 +230,14 @@
     color: var(--verde-ottanio);
 }
 
-/* Allineamento lato sinistro (Checkbox + Info Ordine) */
 .ordine-meta-left {
     display: flex;
     align-items: center;
     gap: 1.5rem;
 }
 
-/* Custom Checkbox Minimalista */
+/* CUSTOM CHECKBOX */
+
 .custom-cb-wrapper {
     position: relative;
     display: flex;
@@ -250,6 +246,7 @@
     user-select: none;
 }
 
+/* Nasconde l'input nativo sovrapponendolo con opacity zero per sostituirlo graficamente pur mantenendone il binding logico per il form */
 .custom-cb-wrapper input {
     position: absolute;
     opacity: 0;
@@ -270,13 +267,11 @@
     transition: all 0.2s ease;
 }
 
-/* Stato attivo del Checkbox */
 .custom-cb-wrapper input:checked ~ .custom-cb {
     background-color: var(--verde-ottanio);
     border-color: var(--verde-ottanio);
 }
 
-/* Aggiunta dell'icona spunta in SVG via CSS quando attivo */
 .custom-cb-wrapper input:checked ~ .custom-cb::after {
     content: "";
     width: 5px;
@@ -287,7 +282,6 @@
     margin-bottom: 2px;
 }
 
-/* Adattamento riga prodotto per far spazio al checkbox */
 .prodotto-row {
     display: flex;
     align-items: center;
@@ -300,7 +294,9 @@
     flex: 1;
 }
 
-/* Tasto a comparsa (Floating Submit) */
+/* FLOATING CTA E OVERLAY */
+
+/* Utilizza un posizionamento bottom negativo per nascondere il componente fuori dalla viewport fino all'attivazione della classe .visible tramite eventi JS */
 .floating-submit-container{
     position: fixed;
     bottom: -100px;
@@ -342,13 +338,13 @@
 .film-container.large{
     max-width:60vw;
 }
+
 .form-title span{
     color:var(--verde-ottanio);
 }
 
-/* ===================================================
-   RISULTATI RICERCA E GRIGLIA TICKETS
-   =================================================== */
+/* GRIGLIA TICKETS E RISULTATI */
+
 .pratiche-results-container {
     width: 100%;
     margin-top: 1rem;
@@ -388,7 +384,6 @@
     background-color: rgba(0, 0, 0, 0.02);
 }
 
-/* Header della griglia ticket (Allineamento perfetto) */
 .pratica-grid-header {
     display: grid;
     grid-template-columns: 1fr 150px 150px; 
@@ -412,7 +407,6 @@
     text-overflow: ellipsis;
 }
 
-/* Nuove classi generiche per adattarsi a Date/Utenti/Stati/Admin */
 .pratica-col-center {
     color: var(--grigio-taupe);
     font-size: 0.9rem;
@@ -427,124 +421,13 @@
     letter-spacing: 1px;
 }
 
-/* Stili specifici (Badge Superadmin e Colori Stato) */
 .admin-badge { color: var(--marrone-cuoio); }
 .status-aperta { color: var(--verde-ottanio); }
 .status-in-carico { color: var(--antracite-scuro); }
 .status-chiusa { color: var(--verde-ottanio); text-decoration: line-through; }
 
-/* ===================================================
-   RESPONSIVE GRID
-   =================================================== */
-@media (max-width: 768px) {
-    .pratica-grid-row {
-        /* Incolonna i dettagli sotto il titolo su mobile */
-        grid-template-columns: 1fr auto;
-        grid-template-areas: 
-            "titolo stato"
-            "utente stato";
-        padding: 1rem;
-    }
-    
-    .pratica-grid-header {
-        display: none;
-    }
+/* MODALI DIALOG E CHAT TICKET */
 
-    .pratica-titolo { grid-area: titolo; white-space: normal; line-height: 1.3; }
-    .pratica-col-center { grid-area: utente; margin-top: 0.3rem; }
-    .pratica-col-right { grid-area: stato; align-self: center; }
-}
-
-/* ===================================================
-   RESPONSIVE: TABLET E SMARTPHONE (max-width: 1025px)
-   =================================================== */
-@media (max-width: 1025px) {
-    .assistenza-main {
-        padding: 4rem 1rem 3rem;
-    }
-
-    .assistenza-title {
-        font-size: 1.8rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .ordine-header {
-        padding: 1rem;
-        align-items: center; 
-    }
-
-    .ordine-meta {
-        flex-direction: column;
-        gap: 0.3rem;
-    }
-
-    .ordine-meta-left {
-        gap: 1rem;
-    }
-
-    .ordine-id {
-        font-size: 1rem;
-    }
-
-    .ordine-date {
-        font-size: 0.85rem;
-    }
-
-    .prodotto-row {
-        gap: 1rem;
-        padding-top: 0.8rem;
-        align-items: flex-start;
-    }
-
-    .prodotto-nome {
-        font-size: 0.9rem;
-        line-height: 1.4;
-    }
-
-    .prodotto-qta {
-        font-size: 0.85rem;
-        white-space: nowrap;
-        margin-top: 2px;
-    }
-
-    .floating-submit-container {
-        padding: 1rem;
-    }
-
-    .floating-submit-container .btn-cta {
-        width: 100%;
-        max-width: 350px;
-        font-size: 18px;
-        padding: 12px;
-    }
-    .film-container.large{
-        max-width:80vw;
-    }
-}
-
-/* ===================================================
-   RESPONSIVE: SMARTPHONE PICCOLI (max-width: 480px)
-   =================================================== */
-@media (max-width: 480px) {
-    .assistenza-title {
-        font-size: 1.5rem;
-    }
-
-    .ordine-status {
-        display: none;
-    }
-
-    .ordine-trigger {
-        justify-content: flex-end;
-    }
-    .film-container.large{
-        max-width:100vw;
-    }
-}
-
-/* ===================================================
-   DIALOG OVERLAY TICKET
-   =================================================== */
 .ticket-dialog {
     padding: 0;
     margin: auto;
@@ -615,6 +498,7 @@
     padding: 40px 20px 20px 20px;
 }
 
+/* Rimuove le scrollbar native mantenendo la funzionalità di scorrimento touch/trackpad per un'estetica più pulita della chat */
 .chat-history,
 .panel-details-scroll {
     flex-grow: 1;
@@ -715,9 +599,6 @@
     margin-top: 15px;
 }
 
-/* =========================================
-   DIVISORE NOTIFICHE DI SISTEMA 
-   ========================================= */
 .chat-system-divider {
     display: flex;
     justify-content: center;
@@ -738,9 +619,9 @@
     letter-spacing: 0.5px;
     text-align: center;
 }
-/* ===================================================
-   TOGGLE SWITCH STATO ADMIN (SEGMENTED CONTROL)
-   =================================================== */
+
+/* TOGGLE SWITCH E BADGE */
+
 .status-toggle-wrapper {
     display: flex;
     justify-content: center;
@@ -758,7 +639,7 @@
     width: 100%; 
     max-width: 240px;
     height: 48px;
-    background-color: color-mix(in srgb, var(--grigio-taupe) 15%, transparent); /* Grigio chiarissimo per lo sfondo */
+    background-color: color-mix(in srgb, var(--grigio-taupe) 15%, transparent); 
     border: 2px solid color-mix(in srgb, var(--grigio-taupe) 30%, transparent);
     border-radius: 30px;
     cursor: pointer;
@@ -767,7 +648,6 @@
     container-type: inline-size;
 }
 
-/* Il blocco scuro che scorre all'interno */
 .toggle-thumb {
     position: absolute;
     top: 4px;
@@ -781,130 +661,54 @@
     z-index: 1;
 }
 
+/* Implementazione delle Container Queries (cqw) per definire una tipografia fluida indipendente dalla viewport generale, adattandosi dinamicamente allo spazio reale del toggle container */
 .toggle-text {
     flex: 1;
     text-align: center;
-    /* NUOVO: Font fluido limitato tra 10px e 14px, che scala dinamicamente in base allo spazio (4.5cqw) */
     font-size: clamp(10px, 4.5cqw, 14px);
     font-weight: 700;
     z-index: 2; 
     transition: color 0.3s ease;
     user-select: none;
-    /* NUOVO: Leggermente ridotto per salvare spazio orizzontale senza perdere l'estetica brutalista */
     letter-spacing: 0.5px; 
     white-space: nowrap;
 }
 
-/* Colori di default (IN CARICO è attivo) */
 .toggle-text-left { color: var(--panna-carta); }
 .toggle-text-right { color: var(--grigio-taupe); }
 
-/* --- STATO "CHIUSA" (Checked - Spostato a destra) --- */
+/* Sfrutta il selettore fratello adiacente (+) per animare graficamente la posizione e il colore del toggle e del testo al variare dello stato checked dell'input nascosto */
 #toggleStatoAdmin:checked + .status-toggle-pill .toggle-thumb {
-    transform: translateX(100%); /* Si sposta esattamente della sua larghezza */
-    background-color: var(--verde-ottanio); /* Diventa Rosso per indicare la chiusura */
+    transform: translateX(100%); 
+    background-color: var(--verde-ottanio); 
 }
 
-/* Inversione dei colori del testo quando è checked */
 #toggleStatoAdmin:checked + .status-toggle-pill .toggle-text-left { color: var(--grigio-taupe); }
 #toggleStatoAdmin:checked + .status-toggle-pill .toggle-text-right { color: var(--panna-carta); }
 
-/* --- MESSAGGIO DI AVVISO DINAMICO --- */
 .status-warning-msg {
     font-size: 0.85rem;
     color: var(--grigio-taupe);
-    margin-top: 0; /* Rimosso il margine fisso per non occupare spazio da nascosto */
+    margin-top: 0; 
     font-style: italic;
     text-align: center;
     line-height: 1.3;
-    max-height: 0; /* Altezza zero di default */
+    max-height: 0; 
     opacity: 0;
     visibility: hidden;
     overflow: hidden;
     transition: max-height 0.3s ease, opacity 0.3s ease, margin-top 0.3s ease;
 }
 
+/* Animazione di slide-down tramite max-height applicata dinamicamente via JS per mostrare gli alert di stato */
 .status-warning-msg.show {
     opacity: 1;
     visibility: visible;
-    max-height: 150px; /* Si espande solo quando serve */
-    margin-top: 15px; /* Aggiunge lo spazio tra il toggle e il testo solo se visibile */
+    max-height: 150px; 
+    margin-top: 15px; 
     overflow: visible;
 }
 
-/* ===================================================
-   MOBILE 
-   =================================================== */
-.mobile-ticket-tabs {
-    display: none; /* Nascosto di default su Desktop */
-}
-
-@media (max-width: 992px) {
-    .ticket-dialog-wrapper {
-        flex-direction: column;
-        padding-top: 50px; 
-        align-items: center;
-    }
-
-    /* Mostriamo il selettore (Segmented Control) */
-    .mobile-ticket-tabs {
-        display: flex;
-        justify-content: center;
-        gap: 15px;
-        width: 100%;
-        margin-bottom: 15px;
-        z-index: 10;
-    }
-
-    .tab-btn {
-        background: transparent;
-        border: 2px solid var(--grigio-taupe);
-        color: var(--grigio-taupe);
-        padding: 8px 24px;
-        border-radius: 30px;
-        font-family: var(--font-tecnico, monospace);
-        font-weight: 700;
-        font-size: 0.85rem;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .tab-btn.active {
-        background: var(--verde-ottanio);
-        border-color: var(--verde-ottanio);
-        color: var(--panna-carta);
-    }
-
-    /* Sistemiamo il layout dei pannelli */
-    .ticket-dialog-content {
-        flex-direction: column !important; /* Riporta la chat in cima */
-        align-items: center;
-    }
-
-    /* Di default mostriamo solo il primo pannello (Chat) e nascondiamo i Dettagli */
-    .ticket-panel:nth-child(2) {
-        display: none !important;
-    }
-
-    /* Quando è attiva la classe 'show-dettagli' via JS, invertiamo la visibilità */
-    .ticket-dialog-content.show-dettagli .ticket-panel:nth-child(1) {
-        display: none !important;
-    }
-    .ticket-dialog-content.show-dettagli .ticket-panel:nth-child(2) {
-        display: flex !important;
-    }
-
-    /* Adattiamo l'altezza per far entrare la pellicola perfettamente nello schermo */
-    .ticket-panel {
-        height: 70vh !important;
-        margin-bottom: 0 !important;
-    }
-}
-/* ===================================================
-   VALIDAZIONE FORM STEP 2
-   =================================================== */
 .btn-full-width {
     width: 100%;
 }
@@ -928,9 +732,6 @@
     display: block;
 }
 
-/* ===================================================
-   POPUP CONFERMA CREAZIONE TICKET
-   =================================================== */
 .ticket-popup-overlay {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
@@ -940,8 +741,6 @@
     justify-content: center;
     align-items: center;
     z-index: 2000;
-    
-    /* Gestione animazione */
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease;
@@ -981,7 +780,6 @@
     font-size: 1rem;
 }
 
-/* --- Allineamento Titolo e Badge Categoria --- */
 .titolo-categoria-wrapper {
     display: flex;
     align-items: center;
@@ -990,7 +788,6 @@
     flex-direction: row-reverse;
 }
 
-/* --- Badge Brutalista: Linee spezzate, minimal e a pillola --- */
 .badge-categoria-brutal {
     display: inline-flex;
     align-items: center;
@@ -1008,7 +805,6 @@
     white-space: nowrap;
 }
 
-/* --- Testo del Titolo --- */
 .dettaglio-titolo-testo {
     margin: 0 !important;
     font-size: 16px;
@@ -1016,7 +812,7 @@
     line-height: 1.4;
 }
 
-/* --- Evidenziatore Pratiche "Da Assegnare" (Superadmin) --- */
+/* Animazione di pulsing basata su box-shadow e opacity per richiamare l'attenzione sulle pratiche non assegnate (Admin Dashboard) */
 .badge-urgent-assign {
     color: var(--verde-ottanio) ;
     background-color: transparent;
@@ -1038,5 +834,173 @@
     100% { 
         opacity: 1; 
         box-shadow: 0 0 0 0 transparent; 
+    }
+}
+
+/* MEDIA QUERIES E RESPONSIVE */
+
+@media (max-width: 768px) {
+    .pratica-grid-row {
+        grid-template-columns: 1fr auto;
+        grid-template-areas: 
+            "titolo stato"
+            "utente stato";
+        padding: 1rem;
+    }
+    
+    .pratica-grid-header {
+        display: none;
+    }
+
+    .pratica-titolo { grid-area: titolo; white-space: normal; line-height: 1.3; }
+    .pratica-col-center { grid-area: utente; margin-top: 0.3rem; }
+    .pratica-col-right { grid-area: stato; align-self: center; }
+}
+
+@media (max-width: 1025px) {
+    .assistenza-main {
+        padding: 4rem 1rem 3rem;
+    }
+
+    .assistenza-title {
+        font-size: 1.8rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .ordine-header {
+        padding: 1rem;
+        align-items: center; 
+    }
+
+    .ordine-meta {
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+
+    .ordine-meta-left {
+        gap: 1rem;
+    }
+
+    .ordine-id {
+        font-size: 1rem;
+    }
+
+    .ordine-date {
+        font-size: 0.85rem;
+    }
+
+    .prodotto-row {
+        gap: 1rem;
+        padding-top: 0.8rem;
+        align-items: flex-start;
+    }
+
+    .prodotto-nome {
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+
+    .prodotto-qta {
+        font-size: 0.85rem;
+        white-space: nowrap;
+        margin-top: 2px;
+    }
+
+    .floating-submit-container {
+        padding: 1rem;
+    }
+
+    .floating-submit-container .btn-cta {
+        width: 100%;
+        max-width: 350px;
+        font-size: 18px;
+        padding: 12px;
+    }
+    
+    .film-container.large {
+        max-width: 80vw;
+    }
+}
+
+@media (max-width: 480px) {
+    .assistenza-title {
+        font-size: 1.5rem;
+    }
+
+    .ordine-status {
+        display: none;
+    }
+
+    .ordine-trigger {
+        justify-content: flex-end;
+    }
+    
+    .film-container.large {
+        max-width: 100vw;
+    }
+}
+
+.mobile-ticket-tabs {
+    display: none; 
+}
+
+@media (max-width: 992px) {
+    .ticket-dialog-wrapper {
+        flex-direction: column;
+        padding-top: 50px; 
+        align-items: center;
+    }
+
+    .mobile-ticket-tabs {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        width: 100%;
+        margin-bottom: 15px;
+        z-index: 10;
+    }
+
+    .tab-btn {
+        background: transparent;
+        border: 2px solid var(--grigio-taupe);
+        color: var(--grigio-taupe);
+        padding: 8px 24px;
+        border-radius: 30px;
+        font-family: var(--font-tecnico, monospace);
+        font-weight: 700;
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .tab-btn.active {
+        background: var(--verde-ottanio);
+        border-color: var(--verde-ottanio);
+        color: var(--panna-carta);
+    }
+
+    .ticket-dialog-content {
+        flex-direction: column !important; 
+        align-items: center;
+    }
+
+    /* Implementazione visibilità selettiva per i pannelli chat/dettagli su mobile. Le direttive !important sovrascrivono la griglia flex principale in base alla classe iniettata dal JS */
+    .ticket-panel:nth-child(2) {
+        display: none !important;
+    }
+
+    .ticket-dialog-content.show-dettagli .ticket-panel:nth-child(1) {
+        display: none !important;
+    }
+    
+    .ticket-dialog-content.show-dettagli .ticket-panel:nth-child(2) {
+        display: flex !important;
+    }
+
+    .ticket-panel {
+        height: 70vh !important;
+        margin-bottom: 0 !important;
     }
 }

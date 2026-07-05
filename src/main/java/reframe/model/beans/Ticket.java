@@ -3,18 +3,24 @@ package reframe.model.beans;
 import java.sql.Timestamp;
 
 public class Ticket {
+    
+    /* ATTRIBUTI */
     private String idTicket;
     private String rmaPratica;
     private String autore;
-    private String tipo;      // Enum nel DB: 'User' o 'Admin'
+    
+    // Vincolato a livello di database tramite tipo ENUM ('User' o 'Admin') per classificare i permessi in fase di lettura
+    private String tipo;      
     private String messaggio;
+    
+    // Mappato con java.sql.Timestamp per garantire l'integrità del salvataggio dei valori DATETIME/TIMESTAMP sul database
     private Timestamp dataTicket;
 
+    /* COSTRUTTORI */
     public Ticket() {
-        // Costruttore vuoto
     }
 
-    // --- GETTER E SETTER ---
+    /* GETTER E SETTER */
     public String getIdTicket() { return idTicket; }
     public void setIdTicket(String idTicket) { this.idTicket = idTicket; }
 

@@ -10,10 +10,10 @@ import reframe.utils.ConnessioneDB;
 
 public class OrdineDAO {
 
-    /**
-     * Inserisce un nuovo ordine completo (Testata + Dettagli) 
-     * e scala lo stock dei prodotti, tutto in una singola Transazione SQL.
-     */
+    /* CREAZIONE ORDINE TRANSAZIONALE */
+    
+    // Esegue l'inserimento della testata dell'ordine, dei relativi dettagli e l'aggiornamento dello stock in un'unica transazione atomica.
+    // L'uso di setAutoCommit(false) garantisce le proprietà ACID: in caso di eccezione su una qualsiasi query, viene eseguito il rollback totale per mantenere l'integrità del database.
     public void insertOrdineCompleto(Ordine ordine) throws SQLException {
         String queryOrdine = "INSERT INTO Ordine (ID_ordine, Data_ordine, Totale, Garanzia, Stato, ID_Utente, ID_Pagamento, ID_Spedizione) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         String queryDettaglio = "INSERT INTO Ordine_Prodotto (ID_Ordine, ID_Prodotto, Prezzo_acquisto, Quantita_acquisto, Nome_prodotto_acquisto, IVA_acquisto) VALUES (?, ?, ?, ?, ?, ?)";
@@ -26,11 +26,8 @@ public class OrdineDAO {
         
         try {
             conn = ConnessioneDB.getConnection();
-            
-            // 1. INIZIO TRANSAZIONE: Disabilitiamo l'autocommit
             conn.setAutoCommit(false);
             
-            // 2. INSERIMENTO TESTATA ORDINE
             psOrdine = conn.prepareStatement(queryOrdine);
             psOrdine.setString(1, ordine.getIdOrdine());
             psOrdine.setDate(2, ordine.getDataOrdine());
@@ -43,12 +40,10 @@ public class OrdineDAO {
             
             psOrdine.executeUpdate();
             
-            // 3. INSERIMENTO DETTAGLI ORDINE E AGGIORNAMENTO STOCK
             psDettaglio = conn.prepareStatement(queryDettaglio);
             psUpdateStock = conn.prepareStatement(queryUpdateStock);
             
             for (DettaglioOrdine dettaglio : ordine.getDettagli()) {
-                // A) Inserisce il dettaglio
                 psDettaglio.setString(1, ordine.getIdOrdine()); 
                 psDettaglio.setString(2, dettaglio.getIdProdotto());
                 psDettaglio.setDouble(3, dettaglio.getPrezzoAcquisto()); 
@@ -57,17 +52,14 @@ public class OrdineDAO {
                 psDettaglio.setInt(6, dettaglio.getIvaAcquisto());       
                 psDettaglio.executeUpdate();
                 
-                // B) Sottrae la quantità appena acquistata dallo stock del Prodotto
                 psUpdateStock.setInt(1, dettaglio.getQuantitaAcquisto());
                 psUpdateStock.setString(2, dettaglio.getIdProdotto());
                 psUpdateStock.executeUpdate();
             }
             
-            // 4. CONFERMA TRANSAZIONE
             conn.commit();
             
         } catch (SQLException e) {
-            // ERRORE: Rollback
             if (conn != null) {
                 try {
                     conn.rollback();
@@ -85,14 +77,15 @@ public class OrdineDAO {
             
             if (conn != null) {
                 try { 
-                    conn.setAutoCommit(true); // Ripristina l'autocommit prima di restituirla
+                    conn.setAutoCommit(true); 
                 } catch (SQLException e) { e.printStackTrace(); }
                 ConnessioneDB.releaseConnection(conn); 
             }
         }
     }
 
-    // Recupera l'ordine e tutti i suoi prodotti per stampare la fattura
+    /* RECUPERO DATI ORDINE */
+    
     public Ordine fetchOrdineById(String idOrdine) throws SQLException {
         String queryOrdine = "SELECT * FROM Ordine WHERE ID_ordine = ?";
         String queryDettagli = "SELECT * FROM Ordine_Prodotto WHERE ID_Ordine = ?";
@@ -150,10 +143,7 @@ public class OrdineDAO {
         return ordine;
     }
     
-    /**
-     * Recupera tutti gli ordini (con i relativi dettagli) di un utente specifico, 
-     * ordinati dal più recente al più vecchio.
-     */
+    // Ricostruisce lo storico completo lato utente eseguendo un'interrogazione gerarchica: prima recupera le testate degli ordini e successivamente itera per popolarne i dettagli.
     public List<Ordine> getOrdiniCompletiByUtente(String username) throws SQLException {
         List<Ordine> lista = new ArrayList<>();
         String queryOrdini = "SELECT * FROM Ordine WHERE ID_Utente = ? ORDER BY Data_ordine DESC";
@@ -177,7 +167,6 @@ public class OrdineDAO {
                 ord.setTotale(rsOrdini.getDouble("Totale"));
                 ord.setStato(rsOrdini.getString("Stato"));
 
-                // Recupera i prodotti per questo specifico ordine
                 psDettagli = conn.prepareStatement(queryDettagli);
                 psDettagli.setString(1, ord.getIdOrdine());
                 try (ResultSet rsDettagli = psDettagli.executeQuery()) {
@@ -190,7 +179,7 @@ public class OrdineDAO {
                         ord.addDettaglio(dett);
                     }
                 }
-                psDettagli.close(); // Lo chiudiamo per riaprirlo al ciclo successivo
+                psDettagli.close(); 
                 lista.add(ord);
             }
             
@@ -206,6 +195,9 @@ public class OrdineDAO {
         return lista;
     }
     
+    /* FILTRAGGIO E AMMINISTRAZIONE ORDINI */
+
+    // Implementa la costruzione dinamica della query SQL tramite StringBuilder per supportare l'applicazione opzionale e cumulativa di filtri di ricerca (utente e range di date).
     public List<Ordine> getOrdiniFiltrati(String emailCliente, java.sql.Date dataInizio, java.sql.Date dataFine) throws SQLException {
         List<Ordine> lista = new ArrayList<>();
         StringBuilder query = new StringBuilder("SELECT * FROM Ordine WHERE 1=1");
@@ -261,6 +253,8 @@ public class OrdineDAO {
         }
         return lista;
     }
+    
+    /* GESTIONE STATO ORDINE */
     
     public void updateStato(String idOrdine, String nuovoStato) throws SQLException {
         String query = "UPDATE Ordine SET Stato = ? WHERE ID_Ordine = ?";

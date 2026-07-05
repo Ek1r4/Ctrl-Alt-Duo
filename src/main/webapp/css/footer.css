@@ -1,12 +1,13 @@
 @charset "UTF-8";
-/* =========================================
-   FOOTER STYLING
-   ========================================= */
+
+/* FOOTER STYLING E LAYOUT GLOBALE */
+
 .site-footer {
     background-color: #111;
     color: var(--panna-carta, #f8f9fa);
     padding: 6rem 0 2rem 0;
     position: relative;
+    /* Genera un nuovo stacking context per assicurare che il footer si sovrapponga correttamente agli elementi fluidi sovrastanti */
     z-index: 100; 
 }
 
@@ -23,7 +24,8 @@
     margin-bottom: 4rem;
 }
 
-/* --- Colonna 1: Manifesto --- */
+/* BRAND E MANIFESTO */
+
 .brand-col {
     display: flex;
     flex-direction: column;
@@ -32,6 +34,7 @@
 
 .footer-headline {
     font-family: var(--font-titoli);
+    /* Implementa la tipografia fluida tramite clamp() per interpolare dinamicamente la dimensione del font tra 3rem e 4.5rem in base alla larghezza della viewport (5vw) */
     font-size: clamp(3rem, 5vw, 4.5rem);
     line-height: 1;
     color: var(--marrone-cuoio, #c47e5a);
@@ -58,12 +61,14 @@
     letter-spacing: 2px;
     color: var(--marrone-cuoio);
 }
+
 .footer-logo .logo-img {
     height: 32px; 
     object-fit: contain;
 }
 
-/* --- Colonne 2 & 3: Navigazione --- */
+/* NAVIGAZIONE */
+
 .footer-title {
     font-family: var(--font-testi);
     font-size: 0.9rem;
@@ -98,7 +103,8 @@
     color: var(--verde-ottanio);
 }
 
-/* --- Footer Bottom: Divisore, Social e Copyright --- */
+/* FOOTER BOTTOM E SOCIAL */
+
 .footer-divider {
     border: none;
     border-top: 1px solid var(--beige-scuro);
@@ -143,14 +149,15 @@
     color: var(--grigio-taupe);
 }
 
-/* =========================================
-   			RESPONSIVE DESIGN 
-   ========================================= */
+/* RESPONSIVE DESIGN */
+
 @media (max-width: 992px) {
     .footer-grid {
         grid-template-columns: 1fr 1fr; 
     }
+    
     .brand-col {
+        /* Sfrutta grid-column: 1 / -1 per estendere forzatamente il blocco manifesto su tutta la larghezza del contenitore, causando il wrapping delle colonne di navigazione alla riga successiva */
         grid-column: 1 / -1; 
     }
 }

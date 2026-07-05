@@ -1,9 +1,8 @@
 @import url("variables.css");
 @import url("global.css");
 
-/* =========================================
-   CONTENITORE PRINCIPALE
-   ========================================= */
+/* CONTENITORE PRINCIPALE (LAYOUT) */
+
 .single-product-page {
     background-color: var(--beige-scuro, #f8f5f0);
     margin: 0;
@@ -12,8 +11,8 @@
 
 .product-container {
     max-width: 1200px;
-    margin: 60px auto; /* 60px di spazio sopra/sotto, centrato ai lati */
-    width: 90%; /* Evita che tocchi i bordi su schermi medi */
+    margin: 60px auto; 
+    width: 90%; 
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 60px;
@@ -23,30 +22,26 @@
     padding: 40px;
 }
 
-/* =========================================
-   COLONNA SINISTRA: MODELLO 3D
-   ========================================= */
-/* Contenitore per dare respiro al modello */
+/* COLONNA SINISTRA: MODELLO 3D (GOOGLE MODEL-VIEWER) */
+
 .container-3d {
     width: 100%;
-    max-width: 600px; /* Grandezza massima */
+    max-width: 600px; 
     margin: 0 auto;
-    background-color: #f8f5f0; /* Il grigio/beige chiaro che usi per le card */
+    background-color: #f8f5f0; 
     border-radius: 8px;
-    box-shadow: inset 0 0 20px rgba(0,0,0,0.05); /* Ombra interna per dare l'effetto "studio fotografico" */
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.05); 
     overflow: hidden;
 }
 
-/* Dimensioni del viewer */
 model-viewer {
     width: 100%;
     height: 500px;
-    outline: none; /* Rimuove il bordo blu quando ci clicchi sopra */
+    outline: none; 
 }
 
-/* =========================================
-   COLONNA DESTRA: INFORMAZIONI
-   ========================================= */
+/* COLONNA DESTRA: INFORMAZIONI PRODOTTO */
+
 .product-info {
     display: flex;
     flex-direction: column;
@@ -95,9 +90,8 @@ model-viewer {
     opacity: 0.9;
 }
 
-/* =========================================
-   AGGIUNTA AL CARRELLO
-   ========================================= */
+/* CARRELLO E QUANTITÀ (CONTROLS) */
+
 .add-to-cart-section {
     display: flex;
     gap: 20px;
@@ -116,7 +110,7 @@ model-viewer {
 .add-to-cart-section .btn-cta:hover {
     background-color: transparent;
     color: var(--verde-ottanio);
-   	box-shadow: 0 6px 12px rgba(0,0,0,0.5);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.5);
     transform: translateY(-2px);
 }
 
@@ -154,15 +148,15 @@ model-viewer {
     background-color: color-mix(in srgb, var(--grigio-taupe) 10%, transparent);
 }
 
+/* Modificatore per disabilitare la renderizzazione nativa dei controlli spinner numerici (up/down arrows) */
 .qty-input::-webkit-outer-spin-button,
 .qty-input::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
 
-/* =========================================
-   ACCORDION (Dettagli / Spedizioni)
-   ========================================= */
+/* ACCORDION (DETTAGLI E SPEDIZIONI) */
+
 .product-details-accordion {
     border-top: 1px solid var(--beige-scuro);
 }
@@ -176,16 +170,15 @@ model-viewer {
     font-weight: bold;
     font-size: 1.1rem;
     cursor: pointer;
-    list-style: none; /* Rimuove la freccina standard */
+    list-style: none; 
     display: flex;
     justify-content: space-between;
     align-items: center;
     color: var(--antracite-scuro);
 }
 
-/* Creiamo una freccina personalizzata stile mockup */
 .product-details-accordion summary::after {
-    content: '\f107'; /* Icona freccia in giù di FontAwesome */
+    content: '\f107'; 
     font-family: 'Font Awesome 6 Free';
     font-weight: 900;
     transition: transform 0.3s ease;
@@ -195,8 +188,9 @@ model-viewer {
     transform: rotate(180deg);
 }
 
+/* Nasconde il marker nativo su browser Webkit legacy (Safari) per evitare sovrapposizioni visive con la freccia FontAwesome customizzata */
 .product-details-accordion summary::-webkit-details-marker {
-    display: none; /* Per Safari vecchi */
+    display: none; 
 }
 
 .accordion-content {
@@ -205,9 +199,8 @@ model-viewer {
     font-size: 0.95rem;
 }
 
-/* =========================================
-   TABELLA SPECIFICHE TECNICHE
-   ========================================= */
+/* TABELLA SPECIFICHE TECNICHE (GRID) */
+
 .product-spec-table {
     width: 100%;
     border-collapse: collapse;
@@ -220,12 +213,10 @@ model-viewer {
     font-size: 0.95rem;
 }
 
-/* Rimuove il bordo dall'ultima riga della tabella */
 .product-spec-table tr:last-child td {
     border-bottom: none;
 }
 
-/* Colonna di sinistra: i nomi dei campi (Etichette) */
 .product-spec-table td:first-child {
     width: 40%;
     font-weight: 600;
@@ -235,16 +226,14 @@ model-viewer {
     letter-spacing: 0.5px;
 }
 
-/* Colonna di destra: i valori reali provenienti dal DB */
 .product-spec-table td:last-child {
-	font-family: var(--font-tecnico);
+    font-family: var(--font-tecnico);
     color: var(--antracite-scuro);
     text-align: left;
 }
 
-/* =========================================
-   STATO: PRODOTTO NON TROVATO (Fallback)
-   ========================================= */
+/* FALLBACK PRODOTTO NON TROVATO */
+
 .product-not-found-container {
     display: block;
     text-align: center;
@@ -262,20 +251,17 @@ model-viewer {
     color: var(--antracite-scuro);
 }
 
-/* =========================================
-   AZIONI ADMIN E MODIFICA PRODOTTO
-   ========================================= */
+/* AZIONI ADMIN (OVERRIDE ACCESSO) */
 
-/* Disabilitazione totale bottone carrello per Admin */
+/* Forza l'inaccessibilità totale agli eventi del cursore tramite pointer-events: none, bloccando fisicamente l'interazione per il ruolo Admin sul pulsante di acquisto indipendentemente dal suo stato visivo */
 .btn-cta.disabled-for-admin {
     background-color: var(--grigio-taupe, #9e9e9e);
     opacity: 0.4;
     cursor: not-allowed;
-    pointer-events: none; /* Regola fondamentale: impedisce letteralmente al mouse di cliccarlo */
+    pointer-events: none; 
     transform: none !important;
 }
 
-/* Wrapper per affiancare Titolo e Matita */
 .product-title-wrapper {
     display: flex;
     align-items: center;
@@ -284,10 +270,9 @@ model-viewer {
 }
 
 .product-title-wrapper .product-title {
-    margin-bottom: 0; /* Rimuove il margine vecchio perché ora lo gestisce il wrapper */
+    margin-bottom: 0; 
 }
 
-/* Bottone Matita */
 .btn-edit-pencil {
     background-color: transparent;
     color: var(--grigio-taupe);
@@ -309,9 +294,10 @@ model-viewer {
     transform: scale(1.1) rotate(10deg);
 }
 
-/* --- Finestra Modale --- */
+/* MODALE DI MODIFICA PRODOTTO (ADMIN) */
+
 .edit-modal-overlay {
-    display: none; /* Nascosta di default */
+    display: none; 
     position: fixed;
     top: 0;
     left: 0;
@@ -324,16 +310,10 @@ model-viewer {
     align-items: center;
 }
 
-/* Classe aggiunta dal JS per mostrare la modale */
 .edit-modal-overlay.active {
     display: flex;
 }
 
-/* =========================================
-   INTEGRAZIONE MODALE CON STILE "PELLICOLA"
-   ========================================= */
-
-/* Animazione di discesa per il contenitore pellicola */
 .modal-film-override {
     animation: slideDownModal 0.3s ease-out forwards;
 }
@@ -343,11 +323,10 @@ model-viewer {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Riposizionamento della X in alto a destra nel box pellicola */
 .btn-close-modal {
     position: absolute;
     top: 15px;
-    right: 25px; /* Spostato internamente ai fori della pellicola */
+    right: 25px; 
     background: transparent;
     border: none;
     font-size: 2rem;
@@ -362,60 +341,52 @@ model-viewer {
     color: var(--rosso-ruggine);
 }
 
-/* Il tuo form.css formatta solo gli "input". Estendiamo lo stile anche alla textarea */
 fieldset.custom-input textarea.custom-textarea {
     width: 100%;
     border: none;
     background: transparent;
     outline: none;
-    font-size: 18px; /* Allineato a .film-container.large input */
+    font-size: 18px; 
     color: var(--antracite-scuro);
     padding: 5px 0;
-    resize: vertical; /* Permette all'utente di allungarla solo in verticale */
+    resize: vertical; 
     font-family: inherit;
 }
 
-/* =========================================
-   ICONA MODALE
-   ========================================= */
 .icon-edit-modal {
     width: 3rem; 
     height: 3rem;
-    stroke: var(--antracite-scuro); /* Puoi mettere var(--verde-ottanio) se la vuoi colorata */
-    stroke-width: 1.5px; /* Spessore elegante del tratto */
-    fill: none; /* Rende l'icona "vuota" all'interno */
+    stroke: var(--antracite-scuro); 
+    stroke-width: 1.5px; 
+    fill: none; 
     display: block;
 }
 
-/* Assicurati che il contenitore tagli bene il bordo sotto l'icona */
 .edit-modal-overlay .camera-icon {
-    top: -30px; /* Spostata leggermente più su per via delle dimensioni */
+    top: -30px; 
     background-color: var(--panna-carta);
     padding: 0 15px;
-    border-radius: 30%; /* Opzionale: aiuta a sfumare i bordi */
+    border-radius: 30%; 
 }
 
-/* =========================================
-   RECENSIONI - STILE REFRAME CORRETTO
-   ========================================= */
+/* SEZIONE RECENSIONI (USER & GUEST) */
 
 .clean-reviews-wrapper {
-    grid-column: 1 / -1; /* LA MAGIA: Forza il div a occupare entrambe le colonne della griglia! */
+    grid-column: 1 / -1; 
     margin-top: 20px;
     padding-top: 40px;
-    border-top: 1px solid var(--beige-scuro); /* Usa il colore del tuo bordo */
+    border-top: 1px solid var(--beige-scuro); 
     width: 100%;
 }
 
 .reviews-title {
-    font-family: var(--font-titoli); /* Usiamo il font ufficiale dei titoli */
+    font-family: var(--font-titoli); 
     font-size: 2rem;
     color: var(--antracite-scuro);
     margin-bottom: 30px;
     letter-spacing: 1px;
 }
 
-/* --- FORM --- */
 .minimal-review-form-container {
     background-color: transparent; 
     margin-bottom: 40px;
@@ -425,7 +396,7 @@ fieldset.custom-input textarea.custom-textarea {
     display: flex;
     flex-direction: column;
     gap: 15px;
-    max-width: 800px; /* Evita che il form diventi largo 1200px, tenendolo compatto */
+    max-width: 800px; 
 }
 
 .review-form-header {
@@ -470,15 +441,14 @@ fieldset.custom-input textarea.custom-textarea {
 .clean-review-textarea:focus {
     border-color: var(--verde-ottanio);
     background-color: var(--panna-carta);
-    box-shadow: 0 0 10px rgba(42, 77, 70, 0.1); /* Leggero glow verde */
+    box-shadow: 0 0 10px rgba(42, 77, 70, 0.1); 
 }
 
 .review-form-footer {
     display: flex;
-    justify-content: flex-start; /* Allinea il bottone a sinistra per seguire il flusso di lettura */
+    justify-content: flex-start; 
 }
 
-/* Identico al tuo "Aggiungi al Carrello" */
 .btn-clean-submit {
     background-color: var(--verde-ottanio);
     color: var(--panna-carta);
@@ -488,7 +458,7 @@ fieldset.custom-input textarea.custom-textarea {
     font-family: inherit;
     font-weight: bold;
     letter-spacing: 1px;
-    border-radius: 6px; /* Adattato ai tuoi input */
+    border-radius: 6px; 
     cursor: pointer;
     transition: all 0.2s ease;
 }
@@ -517,11 +487,10 @@ fieldset.custom-input textarea.custom-textarea {
     text-decoration: underline;
 }
 
-/* --- LISTA RECENSIONI --- */
 .minimal-reviews-list {
     display: flex;
     flex-direction: column;
-    max-width: 800px; /* Tiene le recensioni impaginate bene come il form */
+    max-width: 800px; 
 }
 
 .minimal-review-item {
@@ -566,11 +535,8 @@ fieldset.custom-input textarea.custom-textarea {
     font-size: 1rem;
 }
 
-/* =========================================
-   CESTINO RECENSIONI (ADMIN)
-   ========================================= */
+/* CESTINO RECENSIONI (MODERAZIONE ADMIN) */
 
-/* Ci assicuriamo che il blocco header spinga il cestino tutto a destra */
 .review-item-header {
     display: flex;
     justify-content: space-between; 
@@ -581,7 +547,7 @@ fieldset.custom-input textarea.custom-textarea {
 .btn-delete-review {
     background: transparent;
     border: none;
-    color: #cccccc; /* Grigio chiaro discreto */
+    color: #cccccc; 
     font-size: 1.05rem;
     cursor: pointer;
     padding: 5px;
@@ -589,34 +555,36 @@ fieldset.custom-input textarea.custom-textarea {
 }
 
 .btn-delete-review:hover {
-    color: var(--rosso-ruggine, #c84b31); /* Diventa rosso vivo al passaggio */
+    color: var(--rosso-ruggine, #c84b31); 
     transform: scale(1.1) rotate(5deg);
 }
 
+/* RESPONSIVE DESIGN (BREAKPOINTS) */
+
 @media (max-width: 1025px) {
-	
-	.product-container {
-        /* Passiamo da grid a flex per poter riordinare liberamente gli elementi */
+    
+    .product-container {
         display: flex; 
         flex-direction: column;
         padding: 20px;
-        gap: 0; /* Rimuoviamo il gap del grid, useremo i margin */
+        gap: 0; 
     }
     
+    /* Disabilita la struttura nativa del contenitore in contesti flexbox tramite display: contents, consentendo ai discendenti diretti (come titolo e pane descrittivo) di essere riordinati individualmente nella viewport */
     .product-info {
-        /* "Dissolve" il div. I testi e il form diventano figli diretti del container */
         display: contents; 
     }
     
+    /* Sfrutta l'ordine flex negativo (order: -2 e -1) per alterare la gerarchia visiva del DOM senza toccare l'HTML: promuove la posizione del breadcrumb e dell'immagine in cima allo stack visuale prima del titolo prodotto */
     .breadcrumb {
-        order: -2; /* Lo spara in cima assoluta, sopra a tutto */
+        order: -2; 
         margin-bottom: 15px;
     }
     
     .product-gallery {
-        order: -1; /* Lo piazza subito sotto il breadcrumb, ma prima del titolo */
+        order: -1; 
         margin-bottom: 25px;
-        position: static; /* Rimuove l'effetto sticky che su mobile non serve */
+        position: static; 
     }
     
     .add-to-cart-section {
@@ -633,9 +601,8 @@ fieldset.custom-input textarea.custom-textarea {
         width: 100%;
     }
     
-	}
+}
 
-/* RESPONSIVE: Impila le colonne su mobile */
 @media (max-width: 500px) {
     
     .add-to-cart-section {

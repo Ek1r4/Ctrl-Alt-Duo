@@ -6,7 +6,9 @@
 <%@ page import="reframe.model.beans.DettaglioOrdine" %>
 <%@ page import="java.util.List" %>
 
+<%-- CONTROLLO ACCESSI E INIZIALIZZAZIONE DATI --%>
 <%
+    // Implementazione del pattern middleware a livello di view: verifica l'esistenza di una sessione utente attiva. In assenza di token, forza il redirect preventivo per proteggere i dati sensibili del profilo.
     Utente utenteLoggato = (Utente) session.getAttribute("utente");
     if (utenteLoggato == null) {
         response.sendRedirect(request.getContextPath() + "/login.jsp");
@@ -16,9 +18,11 @@
     List<Pagamento> listaPagamenti = (List<Pagamento>) request.getAttribute("listaPagamenti");
     List<Ordine> listaOrdini = (List<Ordine>) request.getAttribute("listaOrdini");
 %>
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
+    <!-- STRUTTURA PAGINA E HEAD -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ReFrame - Profilo di @<%= utenteLoggato.getUsername() %></title>
@@ -31,12 +35,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
+    
     <%@ include file="/WEB-INF/components/header.jsp" %>
     
     <div class="profile-page-container">
         
         <div class="profile-column scrollable-column">
             
+            <!-- SEZIONE: SPEDIZIONI -->
             <div class="profile-card">
                 <div class="card-header">
                     <h2><i class="fas fa-truck"></i> SHIPPING</h2>
@@ -78,6 +84,7 @@
                 </div>
             </div>
 
+            <!-- SEZIONE: PAGAMENTI -->
             <div class="profile-card">
                 <div class="card-header">
                     <h2><i class="fas fa-credit-card"></i> PAYMENT</h2>
@@ -111,6 +118,7 @@
                 <div class="scrollable-content">
                     <% if (listaPagamenti != null && !listaPagamenti.isEmpty()) {
                         for (Pagamento pag : listaPagamenti) {
+                            // Mascheramento dei dati sensibili della carta di credito (Data Masking) per garantire la conformità di sicurezza lato UI.
                             String numCarta = pag.getNumeroCarta();
                             String cartaMascherata = "****" + (numCarta != null && numCarta.length() >= 4 ? numCarta.substring(numCarta.length() - 4) : numCarta);
                     %>
@@ -127,11 +135,13 @@
                 </div>
             </div>
 
+            <!-- SEZIONE: STORICO ORDINI -->
             <div class="profile-card">
                 <div class="card-header history-header-wrap">
                     <h2><i class="fas fa-history"></i> HISTORY</h2>
                     
                     <div class="search-history-container">
+                        <%-- Filtraggio dinamico lato client. --%>
                         <fieldset class="custom-input search-history-fieldset">
                             <input type="text" id="searchHistory" class="search-history-input" placeholder="Cerca ordine n°..." onkeyup="filtraOrdini()">
                         </fieldset>
@@ -166,9 +176,9 @@
 
         </div> 
 
+        <!-- SEZIONE: ASSISTENZA E COMPONENTI ANAGRAFICA -->
         <%@ include file="/WEB-INF/components/anagrafia.jsp" %>
         
-        <!-- CARD ASSISTENZA (Template nascosto, verrà spostato via JS) -->
         <div id="supportCardTemplate" class="profile-card support-card" style="display: none;">
             <div class="card-header">
                 <h2><i class="fas fa-life-ring"></i> ASSISTANCE</h2>
@@ -181,22 +191,26 @@
         
     </div>
     
+    <!-- MODALI DI SISTEMA -->
     <div id="delete-confirm-modal" class="admin-modal-overlay">
-            <div class="film-container modal-film-override confirm-modal-box">
-                
-                <h3 class="form-title" style="margin-bottom: 5px;">Conferma Azione</h3>
-                <p id="delete-confirm-message" class="confirm-message"></p>
-                
-                <div class="confirm-actions">
-                    <button type="button" id="btn-cancel-delete" class="btn-cta cancel-btn">Annulla</button>
-                    <button type="button" id="btn-confirm-delete" class="btn-cta danger-btn">Procedi</button>
-                </div>
+        <div class="film-container modal-film-override confirm-modal-box">
+            
+            <h3 class="form-title" style="margin-bottom: 5px;">Conferma Azione</h3>
+            <p id="delete-confirm-message" class="confirm-message"></p>
+            
+            <div class="confirm-actions">
+                <button type="button" id="btn-cancel-delete" class="btn-cta cancel-btn">Annulla</button>
+                <button type="button" id="btn-confirm-delete" class="btn-cta danger-btn">Procedi</button>
             </div>
         </div>
+    </div>
     
-            <footer class="site-footer-minimal">
-                &copy; 2026 ReFrame
-            </footer>
+    <footer class="site-footer-minimal">
+        &copy; 2026 ReFrame
+    </footer>
+    
+    <!-- MODALI DETTAGLIO ORDINI -->
+    <%-- Generazione dinamica a runtime dei modali di dettaglio basata sull'iterazione dello storico ordini recuperato dalla request. --%>
     <% if (listaOrdini != null) {
         for (Ordine ord : listaOrdini) { %>
         <div id="modal-<%= ord.getIdOrdine() %>" class="order-modal-overlay hidden">
@@ -239,6 +253,7 @@
             </div>
         </div>
     <% } } %>
+
     <script>const contestoReFrame = '<%= request.getContextPath() %>';</script>
     <script src="<%= request.getContextPath() %>/js/profilo.js"></script>
 </body>

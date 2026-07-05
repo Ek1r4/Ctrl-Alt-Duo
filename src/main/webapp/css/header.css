@@ -1,7 +1,8 @@
 @import url("variables.css");
 @import url("global.css");
 
-/* --- Header Globale --- */
+/* HEADER GLOBALE E LAYOUT */
+
 .site-header {
     background-color: #1A1A1A; 
     position: sticky; 
@@ -13,13 +14,11 @@
     font-family: var(--font-titoli); 
 }
 
-/* --- Header Trasparente (Home Page) --- */
+/* L'utilizzo di backdrop-filter sfoca i contenuti sottostanti in tempo reale, mantenendo la leggibilità della navigazione sullo slider hero. */
 .page-home .site-header {
     background: linear-gradient(to bottom, rgba(26, 26, 26, 0.9) 0%, rgba(26, 26, 26, 0.7) 100%);
-    
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    
     position: fixed; 
     top: 0; 
     left: 0;
@@ -38,10 +37,11 @@
 }
 
 .header-container a {
-	text-decoration: none;
+    text-decoration: none;
 }
 
-/* --- Logo --- */
+/* LOGO E NAVIGAZIONE */
+
 .header-logo {
     display: flex;
     align-items: center;
@@ -51,6 +51,7 @@
     letter-spacing: 2px;
     color: var(--marrone-cuoio);
 }
+
 .header-logo .logo-img {
     height: 32px; 
     object-fit: contain;
@@ -69,7 +70,6 @@
     color: var(--panna-carta);
 }
 
-/* --- Navigazione --- */
 .header-nav .nav-links {
     display: flex;
     list-style: none;
@@ -91,7 +91,8 @@
     color: var(--marrone-cuoio);
 }
 
-/* --- Barra di Ricerca --- */
+/* BARRA DI RICERCA */
+
 .header-search {
     display: flex;
     align-items: center;
@@ -103,7 +104,7 @@
     transition: all 0.3s ease;
 }
 
-/* Stato attivo barra di ricerca */
+/* Sfrutta la pseudo-classe :focus-within per propagare dinamicamente lo stato di focus dall'input interno al contenitore padre, permettendo di animare l'intero wrapper di ricerca. */
 .header-search:focus-within {
     background-color: rgba(255, 255, 255, 0.15);
     border-color: var(--marrone-cuoio); 
@@ -120,7 +121,6 @@
     outline: none; 
 }
 
-/* Placeholder barra di ricerca */
 .search-input::placeholder {
     color: rgba(255, 255, 255, 0.5);
     font-style: italic;
@@ -141,7 +141,8 @@
     color: var(--marrone-cuoio); 
 }
 
-/* --- Icone Strumenti --- */
+/* ICONE E AZIONI UTENTE */
+
 .header-icons {
     display: flex;
     align-items: center;
@@ -163,7 +164,6 @@
     transform: scale(1.1);
 }
 
-/* --- Pulsante Accedi --- */
 .login-link {
     color: var(--panna-carta);
     font-family: var(--font-testi);
@@ -181,24 +181,20 @@
     transition: all 0.3s ease; 
 }
 
-/* Hover pulsante accedi */
 .login-link:hover {
     color: var(--verde-ottanio); 
     border-color: var(--verde-ottanio); 
 }
 
-/* --- Pulsante Logout --- */
 .logout-link {
     margin-left: 5px; 
 }
 
-/* Hover pulsante logout */
 .logout-link:hover, 
 .logout-link:hover i {
     color: var(--rosso-ruggine) !important;
 }
 
-/* --- Badge Carrello --- */
 .cart-badge {
     position: absolute;
     top: -8px;
@@ -217,9 +213,7 @@
     border: 2px solid #1A1A1A; 
 }
 
-/* =========================================
-   MINI-CART PREVIEW (HOVER)
-   ========================================= */
+/* MINI-CART PREVIEW (HOVER) */
 
 .cart-wrapper {
     position: relative;
@@ -228,7 +222,6 @@
     align-items: center;
 }
 
-/* Il box della preview */
 .mini-cart-preview {
     position: absolute;
     top: 150%; 
@@ -249,7 +242,6 @@
     flex-direction: column;
 }
 
-/* Triangolino superiore (Indicatore) */
 .mini-cart-preview::before {
     content: '';
     position: absolute;
@@ -260,7 +252,7 @@
     border-bottom: 10px solid var(--antracite-scuro);
 }
 
-/* Ponte invisibile per rendere l'hover fluido quando sposti il mouse verso il basso */
+/* Generazione di un ponte interattivo invisibile tramite pseudo-elemento ::after.*/
 .cart-wrapper::after {
     content: '';
     position: absolute;
@@ -270,14 +262,12 @@
     height: 30px; 
 }
 
-/* Trigger Hover */
 .cart-wrapper:hover .mini-cart-preview {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
 }
 
-/* Contenuti interni */
 .mini-cart-header {
     background-color: var(--antracite-scuro);
     color: var(--panna-carta);
@@ -285,6 +275,7 @@
     padding: 10px 15px;
     text-align: center;
 }
+
 .mini-cart-header h4 {
     margin: 0;
     font-size: 14px;
@@ -296,6 +287,7 @@
     overflow-y: auto;
     padding: 10px;
 }
+
 .mc-item {
     display: flex;
     justify-content: space-between;
@@ -303,6 +295,7 @@
     padding: 12px 5px;
     border-bottom: 1px dashed var(--grigio-taupe);
 }
+
 .mc-item:last-child {
     border-bottom: none;
 }
@@ -313,15 +306,30 @@
     gap: 4px;
     width: 60%;
 }
-.mc-name { font-weight: bold; font-size: 14px; line-height: 1.2; }
-.mc-qty { font-size: 12px; color: var(--grigio-taupe); font-family: var(--font-tecnico);}
+
+.mc-name { 
+    font-weight: bold; 
+    font-size: 14px; 
+    line-height: 1.2; 
+}
+
+.mc-qty { 
+    font-size: 12px; 
+    color: var(--grigio-taupe); 
+    font-family: var(--font-tecnico);
+}
 
 .mc-item-actions {
     display: flex;
     align-items: center;
     gap: 15px;
 }
-.mc-price { font-weight: bold; color: var(--marrone-cuoio); font-size: 14px; }
+
+.mc-price { 
+    font-weight: bold; 
+    color: var(--marrone-cuoio); 
+    font-size: 14px; 
+}
 
 .mc-remove-btn {
     background: transparent;
@@ -332,7 +340,11 @@
     font-size: 14px;
     transition: transform 0.2s;
 }
-.mc-remove-btn:hover { transform: scale(1.2); color: var(--rosso-ruggine);}
+
+.mc-remove-btn:hover { 
+    transform: scale(1.2); 
+    color: var(--rosso-ruggine);
+}
 
 .empty-mc {
     text-align: center;
@@ -366,15 +378,14 @@
     font-size: 14px;
 }
 
-/* Nascondi la preview su Tablet e Mobile */
 @media (max-width: 1024px) {
     .mini-cart-preview, .cart-wrapper::after {
         display: none !important;
     }
 }
-/* --- Responsive Design --- */
 
-/* Elementi mobile nascosti su Desktop */
+/* RESPONSIVE DESIGN: TABLET E SMARTPHONE */
+
 .hamburger-btn {
     display: none;
     background: transparent;
@@ -393,54 +404,41 @@
     display: none; 
 }
 
-/* --- Tablet (max 1024px) --- */
 @media (max-width: 1024px) {
-    /* Nascondi testo logo */
     .logo-text { display: none; }
     
-    /* Nascondi barra ricerca */
     .header-search { display: none; } 
     
-    /* Allineamento navigazione */
     .header-nav { margin: 0 auto; }
 
-    /* Visualizza toggle menu mobile */
     .hamburger-btn { display: block; }
 
-    /* Stile Menu Laterale */
     .header-icons {
         position: absolute;
         top: 100%; 
         right: 0; 
-        
         opacity: 0;
         visibility: hidden;
         transform: translateY(-20px); 
-        
         width: 320px;
         padding: 40px 35px;
         background-color: rgba(26, 26, 26, 0.98);
         backdrop-filter: blur(12px);
-        
         flex-direction: column; 
         align-items: center;
         gap: 0; 
-        
         border-bottom-left-radius: 20px;
         border-left: 1px solid rgba(255, 255, 255, 0.1);
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
     }
 
-    /* Stato Menu Aperto */
     .site-header.menu-open .header-icons {
         opacity: 1;
         visibility: visible;
         transform: translateY(0); 
     }
 
-    /* Stile voci menu laterale */
     .icon-link {
         display: flex;
         align-items: center;
@@ -451,7 +449,6 @@
         border-bottom: none; 
     }
 
-    /* Label testuali menu laterale */
     .icon-label {
         display: inline-block;
         font-family: var(--font-testi);
@@ -461,7 +458,6 @@
         color: var(--panna-carta);
     }
 
-    /* Allineamento badge carrello menu laterale */
     .cart-badge {
         position: relative;
         top: 0;
@@ -475,7 +471,6 @@
         right: 0; 
     }
 
-    /* Reset stile icone standard */
     .icon-link, .login-link {
         margin: 0;
         width: auto;
@@ -487,12 +482,9 @@
     }
 }
 
-/* --- Smartphone (max 576px) --- */
 @media (max-width: 576px) {
-    /* Nascondi navigazione standard */
     .header-nav { display: none; }
 
-    /* Navigazione integrata menu mobile */
     .mobile-only-links {
         display: flex;
         flex-direction: column;
@@ -511,7 +503,7 @@
     }
 }
 
-/* --- HOVER FORZATO TRAMITE JAVASCRIPT --- */
+/* L'override delle proprietà CSS con !important forza l'apertura programmatica del sottomenu da JavaScript ignorando gli stati di hover nativi. */
 .cart-wrapper.force-open .mini-cart-preview {
     opacity: 1 !important;
     visibility: visible !important;

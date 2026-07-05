@@ -8,7 +8,8 @@ import java.util.List;
 
 public class TicketDAO {
 
-    // UTILITY: Mappa la riga del ResultSet in un oggetto Ticket
+    /* UTILITY E MAPPING RESULTSET */
+
     private Ticket estraiTicket(ResultSet rs) throws SQLException {
         Ticket ticket = new Ticket();
         ticket.setIdTicket(rs.getString("ID_ticket"));
@@ -20,7 +21,9 @@ public class TicketDAO {
         return ticket;
     }
 
-    // CREATE: Inserisce un nuovo messaggio nella chat
+    /* OPERAZIONI DI CREAZIONE (CREATE) */
+
+    // Delega al DBMS la valorizzazione temporale: il campo Data_ticket viene omesso dall'INSERT in quanto gestito dal default TIMESTAMP a livello di database.
     public boolean doSave(Ticket ticket) throws SQLException {
         String query = "INSERT INTO Ticket (ID_ticket, RMA_Pratica, Autore, Tipo, Messaggio) VALUES (?, ?, ?, ?, ?)";
         
@@ -49,7 +52,9 @@ public class TicketDAO {
         }
     }
 
-    // READ (Lista): Estrae l'intera cronologia chat di una singola Pratica, ordinata per data (dal più vecchio al più recente)
+    /* OPERAZIONI DI RECUPERO DATI (READ) */
+
+    // L'ordinamento crescente (ASC) sulla data è vincolante per la corretta ricostruzione cronologica del thread di messaggistica lato frontend.
     public List<Ticket> doRetrieveByRma(String rma) throws SQLException {
         String query = "SELECT * FROM Ticket WHERE RMA_Pratica = ? ORDER BY Data_ticket ASC";
         
