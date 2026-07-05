@@ -84,7 +84,29 @@ public class ProdottoDAO {
     }
     
     public List<Prodotto> fetchAllProdotti() throws SQLException {
-        String query = "SELECT * FROM Prodotto";
+        String query = "SELECT * FROM Prodotto WHERE isAttivo = true";
+        List<Prodotto> prodotti = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement ps = null;
+        
+        try {
+            conn = ConnessioneDB.getConnection();
+            ps = conn.prepareStatement(query);
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    prodotti.add(estraiProdotto(rs));
+                }
+            }
+        } finally {
+            if (ps != null) ps.close();
+            if (conn != null) ConnessioneDB.releaseConnection(conn);
+        }
+        return prodotti;
+    }
+    
+    public List<Prodotto> fetchAllProdottiAdmin() throws SQLException {
+        String query = "SELECT * FROM Prodotto ";
         List<Prodotto> prodotti = new ArrayList<>();
         Connection conn = null;
         PreparedStatement ps = null;

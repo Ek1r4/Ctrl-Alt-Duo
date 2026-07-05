@@ -19,6 +19,7 @@ import reframe.model.dao.UtenteDAO;
 import reframe.model.beans.Ordine;
 import reframe.model.dao.OrdineDAO;
 import reframe.utils.HashingPassword;
+import reframe.utils.EmailManager;
 
 /* CONFIGURAZIONE CLASSE E ANNOTAZIONI */
 // @MultipartConfig permette alla Servlet di gestire flussi di dati multipli, necessari per l'upload di immagini e modelli 3D
@@ -51,7 +52,7 @@ public class PannelloAdminServlet extends HttpServlet {
             if (ricercaProdotto != null && !ricercaProdotto.trim().isEmpty()) {
                 request.setAttribute("listaProdotti", prodottoDAO.fetchProdottiPerAdmin(ricercaProdotto.trim()));
             } else {
-                request.setAttribute("listaProdotti", prodottoDAO.fetchAllProdotti());
+                request.setAttribute("listaProdotti", prodottoDAO.fetchAllProdottiAdmin());
             }
 
             /* RECUPERO UTENTI ADMIN */
@@ -184,7 +185,20 @@ public class PannelloAdminServlet extends HttpServlet {
         if (userAdminDaEliminare != null && !userAdminDaEliminare.trim().isEmpty()) {
             UtenteDAO dao = new UtenteDAO();
             try {
+                Utente adminTarget = dao.doRetrieveByKey(userAdminDaEliminare);
                 dao.doDelete(userAdminDaEliminare); 
+                
+                //mail di notifica
+                if (adminTarget != null && adminTarget.getEmail() != null) {
+                    String oggetto = "Reframe - Revoca accessi amministrativi";
+                    String testo = "Gentile " + adminTarget.getNome() + ",\n\n"
+                                 + "Ti informiamo che i tuoi privilegi di amministratore sulla piattaforma Reframe sono stati revocati.\n"
+                                 + "Il tuo account gestionale è stato disabilitato ed eliminato dai nostri sistemi in modo permanente.\n\n"
+                                 + "Saluti,\nIl Team Reframe.";
+
+                    EmailManager.inviaEmail(adminTarget.getEmail(), oggetto, testo);
+                }
+                
                 response.sendRedirect(request.getContextPath() + "/PannelloAdminServlet?success=adminEliminato");
             } catch (SQLException e) {
                 e.printStackTrace();
