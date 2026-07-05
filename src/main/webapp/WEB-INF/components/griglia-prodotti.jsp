@@ -55,15 +55,15 @@
             <i class="fas fa-box-open"></i>
         </button>
     <% 
-            } // Fine if(inStock > 0)
-        } // Fine if(!isAdmin)
+            } 
+        } 
     %>
 			</div>
             
 	</div>
 <% 
-    } // Fine del ciclo for (Prodotto p : lista)
-} else { // Ramo else di if(lista != null && !lista.isEmpty())
+    }
+} else {
 %>
     <p class="empty-catalog-msg">Nessuna fotocamera corrisponde ai filtri selezionati.</p>
 <% } %>

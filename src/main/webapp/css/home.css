@@ -1,7 +1,8 @@
 @import url("variables.css");
 @import url("global.css");
 
-/* Hero Section */
+/* HERO SECTION */
+
 .hero-section {
     position: relative;
     width: 100%;
@@ -43,7 +44,7 @@
     margin-top: 2rem; 
 }
 
-/* Typography & Buttons */
+/* Applica ombreggiature multiple testuali per emulare un effetto di profondità tridimensionale. */
 .hero-title {
     font-family: var(--font-titoli);
     font-size: clamp(4rem, 6vw, 6.5rem);
@@ -92,7 +93,9 @@
     transform: translateY(-2px);
 }
 
-/* Canvas & Scroll Animation */
+/* CANVAS E ANIMAZIONE SCROLL */
+
+/* Sfrutta pointer-events: none per rendere l'overlay canvas trasparente alle interazioni utente (click/scroll), permettendo di interagire con gli elementi DOM sottostanti nonostante il position fixed a tutto schermo. */
 #camera-sequence-container {
     position: fixed;
     top: 0;
@@ -120,7 +123,9 @@
     position: relative;
 }
 
-/* Story & Card Sections */
+/* STORIA E CARD */
+
+/* Mantiene il contenitore visibile nella viewport agganciandolo alla cima tramite position: sticky per tutta l'estensione del blocco parent. */
 .story-div {
     position: sticky; 
     top: 0; 
@@ -136,23 +141,18 @@
 .card-div {
     position: relative; 
     z-index: 20;         
-    
-    /* Altezza dinamica per GSAP */
     height: auto; 
     min-height: 100vh; 
-    
     background-color: var(--panna-carta); 
     color: black;
-    
-    /* Disabilita flexbox a favore del layout standard */
     display: block; 
-    
     box-shadow: 
         0px -10px 20px rgba(0, 0, 0, 0.5),   
         0px -40px 80px rgba(0, 0, 0, 0.8);
 }
 
-/* Goal Section */
+/* SEZIONE GOAL */
+
 .goal-section {
     position: sticky;
     top: 0;
@@ -195,10 +195,232 @@
     text-align: right; 
 }
 
-/* Responsive Design */
+/* SEZIONE STORIA (DETTAGLIO) */
 
-/* Tablet */
+.home-story-section {
+    padding: 100px 20px;
+    background-color: var(--panna-carta); 
+    display: flex;
+    justify-content: center;
+    width: 100%; 
+    box-sizing: border-box;
+    overflow: hidden; 
+}
+
+.story-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between; 
+    max-width: 1400px; 
+    width: 100%;
+    margin: 0 auto;
+}
+
+.story-text {
+    flex: 0 0 400px; 
+    display: flex;
+    flex-direction: column;
+    gap: 20px; 
+    position: relative;
+    z-index: 10;
+}
+
+.left-text {
+    text-align: right; 
+}
+
+.right-text {
+    text-align: left; 
+}
+
+.story-subtitle {
+    color: var(--grigio-taupe);
+    font-family: var(--font-tecnico); 
+    font-size: 16px; 
+    text-transform: uppercase;
+    letter-spacing: 3px; 
+    margin: 0;
+}
+
+.story-title {
+    color: var(--marrone-cuoio);
+    font-family: var(--font-titoli);
+    font-size: 48px; 
+    line-height: 1.1;
+    margin: 0;
+}
+
+.story-text p {
+    color: var(--antracite-scuro);
+    font-family: var(--font-testi);
+    font-size: 18px; 
+    line-height: 1.8;
+    margin: 0;
+}
+
+.story-camera-wrapper {
+    flex: 1; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+    padding: 0 40px; 
+}
+
+.story-camera-img {
+    width: 100%;
+    max-width: 450px; 
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0px 25px 35px rgba(0, 0, 0, 0.15));
+    transition: transform 0.5s ease;
+}
+
+.story-camera-img:hover {
+    transform: scale(1.05); 
+}
+
+/* SEZIONE VALORI E ANIMAZIONI 3D */
+
+/* Definisce il contenitore padre per la prospettiva 3D, parametro necessario per il corretto rendering delle trasformazioni geometriche sull'asse Z e i flip delle carte figlie. */
+.sticky-section-values {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    perspective: 1200px;
+    background-color: var(--panna-carta, #f8f5f0); 
+    overflow: hidden;
+}
+
+/* Utilizza will-change per notificare preventivamente al browser le imminenti modifiche di opacity e transform, delegando il rendering alla GPU per un'esecuzione più fluida delle animazioni associate. */
+.sticky-header-values {
+    position: absolute;
+    top: 8%; 
+    will-change: transform, opacity;
+    opacity: 0;
+    transform: translateY(50px);
+    z-index: 10;
+}
+
+.sticky-header-values h2 {
+    font-family: var(--font-titoli);
+    font-size: 3.5rem;
+    color: var(--marrone-cuoio, #3e2723);
+    text-align: center;
+    margin: 4vh 0 0 0;
+}
+
+.card-container-values {
+    display: flex;
+    width: 25vw;
+    height: 60vh;
+    gap: 0;
+    perspective: 1200px;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 20;
+}
+
+/* L'impiego di transform-style: preserve-3d garantisce che i child diretti (front/back) coesistano in uno spazio tridimensionale coerente durante la rotazione dell'elemento root .val-card. */
+.val-card {
+    flex: 1;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transform-origin: top;
+    will-change: transform, border-radius;
+}
+
+#val-card-1 { border-radius: 20px 0 0 20px; }
+#val-card-2 { border-radius: 0; }
+#val-card-3 { border-radius: 0 20px 20px 0; }
+
+/* La proprietà backface-visibility: hidden impedisce il rendering della superficie posteriore degli elementi durante il flip a 180 gradi, consentendo l'alternanza visiva netta tra la view frontale e il retro. */
+.val-card-front, .val-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: inherit;
+    border: 1px solid rgba(0,0,0,0.1);
+}
+
+.val-card-front {
+    background-color: transparent; 
+    padding: 0; 
+}
+
+.val-card-front img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; 
+    display: block;
+    pointer-events: none; 
+}
+
+/* Inverte orizzontalmente il posizionamento del div posteriore per stabilirne lo stato iniziale "nascosto" nel contesto tridimensionale della view[cite: 20]. */
+.val-card-back {
+    transform: rotateY(180deg);
+}
+
+#val-card-1 .val-card-back { background-color: var(--marrone-cuoio); padding: 5vw; }
+#val-card-2 .val-card-back { background-color: var(--antracite-scuro); padding: 5vw; }
+#val-card-3 .val-card-back { background-color: var(--verde-ottanio); padding: 5vw;}
+
+.val-card-back a {
+    font-family: var(--font-titoli);
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--panna-carta);
+    display: inline-block;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+a:link, a:visited {
+    text-decoration: none;
+}
+
+.val-card-back a:hover {
+    opacity: 0.8;
+    transform: scale(1.1);
+}
+
+.val-card-front picture {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.mobile-only-title {
+    display: none;
+}
+
+.mobile-front-content {
+    display: none;
+}
+
+.val-card-back .card-icon {
+    font-size: 4rem; 
+    color: var(--panna-carta, #f8f5f0); 
+    margin-bottom: 20px; 
+    opacity: 0.9;
+}
+
+/* MEDIA QUERIES (RESPONSIVE) */
+
 @media (max-width: 1024px) {
+    
     #camera-sequence-container {
         opacity: 0; 
         transform: translateX(100vw); 
@@ -280,9 +502,120 @@
         font-size: clamp(1.6rem, 5.5vw, 2.5rem);
         line-height: 1.25;
     }
+
+    .home-story-section {
+        padding: 80px 40px !important; 
+        height: auto !important;
+        display: block !important; 
+    }
+
+    .story-container {
+        display: block !important; 
+        width: 100% !important;
+    }
+
+    .story-text {
+        display: block !important;
+        width: 100% !important;
+        max-width: 650px !important; 
+        margin: 0 auto !important;
+    }
+
+    .left-text, .right-text {
+        text-align: center !important; 
+    }
+
+    .story-title {
+        font-size: 40px !important; 
+        margin: 15px 0 !important;
+    }
+
+    .story-text p {
+        font-size: 18px !important; 
+    }
+
+    .story-text p.upper-paragraph {
+        margin-bottom: 40vh !important; 
+        display: block !important; 
+    }
+
+    .story-camera-wrapper {
+        display: none !important;
+    }
+
+    .sticky-section-values {
+        height: auto !important;
+        padding: 60px 20px !important;
+        display: block !important; 
+    }
+
+    .sticky-header-values {
+        position: relative !important;
+        top: 0 !important;
+        opacity: 1 !important;
+        transform: none !important;
+        text-align: center !important;
+        margin-bottom: 40px !important;
+        width: 100% !important;
+    }
+
+    .sticky-header-values h2 {
+        font-size: 36px !important; 
+        line-height: 1.2 !important;
+    }
+
+    .card-container-values {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        height: auto !important;
+        gap: 30px !important; 
+    }
+
+    .val-card {
+        width: 100% !important;
+        height: 400px !important; 
+        min-height: 400px !important; 
+        border-radius: 20px !important;
+        display: block !important;
+        position: relative !important;
+    }
+
+    /* Sostituzione delle dinamiche di animazione JS complesse con la dichiarazione esplicita CSS nativa (!important) per assicurare l'overflow corretto su dispositivi tablet. */
+    #val-card-1, #val-card-2, #val-card-3 {
+        border-radius: 20px !important;
+        transform: none !important; 
+    }
+
+    .val-card-front, .val-card-back {
+        border-radius: 20px !important;
+        transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1) !important; 
+    }
+
+    .val-card-front img {
+        border-radius: 20px !important;
+    }
+
+    /* Abilita il trigger dell'animazione flip tridimensionale nativa su CSS tramite eventi di pseudo-classe (:hover e :active) come meccanismo di fallback funzionale per le interfacce touch/mobile. */
+    .val-card:active .val-card-front,
+    .val-card:hover .val-card-front {
+        transform: rotateY(-180deg) !important;
+    }
+
+    .val-card:active .val-card-back,
+    .val-card:hover .val-card-back {
+        transform: rotateY(0deg) !important; 
+    }
+    
+    .mobile-only-title {
+        display: block;
+        font-family: var(--font-tecnico);
+        color: var(--grigio-taupe);
+        margin-top: 0;
+        letter-spacing: -0.02em;
+    }
 }
 
-/* Mobile */
 @media (max-width: 576px) {
     .hero-container, .goal-container {
         padding: 2vh 4% 5vh 4%; 
@@ -315,154 +648,11 @@
         line-height: 1.05;
         padding: 0 4%;
     }
-}
 
-/* Sezione Storia */
-.home-story-section {
-    padding: 100px 20px;
-    background-color: var(--panna-carta); 
-    display: flex;
-    justify-content: center;
-    width: 100%; 
-    box-sizing: border-box;
-    overflow: hidden; 
-}
-
-.story-container {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between; 
-    max-width: 1400px; 
-    width: 100%;
-    margin: 0 auto;
-}
-
-/* Blocchi di testo */
-.story-text {
-    flex: 0 0 400px; 
-    display: flex;
-    flex-direction: column;
-    gap: 20px; 
-    position: relative;
-    z-index: 10;
-}
-
-.left-text {
-    text-align: right; 
-}
-
-.right-text {
-    text-align: left; 
-}
-
-.story-subtitle {
-    color: var(--grigio-taupe);
-    font-family: var(--font-tecnico); 
-    font-size: 16px; 
-    text-transform: uppercase;
-    letter-spacing: 3px; 
-    margin: 0;
-}
-
-.story-title {
-    color: var(--marrone-cuoio);
-    font-family: var(--font-titoli);
-    font-size: 48px; 
-    line-height: 1.1;
-    margin: 0;
-}
-
-.story-text p {
-    color: var(--antracite-scuro);
-    font-family: var(--font-testi);
-    font-size: 18px; 
-    line-height: 1.8;
-    margin: 0;
-}
-
-/* Spaziatore centrale */
-.story-camera-wrapper {
-    flex: 1; 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    z-index: 2;
-    padding: 0 40px; 
-}
-
-.story-camera-img {
-    width: 100%;
-    max-width: 450px; 
-    height: auto;
-    object-fit: contain;
-    filter: drop-shadow(0px 25px 35px rgba(0, 0, 0, 0.15));
-    transition: transform 0.5s ease;
-}
-
-.story-camera-img:hover {
-    transform: scale(1.05); 
-}
-
-/* Responsive: Tablet (max 1024px) */
-@media (max-width: 1024px) {
-    
-    /* Layout verticale */
-    .home-story-section {
-        padding: 80px 40px !important; 
-        height: auto !important;
-        display: block !important; 
-    }
-
-    .story-container {
-        display: block !important; 
-        width: 100% !important;
-    }
-
-    /* Centratura testi */
-    .story-text {
-        display: block !important;
-        width: 100% !important;
-        max-width: 650px !important; 
-        margin: 0 auto !important;
-    }
-
-    .left-text, .right-text {
-        text-align: center !important; 
-    }
-
-    /* Tipografia tablet */
-    .story-title {
-        font-size: 40px !important; 
-        margin: 15px 0 !important;
-    }
-
-    .story-text p {
-        font-size: 18px !important; 
-    }
-
-    /* Spaziatura paragrafi */
-    .story-text p.upper-paragraph {
-        margin-bottom: 40vh !important; 
-        display: block !important; 
-    }
-
-    /* Nasconde wrapper centrale */
-    .story-camera-wrapper {
-        display: none !important;
-    }
-}
-
-/* Responsive: Mobile (max 576px) */
-@media (max-width: 576px) {
-    
-    /* Riduzione padding */
     .home-story-section {
         padding: 50px 20px !important; 
     }
 
-    /* Riduzione font */
     .story-title {
         font-size: 32px !important; 
     }
@@ -476,235 +666,7 @@
         line-height: 1.6 !important;
     }
 
-    /* Adattamento spaziatura verticale */
     .story-text p.upper-paragraph {
         margin-bottom: 22vh !important; 
     }
-}
-
-/* Sezione Valori (Sticky) */
-.sticky-section-values {
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    perspective: 1200px;
-    background-color: var(--panna-carta, #f8f5f0); 
-    overflow: hidden;
-}
-
-.sticky-header-values {
-    position: absolute;
-    /* Posizione verticale titolo */
-    top: 8%; 
-    will-change: transform, opacity;
-    opacity: 0;
-    transform: translateY(50px);
-    z-index: 10;
-}
-.sticky-header-values h2 {
-    font-family: var(--font-titoli);
-    font-size: 3.5rem;
-    color: var(--marrone-cuoio, #3e2723);
-    text-align: center;
-    margin: 4vh 0 0 0;
-}
-
-/* Cards & Container */
-.card-container-values {
-    display: flex;
-    width: 25vw;
-    height: 60vh;
-    gap: 0;
-    perspective: 1200px;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    z-index: 20;
-}
-
-.val-card {
-    flex: 1;
-    height: 100%;
-    position: relative;
-    transform-style: preserve-3d;
-    transform-origin: top;
-    will-change: transform, border-radius;
-}
-
-#val-card-1 { border-radius: 20px 0 0 20px; }
-#val-card-2 { border-radius: 0; }
-#val-card-3 { border-radius: 0 20px 20px 0; }
-
-.val-card-front, .val-card-back {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    backface-visibility: hidden;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    border-radius: inherit;
-    border: 1px solid rgba(0,0,0,0.1);
-}
-
-/* Reset sfondo fronte */
-.val-card-front {
-    background-color: transparent; 
-    padding: 0; 
-}
-
-/* Adattamento immagini senza deformazione */
-.val-card-front img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; 
-    display: block;
-    pointer-events: none; 
-}
-
-/* Retro card */
-.val-card-back {
-    transform: rotateY(180deg);
-}
-
-#val-card-1 .val-card-back { background-color: var(--marrone-cuoio); padding: 5vw; }
-#val-card-2 .val-card-back { background-color: var(--antracite-scuro); padding: 5vw; }
-#val-card-3 .val-card-back { background-color: var(--verde-ottanio); padding: 5vw;}
-
-.val-card-back a {
-    font-family: var(--font-titoli);
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: var(--panna-carta);
-    
-    display: inline-block;
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-}
-
-a:link, a:visited
-{
-	text-decoration: none;
-}
-
-.val-card-back a:hover {
-    opacity: 0.8;
-    transform: scale(1.1);
-}
-
-/* Contenitore picture a tutto schermo */
-.val-card-front picture {
-    display: block;
-    width: 100%;
-    height: 100%;
-}
-
-/* Immagine adattata */
-.val-card-front img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    pointer-events: none;
-}
-
-/* Nasconde elementi su Desktop */
-.mobile-only-title {
-    display: none;
-}
-
-
-.mobile-front-content {
-    display: none;
-}
-
-/* Icona retro card */
-.val-card-back .card-icon {
-    font-size: 4rem; 
-    color: var(--panna-carta, #f8f5f0); 
-    margin-bottom: 20px; 
-    opacity: 0.9;
-}
-
-/* Responsive Valori: Tablet & Mobile */
-@media (max-width: 1024px) {
-    
-    .sticky-section-values {
-        height: auto !important;
-        padding: 60px 20px !important;
-        display: block !important; 
-    }
-
-    .sticky-header-values {
-        position: relative !important;
-        top: 0 !important;
-        opacity: 1 !important;
-        transform: none !important;
-        text-align: center !important;
-        margin-bottom: 40px !important;
-        width: 100% !important;
-    }
-
-    /* Font titolo ridotto */
-    .sticky-header-values h2 {
-        font-size: 36px !important; 
-        line-height: 1.2 !important;
-    }
-
-    .card-container-values {
-        display: flex !important;
-        flex-direction: column !important;
-        width: 100% !important;
-        height: auto !important;
-        gap: 30px !important; 
-    }
-
-    /* Altezza fissa carte */
-    .val-card {
-        width: 100% !important;
-        height: 400px !important; 
-        min-height: 400px !important; 
-        border-radius: 20px !important;
-        display: block !important;
-        position: relative !important;
-    }
-
-    /* Reset stili GSAP */
-    #val-card-1, #val-card-2, #val-card-3 {
-        border-radius: 20px !important;
-        transform: none !important; 
-    }
-
-    .val-card-front, .val-card-back {
-        border-radius: 20px !important;
-        transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1) !important; 
-    }
-
-    .val-card-front img {
-        border-radius: 20px !important;
-    }
-
-    /* Animazione flip CSS */
-    .val-card:active .val-card-front,
-    .val-card:hover .val-card-front {
-        transform: rotateY(-180deg) !important;
-    }
-
-    .val-card:active .val-card-back,
-    .val-card:hover .val-card-back {
-        transform: rotateY(0deg) !important; 
-    }
-    
-    .mobile-only-title {
-    display: block;
-    font-family: var(--font-tecnico);
-    color: var(--grigio-taupe);
-    margin-top: 0;
-    letter-spacing: -0.02em;
-    }
-   
 }

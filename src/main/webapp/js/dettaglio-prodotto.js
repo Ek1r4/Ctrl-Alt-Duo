@@ -1,8 +1,9 @@
-// Funzione generica per il Toast (messa globale in alto per comodità)
+/* UTILITIES E NOTIFICHE */
+
+// Inietta proceduralmente il componente toast nel DOM qualora non esista.
 function showToast(message) {
     let toast = document.querySelector('.toast-notification');
     
-    // Se non esiste il container nel DOM, lo creiamo al volo
     if (!toast) {
         toast = document.createElement('div');
         toast.className = 'toast-notification';
@@ -17,18 +18,15 @@ function showToast(message) {
     }, 3000);
 }
 
-// INIZIO DELL'UNICO BLOCCO DI CARICAMENTO PAGINA
 document.addEventListener('DOMContentLoaded', () => {
     
-    // ==========================================
-    // 1. GESTIONE QUANTITÀ E STOCK
-    // ==========================================
+    /* GESTIONE QUANTITÀ E STOCK */
+
     const btnPlus = document.getElementById('btn-plus');
     const btnMinus = document.getElementById('btn-minus');
     const qtyInput = document.getElementById('qty-input');
 
     if (btnPlus && btnMinus && qtyInput) {
-        // Preleviamo lo stock massimo arrivato dal DB
         const maxStock = parseInt(qtyInput.getAttribute('data-stock'), 10);
 
         btnPlus.addEventListener('click', () => {
@@ -49,27 +47,23 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ==========================================
-    // 2. GESTIONE MODALE EDIT (Solo Admin)
-    // ==========================================
+    /* MODALE EDIT PRODOTTO (ADMIN) */
+
     const btnOpenEdit = document.getElementById('open-edit-modal');
     const btnCloseEdit = document.getElementById('close-edit-modal');
     const editModal = document.getElementById('edit-product-modal');
 
     if (btnOpenEdit && btnCloseEdit && editModal) {
-        // Apri la modale cliccando la matita
         btnOpenEdit.addEventListener('click', () => {
             editModal.classList.add('active');
-            document.body.style.overflow = 'hidden'; // Blocca lo scroll
+            document.body.style.overflow = 'hidden'; 
         });
 
-        // Chiudi la modale cliccando la X
         btnCloseEdit.addEventListener('click', () => {
             editModal.classList.remove('active');
-            document.body.style.overflow = 'auto'; // Riabilita lo scroll
+            document.body.style.overflow = 'auto'; 
         });
 
-        // Chiudi la modale cliccando sullo sfondo scuro
         editModal.addEventListener('click', (e) => {
             if (e.target === editModal) {
                 editModal.classList.remove('active');
@@ -78,20 +72,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ==========================================
-    // 3. MODALE CONFERMA ELIMINAZIONE (RECENSIONI)
-    // ==========================================
+    /* MODALE ELIMINAZIONE RECENSIONI */
+
     const deleteReviewBtns = document.querySelectorAll('.btn-delete-review'); 
     const deleteModal = document.getElementById('delete-confirm-modal');
     const deleteMessage = document.getElementById('delete-confirm-message');
     const btnConfirmDelete = document.getElementById('btn-confirm-delete');
     const btnCancelDelete = document.getElementById('btn-cancel-delete');
-    
+
     let formRecensioneDaInviare = null; 
 
     if (deleteReviewBtns.length > 0 && deleteModal) {
         
-        // Cliccando il cestino...
         deleteReviewBtns.forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -101,7 +93,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // Funzione di chiusura
         const chiudiModale = () => {
             deleteModal.classList.remove('active');
             formRecensioneDaInviare = null;
@@ -126,4 +117,4 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-}); // <-- QUESTA GRAFFA CHIUDE FINALMENTE TUTTO IL BLOCCO DOMContentLoaded!
+});

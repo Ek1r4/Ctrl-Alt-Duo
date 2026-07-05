@@ -4,15 +4,17 @@
 <%@ page import="reframe.model.beans.DettaglioOrdine" %>
 <%@ page import="reframe.model.dao.OrdineDAO" %>
 <%@ page import="java.util.List" %>
+
+<%-- CONTROLLO ACCESSI E INIZIALIZZAZIONE DATI --%>
 <%
-    // 1. Sicurezza: Controllo Login
+    // Implementazione del pattern middleware a livello di view: verifica la persistenza in sessione del token utente per proteggere la rotta di assistenza. In assenza di autenticazione valida, forza il redirect bloccando l'esecuzione della pagina.
     Utente utente = (Utente) session.getAttribute("utente");
     if (utente == null) {
         response.sendRedirect(request.getContextPath() + "/login.jsp");
         return;
     }
 
-    // 2. Recupero Dati Reali
+    // Caricamento dello storico ordini dell'utente per permetterne l'associazione al nuovo ticket di assistenza in fase di apertura.
     OrdineDAO ordineDAO = new OrdineDAO();
     List<Ordine> listaOrdini = null;
     try {
@@ -21,9 +23,11 @@
         e.printStackTrace();
     }
 %>
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
+    <!-- HEAD E CONFIGURAZIONE STILI -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nuovo Ticket - Step 1 - ReFrame</title>
@@ -33,8 +37,10 @@
     <link rel="stylesheet" href="../css/assistenza.css">
 </head>
 <body>
+    
     <jsp:include page="../WEB-INF/components/header.jsp" />
 
+    <!-- LAYOUT ASSISTENZA STEP 1 -->
     <main class="assistenza-main">
         
         <div class="step-nav">
@@ -54,6 +60,7 @@
                 STEP 1: <span class="text-accent">SELEZIONA L'ORDINE</span>
             </h1>
 
+            <!-- FORM SELEZIONE ORDINI E PRODOTTI -->
             <form id="formSelezioneOrdine" action="nuovoTicketStep2.jsp" method="GET">
 
                 <div class="assistenza-accordion-container">
@@ -80,6 +87,7 @@
                             </summary>
                             
                             <div class="ordine-products">
+                                <%-- Implementazione dell'escaping HTML tramite .replace("\"", "&quot;") per sanitizzare il binding dei valori all'attributo value della checkbox --%>
                                 <% if (ordine.getDettagli() != null && !ordine.getDettagli().isEmpty()) {
                                     for (DettaglioOrdine dett : ordine.getDettagli()) { 
                                 %>
@@ -125,5 +133,6 @@
 
     <jsp:include page="../WEB-INF/components/footer.jsp" />
     <script src="../js/assistenza.js"></script>
+    
 </body>
 </html>
