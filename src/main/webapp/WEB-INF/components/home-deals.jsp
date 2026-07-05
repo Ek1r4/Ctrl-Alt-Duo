@@ -10,7 +10,7 @@
         <div class="val-card" id="val-card-1">
     <div class="val-card-front">
         <picture>
-            <source media="(max-width: 1024px)" srcset="${pageContext.request.contextPath}/assets/mobile-slice1.jpg">
+            <source media="(max-width: 1024px)" srcset="${pageContext.request.contextPath}/assets/mobile-slice1.png">
             <img src="${pageContext.request.contextPath}/assets/slice1.png" alt="Fetta 1">
         </picture>
     </div>
@@ -24,7 +24,7 @@
 <div class="val-card" id="val-card-2">
     <div class="val-card-front">
         <picture>
-            <source media="(max-width: 1024px)" srcset="${pageContext.request.contextPath}/assets/mobile-slice2.jpg">
+            <source media="(max-width: 1024px)" srcset="${pageContext.request.contextPath}/assets/mobile-slice2.png">
             <img src="${pageContext.request.contextPath}/assets/slice2.png" alt="Fetta 2">
         </picture>
     </div>
@@ -37,7 +37,7 @@
 <div class="val-card" id="val-card-3">
     <div class="val-card-front">
         <picture>
-            <source media="(max-width: 1024px)" srcset="${pageContext.request.contextPath}/assets/mobile-slice3.jpg">
+            <source media="(max-width: 1024px)" srcset="${pageContext.request.contextPath}/assets/mobile-slice3.png">
             <img src="${pageContext.request.contextPath}/assets/slice3.png" alt="Fetta 3">
         </picture>
     </div>

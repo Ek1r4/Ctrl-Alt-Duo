@@ -1,6 +1,7 @@
 package reframe.controller;
 
 import reframe.model.beans.Utente;
+import reframe.model.dao.PraticaAssistenzaDAO;
 import reframe.model.dao.UtenteDAO;
 import reframe.utils.EmailManager;
 
@@ -32,9 +33,13 @@ public class InviaNotaServlet extends HttpServlet {
         String nota = request.getParameter("nota");
         
         try {
-            // TODO: Sostituire il mockup di test con il recupero dinamico dell'operatore in carico
-            // String usernameAdmin = praticaDAO.getAdminInCarico(rma);
-            String usernameAdmin = "admin_Erika"; 
+            PraticaAssistenzaDAO praticaDAO = new PraticaAssistenzaDAO();
+            String usernameAdmin = praticaDAO.getAdminInCarico(rma);
+
+            if (usernameAdmin == null || usernameAdmin.isEmpty()) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                return;
+            }
 
             UtenteDAO utenteDAO = new UtenteDAO();
             Utente adminTarget = utenteDAO.doRetrieveByKey(usernameAdmin); 

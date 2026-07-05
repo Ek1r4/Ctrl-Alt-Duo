@@ -197,4 +197,31 @@ public class PraticaAssistenzaDAO {
             if (conn != null) { ConnessioneDB.releaseConnection(conn); } 
         }
     }
-}
+        // metodo per recuperare l'admin in carico 
+        public String getAdminInCarico(String rma) throws SQLException {
+            String query = "SELECT Admin_Assegnato FROM Pratica_Assistenza WHERE RMA = ?";
+            
+            Connection conn = null;
+            PreparedStatement ps = null;
+            String adminTarget = null;
+            
+            try {
+                conn = ConnessioneDB.getConnection();
+                ps = conn.prepareStatement(query);
+                ps.setString(1, rma);
+                
+                try(ResultSet rs = ps.executeQuery()) {
+                    if(rs.next()) {
+                        adminTarget = rs.getString("Admin_Assegnato");
+                    }
+                }
+            } catch (SQLException e) { 
+                e.printStackTrace(); 
+            } finally { 
+                try { if (ps != null) ps.close(); } catch (SQLException e) { e.printStackTrace(); }
+                if (conn != null) { ConnessioneDB.releaseConnection(conn); } 
+            }
+            
+            return adminTarget;
+        }
+    }
