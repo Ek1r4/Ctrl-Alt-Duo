@@ -7,7 +7,8 @@ import java.util.*;
 
 public class ProdottoDAO {
 
-    // METODO DI UTILITÀ: Mappa la riga corrente del ResultSet in un oggetto Prodotto
+    /* UTILITY E MAPPING RESULTSET */
+
     private Prodotto estraiProdotto(ResultSet rs) throws SQLException {
         Prodotto prodotto = new Prodotto();
         prodotto.setId(rs.getString("ID_Prodotto"));
@@ -24,15 +25,14 @@ public class ProdottoDAO {
         prodotto.setImageUrl(rs.getString("URL_Immagine_Copertina"));
         prodotto.setDescrizione(rs.getString("Descrizione"));
         prodotto.setInStock(rs.getInt("In_stock")); 
-        
-        // Mappatura del campo per il Soft Delete
         prodotto.setAttivo(rs.getBoolean("isAttivo")); 
         
         return prodotto;
     }
     
+    /* OPERAZIONI DI RECUPERO DATI (READ) */
+
     public List<Prodotto> fetchProdottiByTipo(String tipo) throws SQLException {
-        // FILTRO SOFT DELETE: Mostra solo i prodotti attivi
         String query = "SELECT * FROM Prodotto WHERE Tipo = ? AND isAttivo = true";
         List<Prodotto> prodottiTrovati = new ArrayList<>();
         Connection conn = null;
@@ -57,8 +57,8 @@ public class ProdottoDAO {
         return prodottiTrovati;
     }
     
+    // Omette intenzionalmente il filtro sul flag isAttivo per garantire la visibilità e l'integrità referenziale degli ordini pregressi legati a prodotti non più a catalogo.
     public Prodotto fetchProdottoById(String id) throws SQLException {
-        // NESSUN FILTRO SOFT DELETE: Serve per far funzionare i vecchi ordini e il pannello admin
         String query = "SELECT * FROM Prodotto WHERE ID_Prodotto = ?";
         Connection conn = null;
         PreparedStatement ps = null;
@@ -84,8 +84,7 @@ public class ProdottoDAO {
     }
     
     public List<Prodotto> fetchAllProdotti() throws SQLException {
-        // NESSUN FILTRO SOFT DELETE: L'Admin deve vedere tutto il catalogo
-        String query = "SELECT * FROM Prodotto";
+        String query = "SELECT * FROM Prodotto WHERE isAttivo = true";
         List<Prodotto> prodotti = new ArrayList<>();
         Connection conn = null;
         PreparedStatement ps = null;
@@ -105,9 +104,62 @@ public class ProdottoDAO {
         }
         return prodotti;
     }
+    
+    public List<Prodotto> fetchAllProdottiAdmin() throws SQLException {
+        String query = "SELECT * FROM Prodotto ";
+        List<Prodotto> prodotti = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement ps = null;
+        
+        try {
+            conn = ConnessioneDB.getConnection();
+            ps = conn.prepareStatement(query);
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    prodotti.add(estraiProdotto(rs));
+                }
+            }
+        } finally {
+            if (ps != null) ps.close();
+            if (conn != null) ConnessioneDB.releaseConnection(conn);
+        }
+        return prodotti;
+    }
+    
+    public List<Prodotto> fetchProdottiPerAdmin(String parametro) throws SQLException {
+        String query = "SELECT * FROM Prodotto WHERE nome LIKE ? OR marchio LIKE ? OR seriale LIKE ?";
+        List<Prodotto> prodottiTrovati = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement ps = null;
+        
+        try {
+            conn = ConnessioneDB.getConnection(); 
+            ps = conn.prepareStatement(query);
+            
+            String searchPattern = "%" + parametro + "%";
+            
+            ps.setString(1, searchPattern);
+            ps.setString(2, searchPattern);
+            ps.setString(3, searchPattern);
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    prodottiTrovati.add(estraiProdotto(rs));
+                }
+            }
+        } catch (SQLException e) { 
+            e.printStackTrace(); 
+        } finally { 
+            if (ps != null) try { ps.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if (conn != null) { ConnessioneDB.releaseConnection(conn); } 
+        }
+        return prodottiTrovati;
+    }
+
+    /* OPERAZIONI DI CREAZIONE E AGGIORNAMENTO (CREATE / UPDATE) */
 
     public void insertProdotto(Prodotto p) throws SQLException {
-        // Il campo isAttivo sarà automaticamente TRUE grazie al DEFAULT impostato nel database
         String query = "INSERT INTO Prodotto (ID_Prodotto, Marchio, Seriale, Prezzo, URL_Modello_3D, URL_Immagine_Copertina, Descrizione, In_stock, Nome, Tipo, Stato, Numero_scatti, Condizione_collezionistica, IVA) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         Connection conn = null;
         PreparedStatement ps = null;
@@ -186,8 +238,10 @@ public class ProdottoDAO {
         }
     }
 
+    /* GESTIONE STATO E FILTRAGGIO AVANZATO */
+
+    // Implementa il pattern Soft Delete: esegue un aggiornamento logico dello stato (isAttivo = false) anziché una rimozione fisica, garantendo la consistenza dei dati per gli ordini già evasi.
     public void deleteProdotto(String idProdotto) throws SQLException {
-        // TRASFORMATO IN SOFT DELETE: Aggiorna lo stato invece di eliminare la riga
         String query = "UPDATE Prodotto SET isAttivo = false WHERE ID_Prodotto = ?";
         Connection conn = null;
         PreparedStatement ps = null;
@@ -204,7 +258,6 @@ public class ProdottoDAO {
     }
     
     public List<String> fetchDistinctMarche() throws SQLException {
-        // FILTRO SOFT DELETE: Non mostrare le marche se tutti i loro prodotti sono stati oscurati
         List<String> marche = new ArrayList<>();
         String query = "SELECT DISTINCT Marchio FROM Prodotto WHERE isAttivo = true ORDER BY Marchio ASC";
         
@@ -227,18 +280,16 @@ public class ProdottoDAO {
         return marche;
     }
     
+    // Implementa la costruzione dinamica della query SQL tramite StringBuilder, concatenando parametricamente filtri opzionali e cumulativi.
     public List<Prodotto> fetchProdottiFiltrati(String[] marche, String[] fascePrezzo, String search, String tipo) throws SQLException {
         List<Prodotto> prodotti = new ArrayList<>();
         
-        // FILTRO SOFT DELETE: La base della query parte solo dai prodotti attivi
         StringBuilder query = new StringBuilder("SELECT * FROM Prodotto WHERE isAttivo = true ");
 
-        // 1. Costruzione dinamica per la Categoria (Tipo)
         if (tipo != null && !tipo.trim().isEmpty()) {
             query.append("AND Tipo = ? ");
         }
 
-        // 2. Costruzione dinamica per i Marchi
         if (marche != null && marche.length > 0) {
             query.append("AND Marchio IN (");
             for (int i = 0; i < marche.length; i++) {
@@ -248,7 +299,6 @@ public class ProdottoDAO {
             query.append(") ");
         }
 
-        // 3. Costruzione dinamica per i Prezzi
         if (fascePrezzo != null && fascePrezzo.length > 0) {
             query.append("AND (");
             for (int i = 0; i < fascePrezzo.length; i++) {
@@ -263,7 +313,6 @@ public class ProdottoDAO {
             query.append(") ");
         }
 
-        // 4. Costruzione dinamica per la Barra di Ricerca
         boolean hasSearch = (search != null && !search.trim().isEmpty());
         if (hasSearch) {
             query.append("AND (LOWER(Nome) LIKE ? OR LOWER(Marchio) LIKE ? OR LOWER(Seriale) LIKE ?) ");
@@ -307,7 +356,6 @@ public class ProdottoDAO {
     }
     
     public void ripristinaProdotto(String idProdotto) throws SQLException {
-        // Riporta isAttivo a true per far ricomparire il prodotto in vetrina
         String query = "UPDATE Prodotto SET isAttivo = true WHERE ID_Prodotto = ?";
         Connection conn = null;
         PreparedStatement ps = null;

@@ -13,6 +13,8 @@ public class FatturaServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        
+        /* AUTENTICAZIONE E VALIDAZIONE INPUT */
         Utente utente = (Utente) request.getSession().getAttribute("utente");
         if (utente == null) {
             response.sendRedirect(request.getContextPath() + "/login.jsp");
@@ -25,11 +27,13 @@ public class FatturaServlet extends HttpServlet {
             return;
         }
 
+        /* RECUPERO DATI E AUTORIZZAZIONE */
         try {
             OrdineDAO dao = new OrdineDAO();
             Ordine ordine = dao.fetchOrdineById(idOrdine);
 
-            // Controllo Sicurezza: Puoi vedere solo le TUE fatture
+            // IDOR Prevention: Previene vulnerabilità di Insecure Direct Object Reference assicurandosi che 
+            // l'utente in sessione sia l'effettivo intestatario dell'ordine richiesto via parametro GET
             if (ordine != null && ordine.getIdUtente().equals(utente.getUsername())) {
                 request.setAttribute("ordineFattura", ordine);
                 request.getRequestDispatcher("/common/fattura.jsp").forward(request, response);

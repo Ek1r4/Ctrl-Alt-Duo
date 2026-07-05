@@ -18,39 +18,45 @@
 </head>
 <body class="single-product-page">
 
+    <!-- HEADER E CONTROLLO RUOLI -->
     <%@ include file="/WEB-INF/components/header.jsp" %>
     
     <%
-		Utente utenteDettaglio = (Utente) session.getAttribute("utente");
-    	boolean isAdmin = (utenteDettaglio != null && utenteDettaglio.getIsAdmin() > 0);
-     %>
+        Utente utenteDettaglio = (Utente) session.getAttribute("utente");
+        
+        // Verifica dei privilegi di amministrazione tramite Role-Based Access Control (RBAC)
+        boolean isAdmin = (utenteDettaglio != null && utenteDettaglio.getIsAdmin() > 0);
+    %>
 
     <%
-        // Recuperiamo il prodotto passato dalla Servlet
         Prodotto p = (Prodotto) request.getAttribute("prodotto");
         
         if (p != null) {
     %>
+    <!-- CONTENITORE PRINCIPALE PRODOTTO -->
     <main class="product-container">
         
+        <!-- GALLERIA MODELLO 3D -->
         <div class="product-gallery">
-        	<div class="container-3d">
-    		<model-viewer
-        		src="<%= request.getContextPath() %><%= p.getModelUrl() %>"
-        		alt="Modello 3D interattivo di <%= p.getMarchio() %> <%= p.getNome() %>" 
-        		camera-controls 
-        		auto-rotate 
-        		rotation-per-second="30deg"
-        		shadow-intensity="1" 
-        		environment-image="neutral"
-        		exposure="1.2">
-    		</model-viewer>
-			</div>
+            <div class="container-3d">
+                <%-- Utilizza il web component model-viewer per il rendering del modello 3D in ambiente WebGL. --%>
+                <model-viewer
+                    src="<%= request.getContextPath() %><%= p.getModelUrl() %>"
+                    alt="Modello 3D interattivo di <%= p.getMarchio() %> <%= p.getNome() %>" 
+                    camera-controls 
+                    auto-rotate 
+                    rotation-per-second="30deg"
+                    shadow-intensity="1" 
+                    environment-image="neutral"
+                    exposure="1.2">
+                </model-viewer>
+            </div>
         </div>
 
+        <!-- INFORMAZIONI PRODOTTO -->
         <div class="product-info">
         
-        	<nav class="breadcrumb">
+            <nav class="breadcrumb">
                 <a href="<%= request.getContextPath() %>/index.jsp">Home</a> / 
                 <a href="<%= request.getContextPath() %>/ProdottoServlet">Catalogo</a> / 
                 <span><%= p.getMarchio() %></span>
@@ -72,7 +78,7 @@
                 <p><%= p.getDescrizione() %></p>
             </div>
 
-
+            <!-- GESTIONE CARRELLO -->
             <form action="<%= request.getContextPath() %>/Carrello" method="POST" class="add-to-cart-form">
                 <input type="hidden" name="action" value="add">
                 <input type="hidden" name="id" value="<%= p.getId() %>">
@@ -80,16 +86,22 @@
                 <div class="add-to-cart-section">
                     <div class="quantity-selector">
                         <button type="button" class="qty-btn" id="btn-minus" <%= isAdmin ? "disabled" : "" %>>-</button>
-                        <input type="number" id="qty-input" name="quantita" class="qty-input" value="1" min="1" max="10" readonly>
+        
+                        <%-- Implementa binding bidirezionale della giacenza (InStock) sul DOM tramite attributi HTML5 (max e data-stock) per permettere il controllo sincrono delle constraint fisiche lato client da parte del JavaScript. --%>
+                        <input type="number" id="qty-input" name="quantita" class="qty-input" value="1" min="1" 
+                               max="<%= p.getInStock() %>" data-stock="<%= p.getInStock() %>" readonly>
+               
                         <button type="button" class="qty-btn" id="btn-plus" <%= isAdmin ? "disabled" : "" %>>+</button>
                     </div>
-                    
-                    <button type="submit" class="btn-cta" <%= isAdmin ? "disabled-for-admin" : "" %>" <%= isAdmin ? "disabled" : "" %>>
-                        Aggiungi al Carrello
+    
+                    <%-- Applica restrizioni logiche al bottone di submit disabilitandolo (disabled) qualora l'utente abbia privilegi di Admin o lo stock del prodotto risulti esaurito a DB. --%>
+                    <button type="submit" class="btn-cta" id="btn-add-cart" <%= (isAdmin || p.getInStock() <= 0) ? "disabled" : "" %>>
+                        <%= p.getInStock() > 0 ? "Aggiungi al Carrello" : "Attualmente Esaurito" %>
                     </button>
                 </div>
             </form>
 
+            <!-- SPECIFICHE TECNICHE -->
             <div class="product-details-accordion">
                 <details>
                     <summary>Specifiche Tecniche</summary>
@@ -129,7 +141,6 @@
                                         <td>Grado Collezionistico</td>
                                         <td><%= p.getCondizioneCollezionistica() != null ? p.getCondizioneCollezionistica() : "N/D" %></td>
                                     </tr>
-                                    
                                 <% } %>
                             </tbody>
                         </table>
@@ -153,11 +164,15 @@
             </div>
 
         </div>
+        
+        <!-- RECENSIONI -->
         <%@ include file="/WEB-INF/components/recensioni.jsp" %>
+        
     </main>
     <% 
         } else { 
     %>
+        <!-- FALLBACK PRODOTTO NON TROVATO -->
         <div class="product-container product-not-found-container">
             <h2>Prodotto non trovato</h2>
             <p>La fotocamera che stai cercando non esiste o è stata rimossa dal catalogo.</p>
@@ -166,8 +181,9 @@
     <% 
         } 
     %>
-	
-	<% if (isAdmin) { %>
+    
+    <% if (isAdmin) { %>
+    <!-- MODALE MODIFICA PRODOTTO (ADMIN) -->
     <div id="edit-product-modal" class="edit-modal-overlay">
         
         <div class="film-container large modal-film-override">
@@ -186,7 +202,6 @@
             <form action="<%= request.getContextPath() %>/ProdottoServlet" method="POST">
                 <input type="hidden" name="action" value="edit">
                 <input type="hidden" name="idProdotto" value="<%= p.getId() %>">
-                
                 <input type="hidden" name="stock" value="<%= p.getInStock() %>">
                 <input type="hidden" name="tipo" value="<%= p.getTipo() %>">
                 <input type="hidden" name="stato" value="<%= p.getStato() != null ? p.getStato() : "" %>">
@@ -213,10 +228,12 @@
         </div>
     </div>
     <% } %>
-	
+    
+    <!-- FOOTER -->
     <%@ include file="/WEB-INF/components/footer.jsp" %>
 
-	<div id="delete-confirm-modal" class="admin-modal-overlay">
+    <!-- MODALE CONFERMA ELIMINAZIONE -->
+    <div id="delete-confirm-modal" class="admin-modal-overlay">
         <div class="film-container modal-film-override confirm-modal-box">
         
             <h3 class="form-title" style="margin-bottom: 5px;">Conferma Azione</h3>
@@ -229,8 +246,6 @@
         </div>
     </div>
     
-    
-	
     <script src="<%= request.getContextPath() %>/js/dettaglio-prodotto.js"></script>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
 </body>

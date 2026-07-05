@@ -2,8 +2,10 @@ package reframe.model.beans;
 
 public class Spedizione {
     
+    /* ATTRIBUTI */
+    
     private int idSpedizione;
-    private String idUtente; //Username dell'Utente
+    private String idUtente; 
     private String citta;
     private String provincia;
     private String paese;
@@ -11,12 +13,16 @@ public class Spedizione {
     private String via;
     private String civico;
     private String note;
+    
+    // Flag per il soft-delete: oscura l'indirizzo di spedizione lato frontend (es. profilo utente) 
+    // mantenendo intatta l'integrità referenziale a database per lo storico delle fatture e degli ordini passati.
+    private boolean isAttivo;
 
-    // Costruttore vuoto
+    /* COSTRUTTORI */
+    
     public Spedizione() {
     }
 
-    // Costruttore pieno
     public Spedizione(int idSpedizione, String idUtente, String citta, String provincia, 
                       String paese, String cap, String via, String civico, String note) {
         this.idSpedizione = idSpedizione;
@@ -30,7 +36,8 @@ public class Spedizione {
         this.note = note;
     }
 
-    // Getter e Setter
+    /* GETTER E SETTER */
+    
     public int getIdSpedizione() {
         return idSpedizione;
     }
@@ -102,8 +109,17 @@ public class Spedizione {
     public void setNote(String note) {
         this.note = note;
     }
+    
+    public boolean isAttivo() {
+        return isAttivo;
+    }
 
-    // Override del toString
+    public void setAttivo(boolean isAttivo) {
+        this.isAttivo = isAttivo;
+    }
+
+    /* OVERRIDE METODI */
+    
     @Override
     public String toString() {
         return "Spedizione [idSpedizione=" + idSpedizione + ", idUtente=" + idUtente 

@@ -5,13 +5,20 @@ import java.io.Serializable;
 public class DettaglioOrdine implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    /* ATTRIBUTI */
+    
+    // La duplicazione di campi come prezzo, nome e iva rispetto al bean Prodotto è necessaria
+    // per garantire l'integrità storica: i valori al momento dell'acquisto devono rimanere
+    // immutabili ai fini della fatturazione, anche se il catalogo viene aggiornato in futuro.
     private String idOrdine;
     private String idProdotto;
-    private double prezzoAcquisto; // Requisito OBBLIGATORIO Checklist: Integrità Storica
+    private double prezzoAcquisto; 
     private int quantitaAcquisto;
     private String nomeProdottoAcquisto;
-    private int ivaAcquisto;       // Requisito OBBLIGATORIO Checklist: Integrità Storica
+    private int ivaAcquisto;       
 
+    /* COSTRUTTORI */
+    
     public DettaglioOrdine() {
     }
 
@@ -25,8 +32,8 @@ public class DettaglioOrdine implements Serializable {
         this.ivaAcquisto = ivaAcquisto;
     }
 
-    // --- GETTER E SETTER ---
-
+    /* GETTER E SETTER */
+    
     public String getIdOrdine() { return idOrdine; }
     public void setIdOrdine(String idOrdine) { this.idOrdine = idOrdine; }
 
@@ -45,7 +52,10 @@ public class DettaglioOrdine implements Serializable {
     public int getIvaAcquisto() { return ivaAcquisto; }
     public void setIvaAcquisto(int ivaAcquisto) { this.ivaAcquisto = ivaAcquisto; }
     
- // Metodo di utilità per calcolare il parziale della singola riga (IVA Inclusa)
+    /* LOGICA DI BUSINESS */
+    
+    // Calcola l'importo totale della singola riga d'ordine maggiorando dinamicamente il prezzo 
+    // netto d'acquisto con l'IVA, prima di moltiplicarlo per la quantità.
     public double getTotaleRiga() {
         double importoIva = this.prezzoAcquisto * (this.ivaAcquisto / 100.0);
         double prezzoLordoAcquisto = this.prezzoAcquisto + importoIva;

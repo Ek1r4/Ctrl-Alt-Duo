@@ -1,32 +1,31 @@
 document.addEventListener("DOMContentLoaded", () => {
+    
+    /* INIZIALIZZAZIONE E GESTIONE EVENTI FILTRI */
+    
     const checkboxes = document.querySelectorAll('.filter-label input[type="checkbox"]');
     const searchInput = document.querySelector('.catalog-search-input');
     const searchBtn = document.querySelector('.catalog-search-btn');
     const btnReset = document.getElementById('btn-reset-filtri');
 
-    let debounceTimer; // Variabile per tenere traccia del timer
+    let debounceTimer; 
 
-    // 1. Ascoltatore per i checkbox (istantaneo)
     checkboxes.forEach(chk => {
         chk.addEventListener('change', applicaFiltri);
     });
 
-    // 2. Ascoltatore per la barra di ricerca (CON DEBOUNCE)
     if (searchInput) {
         searchInput.addEventListener('input', () => {
-            clearTimeout(debounceTimer); // Cancella il timer precedente se l'utente sta ancora scrivendo
+            clearTimeout(debounceTimer); 
             debounceTimer = setTimeout(() => {
-                applicaFiltri(); // Esegue la ricerca solo dopo 300ms di inattività
+                applicaFiltri(); 
             }, 300); 
         });
     }
     
-    // Ascoltatore per il click sull'icona della lente
     if (searchBtn) {
         searchBtn.addEventListener('click', applicaFiltri);
     }
 
-    // 3. Ascoltatore per la gomma (reset totale)
     if (btnReset) {
         btnReset.addEventListener('click', () => {
             checkboxes.forEach(chk => chk.checked = false);
@@ -34,26 +33,27 @@ document.addEventListener("DOMContentLoaded", () => {
             applicaFiltri();
         });
     }
-	
-	// ==========================================
-	    // GESTIONE APERTURA/CHIUSURA FILTRI SU MOBILE
-	    // ==========================================
-	    const btnToggleFilters = document.getElementById('btn-toggle-filters');
-	    const btnCloseFilters = document.getElementById('btn-close-filters');
-	    const sidebar = document.querySelector('.catalog-sidebar');
+    
+    /* GESTIONE SIDEBAR MOBILE */
+    
+    const btnToggleFilters = document.getElementById('btn-toggle-filters');
+    const btnCloseFilters = document.getElementById('btn-close-filters');
+    const sidebar = document.querySelector('.catalog-sidebar');
 
-	    if (btnToggleFilters && sidebar) {
-	        btnToggleFilters.addEventListener('click', () => {
-	            sidebar.classList.add('open');
-	        });
-	    }
+    if (btnToggleFilters && sidebar) {
+        btnToggleFilters.addEventListener('click', () => {
+            sidebar.classList.add('open');
+        });
+    }
 
-	    if (btnCloseFilters && sidebar) {
-	        btnCloseFilters.addEventListener('click', () => {
-	            sidebar.classList.remove('open');
-	        });
-	    }
+    if (btnCloseFilters && sidebar) {
+        btnCloseFilters.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+        });
+    }
 
+    /* CHIAMATA AJAX APPLICAZIONE FILTRI */
+    
     function applicaFiltri() {
         const marche = Array.from(document.querySelectorAll('input[name="marca"]:checked')).map(cb => cb.value);
         const prezzi = Array.from(document.querySelectorAll('input[name="prezzo"]:checked')).map(cb => cb.value);
@@ -67,12 +67,13 @@ document.addEventListener("DOMContentLoaded", () => {
         if (searchText) {
             params.append("search", searchText);
         }
-		
-		const urlParams = new URLSearchParams(window.location.search);
-		        const tipoCorrente = urlParams.get('tipo');
-		        if (tipoCorrente) {
-		            params.append("tipo", tipoCorrente);
-		        }
+        
+        /* Recupera il parametro 'tipo' dalla query string dell'URL corrente per preservare il contesto di navigazione durante le mutazioni asincrone della griglia. */
+        const urlParams = new URLSearchParams(window.location.search);
+        const tipoCorrente = urlParams.get('tipo');
+        if (tipoCorrente) {
+            params.append("tipo", tipoCorrente);
+        }
 
         fetch(contextPath + "/ProdottoServlet?" + params.toString())
             .then(response => {
@@ -84,64 +85,82 @@ document.addEventListener("DOMContentLoaded", () => {
             })
             .catch(error => console.error("Errore AJAX:", error));
     }
-	
-	// ==========================================
-	    // MODALE CONFERMA ELIMINAZIONE (VETRINA/CARRELLO)
-	    // ==========================================
-	    
-	    // Cerca tutti i bottoni di eliminazione nella vetrina (Assicurati che la classe sia giusta!)
-	    const deleteButtons = document.querySelectorAll('.btn-delete-product'); 
-	    
-	    const deleteModal = document.getElementById('delete-confirm-modal');
-	    const deleteMessage = document.getElementById('delete-confirm-message');
-	    const btnConfirmDelete = document.getElementById('btn-confirm-delete');
-	    const btnCancelDelete = document.getElementById('btn-cancel-delete');
-	    
-	    let formDaInviare = null; // Memorizza quale form stiamo per inviare
+    
+    /* MODALE CONFERMA ELIMINAZIONE PRODOTTO */
+    
+    const deleteButtons = document.querySelectorAll('.btn-delete-product'); 
+    const deleteModal = document.getElementById('delete-confirm-modal');
+    const deleteMessage = document.getElementById('delete-confirm-message');
+    const btnConfirmDelete = document.getElementById('btn-confirm-delete');
+    const btnCancelDelete = document.getElementById('btn-cancel-delete');
+    
+    let formDaInviare = null; 
 
-	    if (deleteButtons.length > 0 && deleteModal) {
-	        
-	        // Quando clicchi un cestino...
-	        deleteButtons.forEach(btn => {
-	            btn.addEventListener('click', function(e) {
-	                e.preventDefault(); // Blocca l'invio immediato
-	                
-	                formDaInviare = this.closest('form'); // Salva il form collegato a quel bottone
-	                
-	                // Scrive il messaggio personalizzato
-	                deleteMessage.innerHTML = "Sei sicuro di voler rimuovere questo <strong>Prodotto</strong>?";
-	                
-	                // Fa comparire il modale a schermo
-	                deleteModal.classList.add('active');
-	            });
-	        });
+    if (deleteButtons.length > 0 && deleteModal) {
+        
+        deleteButtons.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault(); 
+                
+                formDaInviare = this.closest('form'); 
+                
+                deleteMessage.innerHTML = "Sei sicuro di voler rimuovere questo <strong>Prodotto</strong>?";
+                deleteModal.classList.add('active');
+            });
+        });
 
-	        // Funzione per chiudere il modale e resettare la memoria
-	        const chiudiModale = () => {
-	            deleteModal.classList.remove('active');
-	            formDaInviare = null;
-	        };
+        const chiudiModale = () => {
+            deleteModal.classList.remove('active');
+            formDaInviare = null;
+        };
 
-	        // Se l'utente clicca su "Annulla"
-	        if (btnCancelDelete) {
-	            btnCancelDelete.addEventListener('click', chiudiModale);
-	        }
+        if (btnCancelDelete) {
+            btnCancelDelete.addEventListener('click', chiudiModale);
+        }
 
-	        // Se l'utente clicca fuori dal modale per chiuderlo
-	        deleteModal.addEventListener('click', (e) => {
-	            if (e.target === deleteModal) {
-	                chiudiModale();
-	            }
-	        });
+        deleteModal.addEventListener('click', (e) => {
+            if (e.target === deleteModal) {
+                chiudiModale();
+            }
+        });
 
-	        // Se l'utente clicca su "Procedi"
-	        if (btnConfirmDelete) {
-	            btnConfirmDelete.addEventListener('click', () => {
-	                if (formDaInviare) {
-	                    formDaInviare.submit(); // Invia la richiesta al server!
-	                }
-	            });
-	        }
-	    }
-	
+        if (btnConfirmDelete) {
+            btnConfirmDelete.addEventListener('click', () => {
+                if (formDaInviare) {
+                    formDaInviare.submit(); 
+                }
+            });
+        }
+    }
+        
+    /* GESTIONE TOAST NOTIFICHE */
+    
+    window.mostraToastNotifica = function(messaggio, isSuccess = true) {
+        let toast = document.querySelector('.toast-notification');
+        
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.className = 'toast-notification';
+            document.body.appendChild(toast);
+        }
+        
+        const icona = isSuccess ? 'fa-check-circle' : 'fa-exclamation-circle';
+        const colore = 'var(--verde-ottanio)'; 
+        
+        toast.innerHTML = `<i class="fas ${icona}" style="color: ${colore};"></i> <span>${messaggio}</span>`;
+        toast.style.borderLeftColor = colore;
+        
+        toast.classList.remove('show');
+        
+        /* Hack basato su un timeout di 10ms per forzare il ricalcolo del DOM (reflow) da parte del browser, garantendo l'esecuzione della transizione CSS per l'aggiunta della classe 'show'. */
+        setTimeout(() => {
+            toast.classList.add('show');
+        }, 10);
+        
+        if (window.toastTimeout) clearTimeout(window.toastTimeout);
+        
+        window.toastTimeout = setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
+    };  
 });

@@ -1,7 +1,3 @@
-/* =========================================
-   FATTURA E STAMPA (fattura.jsp)
-   ========================================= */
-
 .invoice-box { 
     max-width: 800px; 
     margin: 2rem auto; 
@@ -90,7 +86,7 @@
     }
 }
 
-/* --- COMPONENTE BOTTONE FATTURA (btn-fattura.jsp) --- */
+/* COMPONENTE BOTTONE FATTURA */
 .btn-fattura-wrapper {
     margin-top: 1.5rem;
 }

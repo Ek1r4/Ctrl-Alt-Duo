@@ -40,20 +40,30 @@
     
     			<% 
         			// Mostriamo il carrello SOLO se NON è admin (quindi lo vedono i clienti loggati e gli ospiti non registrati)
-        			if (!isAdmin) { 
+        			if (!isAdmin) {
+        				if (p.getInStock() > 0) { 
     			%>
     	<form class="quick-add-form" onsubmit="event.preventDefault(); aggiungiVeloceAJAX('<%= p.getId() %>');">
         	<button type="submit" class="btn-quick-add" title="Aggiungi al carrello">
             	<i class="fas fa-cart-plus"></i>
         	</button>
         </form>
-    			<% } %>
+    			<% 
+            } else { 
+    %>
+        <button type="button" class="btn-quick-add" title="Prodotto Esaurito" disabled style="opacity: 0.5; cursor: not-allowed; border-color: gray; color: gray;">
+            <i class="fas fa-box-open"></i>
+        </button>
+    <% 
+            } 
+        } 
+    %>
 			</div>
             
-        </div>
+	</div>
 <% 
-        }
-    } else { 
+    }
+} else {
 %>
     <p class="empty-catalog-msg">Nessuna fotocamera corrisponde ai filtri selezionati.</p>
 <% } %>

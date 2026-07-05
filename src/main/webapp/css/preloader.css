@@ -1,27 +1,25 @@
 @charset "UTF-8";
-/* =========================================
-   PRELOADER PREMIUM "REFRAME"
-   ========================================= */
+
+/* PRELOADER PREMIUM "REFRAME" */
 #reframe-loader {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: #111; /* Sfondo dark brutalista per far risaltare il caricamento */
-    z-index: 99999; /* Z-index altissimo per coprire anche l'header */
+    background-color: #111;
+    z-index: 99999;
     display: flex;
     justify-content: center;
     align-items: center;
-    /* Transizione fluida stile "scorrimento della pellicola" per l'uscita */
     transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.8s ease;
 }
 
 /* Questa classe viene aggiunta dal JS quando il sito è pronto */
 #reframe-loader.loaded {
-    transform: translateY(-100%); /* Fa scorrere il loader in alto fuori dallo schermo */
+    transform: translateY(-100%);
     opacity: 0;
-    pointer-events: none; /* Permette i click sulla pagina sottostante */
+    pointer-events: none;
 }
 
 .loader-content {
@@ -45,7 +43,6 @@
     color: var(--marrone-cuoio);
     letter-spacing: 4px;
     margin: 0;
-    /* Effetto messa a fuoco sul testo */
     animation: pulseText 1.5s infinite alternate ease-in-out;
 }
 
@@ -64,7 +61,6 @@
     width: 25px;
     height: 25px;
     border: 3px solid var(--verde-ottanio); 
-    /* Il mirino pulsa cercando il focus */
     animation: focusIn 1.5s infinite alternate cubic-bezier(0.25, 1, 0.5, 1);
 }
 

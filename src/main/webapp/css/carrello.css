@@ -1,4 +1,5 @@
-/* Layout a 2 colonne */
+/* LAYOUT E GRIGLIA PRINCIPALE */
+
 .cart-page-layout { 
     display: flex; 
     gap: 40px; 
@@ -7,10 +8,20 @@
     padding: 0 20px; 
     align-items: flex-start; 
 }
-.cart-items-column { flex: 1.5; }
-.cart-receipt-column { flex: 1; position: sticky; top: 100px; }
 
-/* Stile singola riga prodotto */
+.cart-items-column { 
+    flex: 1.5; 
+}
+
+/* Sfrutta il posizionamento sticky per mantenere la ricevuta (Riepilogo Costi) visibile in viewport durante lo scroll verticale dell'elenco articoli*/
+.cart-receipt-column { 
+    flex: 1; 
+    position: sticky; 
+    top: 100px; 
+}
+
+/* COMPONENTI: RIGA ARTICOLO */
+
 .cart-item-box { 
     border: 2px dashed var(--antracite-scuro); 
     padding: 20px; 
@@ -20,10 +31,12 @@
     align-items: center; 
     background: transparent; 
 }
+
+/* Imposta il flex base dell'involucro testuale forzando la proprietà min-width a 0: questo previene il collasso del layout Flexbox permettendo al titolo dell'articolo di stringersi e andare a capo correttamente invece di overfloware il container */
 .cart-item-info {
-    flex: 1; /* Permette al blocco di assorbire lo spazio senza spingere gli altri elementi */
-    min-width: 0; /* Fondamentale in Flexbox per permettere al testo di restringersi e andare a capo */
-    padding-right: 4vw; /* Evita che il testo si appiccichi troppo al box della quantità */
+    flex: 1; 
+    min-width: 0; 
+    padding-right: 4vw; 
 }
 
 .cart-item-info h3 { 
@@ -33,28 +46,88 @@
     white-space: normal;
     line-height: 1.3;
 }
+
 .cart-item-info p { 
     margin: 0; 
     color: var(--grigio-taupe); 
     font-size: 0.9rem; 
 }
+
 .cart-item-controls { 
     display: flex; 
-    flex-direction: column; /* Impila prezzo e stepper verticalmente */
-    align-items: flex-end; /* Allinea tutto sul margine destro */
-    gap: 15px; /* Spazio verticale pulito tra prezzo e pillola della quantità */
+    flex-direction: column; 
+    align-items: flex-end; 
+    gap: 15px; 
 }
 
 .cart-item-price { 
     font-weight: bold; 
-    font-size: 1.4rem; /* Prezzo molto più grande e d'impatto */
+    font-size: 1.4rem; 
     text-align: right; 
     color: var(--antracite-scuro);
-    line-height: 1; /* Evita spazi vuoti extra sopra o sotto il numero */
-    letter-spacing: -0.5px; /* Tocco tipografico per compattare le cifre grandi */
+    line-height: 1; 
+    letter-spacing: -0.5px; 
 }
 
-/* IL DESIGN DELLO SCONTRINO BRUTALISTA */
+/* COMPONENTI: STEPPER QUANTITÀ */
+
+.custom-qty-wrapper {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--antracite-scuro); 
+    border-radius: 50px; 
+    padding: 2px 2px;
+    background: transparent;
+    width: fit-content;
+}
+
+.qty-btn {
+    background: transparent;
+    border: .5px solid var(--antracite-scuro);
+    border-radius: 50%; 
+    width: 20px;
+    height: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    color: var(--antracite-scuro);
+    font-size: 0.7rem;
+    transition: all 0.2s ease;
+}
+
+.qty-btn:hover {
+    background: var(--antracite-scuro);
+    color: var(--panna-carta);
+}
+
+.qty-input-field {
+    width: 28px;
+    text-align: center;
+    border: none;
+    background: transparent;
+    font-size: .9rem;
+    color: var(--antracite-scuro);
+    pointer-events: none; 
+    -moz-appearance: textfield; 
+}
+
+.qty-input-field::-webkit-outer-spin-button,
+.qty-input-field::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.cart-remove-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-rust);
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+
+/* COMPONENTI: RICEVUTA E SCONTRINO (CHECKOUT) */
+
 .receipt-box {
     background-color: var(--panna-carta);
     color: var(--antracite-scuro);
@@ -66,7 +139,7 @@
     border-right: 4px solid var(--antracite-scuro);
 }
 
-/* Bordo a ZIG-ZAG acuto (vero scontrino strappato) */
+/* Generazione procedurale dell'effetto grafico "scontrino strappato" sul bordo inferiore tramite combinazione incrociata di linear-gradient e background-size */
 .receipt-box::after {
     content: "";
     position: absolute;
@@ -88,7 +161,6 @@
     letter-spacing: 4px;
 }
 
-/* Linee tratteggiate orizzontali stile stampa */
 .receipt-divider {
     border-top: 2px dashed var(--antracite-scuro);
     margin: 20px 0;
@@ -131,7 +203,12 @@
     background: var(--text-rust);
 }
 
-/* --- Nuove classi estratte dal CSS in-line --- */
+.checkout-link {
+    text-decoration: none;
+}
+
+/* STATI DELLA PAGINA (VUOTO/TEST) */
+
 .empty-cart-container {
     text-align: center;
     margin: 100px auto;
@@ -175,101 +252,124 @@
     color: var(--marrone-cuoio);
 }
 
-/* --- Custom Quantity Stepper --- */
-.custom-qty-wrapper {
-    display: flex;
-    align-items: center;
-    border: 1px solid var(--antracite-scuro); /* Mantiene il feel tattile/analogico */
-    border-radius: 50px; /* Forma a pillola dell'immagine */
-    padding: 2px 2px;
-    background: transparent;
-    width: fit-content;
-}
+/* MODALE ELIMINAZIONE CARRELLO */
 
-.qty-btn {
-    background: transparent;
-    border: .5px solid var(--antracite-scuro);
-    border-radius: 50%; /* Bottoni perfettamente circolari */
-    width: 20px;
-    height: 20px;
-    display: flex;
+.delete-modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: none; 
     justify-content: center;
     align-items: center;
-    cursor: pointer;
-    color: var(--antracite-scuro);
-    font-size: 0.7rem;
-    transition: all 0.2s ease;
+    z-index: 9999;
+    backdrop-filter: blur(3px);
 }
 
-.qty-btn:hover {
-    background: var(--antracite-scuro);
-    color: var(--panna-carta);
+.delete-modal-overlay.active,
+.delete-modal-overlay.show {
+    display: flex;
 }
 
-.qty-input-field {
-    width: 28px;
+.delete-modal-content {
+    background: #f8f5f0;
+    width: 90%;
+    max-width: 400px !important;
+    padding: 40px 25px 25px 25px !important;
     text-align: center;
-    border: none;
-    background: transparent;
-    font-size: .9rem;
-    color: var(--antracite-scuro);
-    pointer-events: none; /* Evita che l'utente clicchi dentro per scrivere */
-    -moz-appearance: textfield; /* Nasconde le frecce native su Firefox */
+    border-radius: 8px;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
 }
 
-/* Nasconde le frecce native su Chrome/Safari/Edge */
-.qty-input-field::-webkit-outer-spin-button,
-.qty-input-field::-webkit-inner-spin-button {
-    -webkit-appearance: none;
+.delete-modal-content .warning-icon {
+    font-size: 3rem;
+    color: var(--rosso-ruggine, #c84b31);
+    margin-bottom: 15px;
+}
+
+.delete-modal-content h3 {
+    margin: 0 0 10px 0;
+    color: #333;
+    font-size: 1.5rem;
+}
+
+.delete-modal-content p {
+    margin: 15px 0 25px 0;
+    color: var(--grigio-taupe, #555);
+    font-size: 1.05rem;
+}
+
+.delete-modal-actions {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    justify-content: center;
+}
+
+.delete-modal-actions button {
+    flex: 1; 
     margin: 0;
-}
-
-.cart-remove-btn {
-    background: transparent;
-    border: none;
-    color: var(--text-rust);
+    padding: 10px 5px !important; 
+    font-size: 0.85rem !important; 
+    min-width: 0 !important; 
+    height: auto !important; 
+    border-radius: 5px;
+    font-weight: bold;
     cursor: pointer;
-    font-size: 1.2rem;
+    transition: background-color 0.2s;
 }
 
-.checkout-link {
-    text-decoration: none;
+.btn-confirm {
+    background-color: var(--rosso-ruggine, #c84b31) !important;
+    color: #ffffff !important;
+    border: none !important;
 }
 
-/* Responsive */
+.btn-confirm:hover { 
+    background-color: #9c2e2a !important; 
+}
+
+.btn-cancel {
+    background-color: #eaeaea !important;
+    color: #222 !important;
+    border: none !important;
+}
+
+.btn-cancel:hover { 
+    background-color: #d4d4d4 !important; 
+}
+
+/* MEDIA QUERIES (RESPONSIVE) */
+
 @media (max-width: 768px) {
-    /* 1. Rimuoviamo il padding laterale per far toccare i bordi allo schermo */
+    
     .cart-page-layout { 
         flex-direction: column; 
         padding: 0; 
-                margin: 3rem 10vw;
+        margin: 3rem 10vw;
     }
     
-    /* 2. Assicuriamoci che le colonne prendano il 100% della larghezza */
     .cart-items-column, 
     .cart-receipt-column { 
         width: 100%; 
     }
 
-    /* 3. Rimettiamo un po' di margine al titolo visto che abbiamo tolto il padding al contenitore */
     .cart-page-title {
         margin-left: 20px;
         margin-right: 20px;
-                text-align: center;
+        text-align: center;
     }
 
-    /* 4. Layout della singola riga prodotto su mobile */
     .cart-item-box { 
         flex-direction: column; 
-        align-items: stretch; /* Permette al contenuto di prendere il 100% della larghezza */
+        align-items: stretch; 
         gap: 15px; 
         width: 100%;
-        border-left: none; /* Tocco di stile: rimuove i bordi laterali per un vero effetto full-width */
+        border-left: none; 
         border-right: none;
         border-radius: 0;
     }
     
-    /* 5. Rimettiamo prezzo e quantità sulla stessa riga */
     .cart-item-controls { 
         width: 100%; 
         flex-direction: row; 

@@ -19,7 +19,10 @@ import java.io.IOException;
 public class ChatServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // FIX ENCODING: Forza la lettura in UTF-8 per supportare accenti e caratteri speciali
+        
+        /* CONFIGURAZIONE E CONTROLLO ACCESSI */
+        
+        // Forza la lettura in UTF-8 per supportare accenti e caratteri speciali nei messaggi
         request.setCharacterEncoding("UTF-8");
         
         HttpSession session = request.getSession();
@@ -30,6 +33,8 @@ public class ChatServlet extends HttpServlet {
             return;
         }
 
+        /* VALIDAZIONE INPUT */
+        
         String rma = request.getParameter("rma");
         String testo = request.getParameter("testo");
 
@@ -49,11 +54,14 @@ public class ChatServlet extends HttpServlet {
                 return;
             }
 
+            // Sicurezza: Impedisce l'inserimento di nuovi messaggi se il ticket è archiviato
             if ("Chiusa".equalsIgnoreCase(praticaCorrente.getStato())) {
                 response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                 return;
             }
 
+            /* SALVATAGGIO NUOVO MESSAGGIO */
+            
             Ticket nuovoMessaggio = new Ticket();
             String idGenerato = GeneratoreID.generaIdTicket(); 
             
@@ -62,6 +70,7 @@ public class ChatServlet extends HttpServlet {
             nuovoMessaggio.setAutore(utenteLoggato.getUsername());
             nuovoMessaggio.setMessaggio(testo);
             
+            // Definisce la provenienza del messaggio per il rendering UI lato client
             if (utenteLoggato.getIsAdmin() > 0) {
                 nuovoMessaggio.setTipo("Admin");
             } else {

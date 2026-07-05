@@ -1,4 +1,5 @@
-/* --- Struttura e Impaginazione --- */
+/* STRUTTURA E IMPAGINAZIONE PRINCIPALE */
+
 .profile-page-container {
     display: flex;
     flex-direction: row;
@@ -9,8 +10,6 @@
     box-sizing: border-box;
     align-items: flex-start;
     font-family: var(--font-testi); 
-    
-    /* Espansione per sticky footer */
     flex-grow: 1; 
     width: 100%; 
 }
@@ -44,16 +43,16 @@
 .scrollable-column::-webkit-scrollbar-thumb:hover{
      background: var(--marrone-cuoio); 
 }
+
+/* Sfrutta position: sticky ancorata al parent flessibile per mantenere visibile la colonna laterale (Anagrafica/Assistenza) in viewport durante lo scorrimento indipendente del catalogo centrale. */
 .fixed-column {
     flex: 1;
     position: sticky;
     top: 20px;
 }
 
+/* DESIGN DELLE CARD E CONTENITORI */
 
-
-
-/* --- Design delle Card --- */
 .profile-card {
     background: transparent;
     border: 4px solid var(--antracite-scuro);
@@ -93,8 +92,8 @@
     text-transform: uppercase;
 }
 
+/* TIPOGRAFIA E RIGHE ANAGRAFICA */
 
-/* --- Tipografia e Righe Anagrafica --- */
 .user-details-grid {
     display: flex;
     flex-direction: column;
@@ -107,13 +106,12 @@
     color: var(--antracite-scuro);
 }
 
-/* Stile etichette generiche */
 .profile-label {
     font-weight: bold;
     font-size: 18px;
 }
 
-/* Pseudo-elemento per compatibilità JS */
+/* Utilizza un pseudo-elemento ::before associato all'ID #txtTelefono per iniettare proceduralmente via CSS il prefisso semantico "TELEFONO: ", mascherando al contempo il controllo visivo lato JS. */
 #txtTelefono::before {
     content: "TELEFONO: ";
     font-weight: bold;
@@ -144,8 +142,8 @@
     justify-content: space-between;
 }
 
+/* ICONE E PULSANTI D'AZIONE */
 
-/* --- Icone d'Azione --- */
 .btn-edit, .btn-delete, .btn-add {
     background: none;
     border: none;
@@ -173,7 +171,10 @@
     font-size: 18px;
     transition: transform 0.2s;
 }
-.btn-edit-profile:hover { transform: scale(1.1); }
+
+.btn-edit-profile:hover { 
+    transform: scale(1.1); 
+}
 
 .link-button {
     background: none;
@@ -186,8 +187,8 @@
     margin-top: 40px;
 }
 
+/* FORM E CAMPI DI INPUT */
 
-/* --- Form e Campi di Input --- */
 .form-container {
     border: 2px dashed var(--grigio-taupe);
     padding: 15px;
@@ -205,8 +206,9 @@
     gap: 15px;
 }
 
-.form-grid .full-width { grid-column: span 2; }
-
+.form-grid .full-width { 
+    grid-column: span 2; 
+}
 
 fieldset.custom-input legend {
     color: var(--grigio-taupe);
@@ -222,11 +224,14 @@ fieldset.custom-input textarea {
     resize: vertical;
 }
 
+/* Sovrascrive i controlli nativi dei browser basati su Chromium/Edge (pulsante occhio/cancella) per gli input di tipo password utilizzando i vendor prefix ::-ms-reveal e ::-ms-clear. */
 fieldset.custom-input input[type="password"]::-ms-reveal,
-fieldset.custom-input input[type="password"]::-ms-clear { display: none; }
+fieldset.custom-input input[type="password"]::-ms-clear { 
+    display: none; 
+}
 
+/* CALL TO ACTION E BOTTONI FORM */
 
-/* --- Call To Action (Form) --- */
 .form-actions {
     display: flex;
     justify-content: flex-end;
@@ -253,10 +258,13 @@ fieldset.custom-input input[type="password"]::-ms-clear { display: none; }
     border-color: var(--grigio-taupe);
     box-shadow: inset 0 0 0 3px var(--panna-carta), inset 0 0 0 5px var(--grigio-taupe);
 }
-.btn-cta.cancel-btn:hover { background-color: var(--beige-scuro); }
 
+.btn-cta.cancel-btn:hover { 
+    background-color: var(--beige-scuro); 
+}
 
-/* --- Input Inline --- */
+/* INPUT INLINE E CLASSI DI SUPPORTO */
+
 .edit-input {
     width: 100%;
     border: 1px dashed var(--grigio-taupe);
@@ -270,14 +278,28 @@ fieldset.custom-input input[type="password"]::-ms-clear { display: none; }
     margin-top: 10px;
 }
 
+.hidden { 
+    display: none !important; 
+}
 
-/* --- Helper Class --- */
-.hidden { display: none !important; }
-.error-text { color: var(--rosso-ruggine); font-size: 14px; margin-top: 5px; display: none; }
-.error-text.visible { display: block; }
-.empty-message { color: var(--grigio-taupe); font-style: italic; }
+.error-text { 
+    color: var(--rosso-ruggine); 
+    font-size: 14px; 
+    margin-top: 5px; 
+    display: none; 
+}
 
-/* --- Admin Badges --- */
+.error-text.visible { 
+    display: block; 
+}
+
+.empty-message { 
+    color: var(--grigio-taupe); 
+    font-style: italic; 
+}
+
+/* ADMIN BADGES */
+
 .admin-badge {
     font-size: 12px;
     color: var(--panna-carta, white);
@@ -298,7 +320,8 @@ fieldset.custom-input input[type="password"]::-ms-clear { display: none; }
     background-color: var(--rosso-ruggine);
 }
 
-/* --- Footer --- */
+/* FOOTER INTERNO */
+
 .site-footer {
     background-color: #1A1A1A; 
     color: var(--panna-carta); 
@@ -311,106 +334,209 @@ fieldset.custom-input input[type="password"]::-ms-clear { display: none; }
     letter-spacing: 1px;
     box-sizing: border-box;
 }
-/* Nasconde la scrollbar mantenendo la funzionalità di scorrimento */
+
+/* STORICO ORDINI E STORIA (SCROLL INVISIBILE) */
+
 .history-content {
-    -ms-overflow-style: none;  /* IE e Edge */
-    scrollbar-width: none;     /* Firefox */
+    -ms-overflow-style: none;  
+    scrollbar-width: none;     
 }
+
 .history-content::-webkit-scrollbar {
-    display: none;             /* Chrome, Safari, Opera */
+    display: none;             
 }
 
- /* CSS per il Modale Overlay */
-        .order-modal-overlay {
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%;
-            background-color: color-mix(in srgb, var(--antracite-scuro) 65% ,transparent );
-            display: flex;
-            justify-content: center; 
-            align-items: center;
-            z-index: 9999; 
-            backdrop-filter: blur(4px);
-        }
-        .order-modal-content {
-            max-width: 500px;
-            padding: 40px 30px;
-            position: relative;
-            margin: 20px;
-            max-height: 90vh;
-            
-        }
-        .close-modal-btn {
-            position: absolute;
-            top: 1.5vh;
-    		right: 1vw;
-            background: none; 
-            border: none;
-            font-size: 26px; 
-            color: var(--rosso-ruggine);
-            cursor: pointer; 
-            transition: transform 0.2s;
-        }
-        .close-modal-btn:hover { transform: scale(1.2); }
-        .order-row:hover { background-color: rgba(0,0,0,0.03); }
+/* MODALE OVERLAY E CONTENUTI ORDINI */
 
-/* --- Scroll Interno Prodotti Modale --- */
+.order-modal-overlay {
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    background-color: color-mix(in srgb, var(--antracite-scuro) 65% ,transparent );
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    z-index: 9999; 
+    backdrop-filter: blur(4px);
+}
+
+.order-modal-content {
+    max-width: 500px;
+    padding: 40px 30px;
+    position: relative;
+    margin: 20px;
+    max-height: 90vh;
+}
+
+.close-modal-btn {
+    position: absolute;
+    top: 1.5vh;
+    right: 1vw;
+    background: none; 
+    border: none;
+    font-size: 26px; 
+    color: var(--rosso-ruggine);
+    cursor: pointer; 
+    transition: transform 0.2s;
+}
+
+.close-modal-btn:hover { 
+    transform: scale(1.2); 
+}
+
+.order-row:hover { 
+    background-color: rgba(0,0,0,0.03); 
+}
+
 .modal-items-scroll {
-    max-height: 180px; /* Regola questo valore per decidere quanti prodotti mostrare prima di scrollare (es. ~4 prodotti) */
+    max-height: 180px; 
     overflow-y: auto;
-    
-    /* Nasconde la scrollbar mantenendo lo scroll attivo */
-    -ms-overflow-style: none;  /* IE e Edge */
-    scrollbar-width: none;     /* Firefox */
+    -ms-overflow-style: none;  
+    scrollbar-width: none;     
 }
 
 .modal-items-scroll::-webkit-scrollbar {
-    display: none;             /* Chrome, Safari, Opera */
+    display: none;             
 }
 
-/* Rimuove l'ultimo bordo tratteggiato per evitare accavallamenti col bordo del box genitore */
 .modal-items-scroll .single-modal-item:last-child {
     border-bottom: none !important;
     padding-bottom: 0 !important;
 }
 
-/* --- Sezione History (Storico Ordini) --- */
-.history-header-wrap { flex-wrap: wrap; gap: 15px; }
-.search-history-container { flex-grow: 1; max-width: 250px; margin-left: auto; }
-.search-history-fieldset { margin-bottom: 0; padding: 5px 15px; }
-.search-history-input { font-size: 14px; }
+/* STORICO ORDINI (LAYOUT RICERCA) */
 
-/* Aggiunta alle regole esistenti di history-content */
-.history-content { max-height: 400px; overflow-y: auto; } 
+.history-header-wrap { 
+    flex-wrap: wrap; 
+    gap: 15px; 
+}
 
-.empty-history-container { text-align: center; padding: 30px 10px; }
-.empty-history-container.compact { padding: 20px; }
-.empty-history-icon { font-size: 30px; color: var(--grigio-taupe); margin-bottom: 15px; }
-.empty-history-icon.small { font-size: 24px; margin-bottom: 10px; }
+.search-history-container { 
+    flex-grow: 1; 
+    max-width: 250px; 
+    margin-left: auto; 
+}
 
-.order-row-item { cursor: pointer; transition: background 0.2s; }
-.item-details-flex { display: flex; width: 100%; justify-content: space-between; padding-right: 15px; }
-.order-state-text { color: var(--antracite-scuro); }
-.btn-explore { margin-top: 15px; display: inline-block; padding: 10px 20px; font-size: 14px; }
+.search-history-fieldset { 
+    margin-bottom: 0; 
+    padding: 5px 15px; 
+}
 
+.search-history-input { 
+    font-size: 14px; 
+}
 
-/* --- Modale Dettaglio Ordine --- */
-.modal-form-title { margin-top: 0; margin-bottom: 20px; font-size: 24px; color: var(--antracite-scuro); }
-.ticket-selections-analog { margin-bottom: 15px; }
-.ticket-items-box { border: 1px dashed var(--grigio-taupe); border-radius: 12px; padding: 15px; margin-bottom: 15px; }
+.history-content { 
+    max-height: 400px; 
+    overflow-y: auto; 
+} 
 
-.ticket-row { margin: 5px 0; }
-.ticket-total { color: var(--verde-ottanio); font-weight: bold; margin: 5px 0; }
-.selection-label-analog { display: block; color: var(--grigio-taupe); margin-bottom: 10px; text-transform: uppercase; font-size: 0.9rem; }
+.empty-history-container { 
+    text-align: center; 
+    padding: 30px 10px; 
+}
 
-.single-modal-item { display: flex; justify-content: space-between; border-bottom: 1px dashed var(--grigio-taupe); padding: 12px 0; }
-.modal-item-name { color: var(--antracite-scuro); text-align: left; }
-.modal-error-text { color: var(--rosso-ruggine); font-style: italic; }
-.modal-footer-box { margin-top: 25px; }
+.empty-history-container.compact { 
+    padding: 20px; 
+}
 
-/* --- Card Assistenza (Invertita per Call to Action) --- */
+.empty-history-icon { 
+    font-size: 30px; 
+    color: var(--grigio-taupe); 
+    margin-bottom: 15px; 
+}
+
+.empty-history-icon.small { 
+    font-size: 24px; 
+    margin-bottom: 10px; 
+}
+
+.order-row-item { 
+    cursor: pointer; 
+    transition: background 0.2s; 
+}
+
+.item-details-flex { 
+    display: flex; 
+    width: 100%; 
+    justify-content: space-between; 
+    padding-right: 15px; 
+}
+
+.order-state-text { 
+    color: var(--antracite-scuro); 
+}
+
+.btn-explore { 
+    margin-top: 15px; 
+    display: inline-block; 
+    padding: 10px 20px; 
+    font-size: 14px; 
+}
+
+/* MODALE DETTAGLIO ORDINE */
+
+.modal-form-title { 
+    margin-top: 0; 
+    margin-bottom: 20px; 
+    font-size: 24px; 
+    color: var(--antracite-scuro); 
+}
+
+.ticket-selections-analog { 
+    margin-bottom: 15px; 
+}
+
+.ticket-items-box { 
+    border: 1px dashed var(--grigio-taupe); 
+    border-radius: 12px; 
+    padding: 15px; 
+    margin-bottom: 15px; 
+}
+
+.ticket-row { 
+    margin: 5px 0; 
+}
+
+.ticket-total { 
+    color: var(--verde-ottanio); 
+    font-weight: bold; 
+    margin: 5px 0; 
+}
+
+.selection-label-analog { 
+    display: block; 
+    color: var(--grigio-taupe); 
+    margin-bottom: 10px; 
+    text-transform: uppercase; 
+    font-size: 0.9rem; 
+}
+
+.single-modal-item { 
+    display: flex; 
+    justify-content: space-between; 
+    border-bottom: 1px dashed var(--grigio-taupe); 
+    padding: 12px 0; 
+}
+
+.modal-item-name { 
+    color: var(--antracite-scuro); 
+    text-align: left; 
+}
+
+.modal-error-text { 
+    color: var(--rosso-ruggine); 
+    font-style: italic; 
+}
+
+.modal-footer-box { 
+    margin-top: 25px; 
+}
+
+/* CARD ASSISTENZA (INVERTITA) */
+
 .support-card {
     background-color: var(--antracite-scuro);
     border-color: var(--antracite-scuro);
@@ -429,7 +555,6 @@ fieldset.custom-input input[type="password"]::-ms-clear { display: none; }
     opacity: 0.9;
 }
 
-/* Bottone Invertito */
 .support-card .btn-cta.inverted-btn {
     background-color: var(--panna-carta);
     color: var(--antracite-scuro);
@@ -442,85 +567,13 @@ fieldset.custom-input input[type="password"]::-ms-clear { display: none; }
     font-weight: 900;
 }
 
-/* Effetto Hover Brutalista: Diventa trasparente con bordo chiaro */
 .support-card .btn-cta.inverted-btn:hover {
     background-color: transparent;
     color: var(--panna-carta);
 }
 
+/* TOAST NOTIFICATIONS */
 
-/* --- Responsive: Tablet --- */
-@media (max-width: 1024px) {
-    
-    /* Layout Generale */
-    .profile-page-container {
-        flex-direction: column; 
-        padding: 10px 15px;
-        gap: 20px;
-    }
-
-    /* Riordino Colonne */
-    .fixed-column {
-        order: -1; 
-        position: static; 
-        width: 100%;
-    }
-
-    .scrollable-column {
-        order: 2; 
-        width: 100%;
-        max-height: none; 
-        padding-right: 0;
-        overflow-y: visible;
-    }
-    
-    /* Accordion Menu (Card) */
-    .profile-card.accordion:not(.open) .scrollable-content,
-    .profile-card.accordion:not(.open) .history-content,
-    .profile-card.accordion:not(.open) .form-container {
-        display: none !important;
-    }
-
-    .profile-card.accordion .card-header {
-        cursor: pointer;
-        padding-right: 40px; 
-        position: relative;
-    }
-
-    /* Icona Dropdown */
-    .profile-card.accordion .card-header::after {
-        content: '\f078'; 
-        font-family: "Font Awesome 6 Free";
-        font-weight: 900;
-        position: absolute;
-        right: 15px;
-        top: 50%;
-        transform: translateY(-50%);
-        transition: transform 0.3s ease;
-        color: var(--verde-ottanio); 
-        font-size: 20px;
-    }
-
-    /* Stato Attivo Dropdown */
-    .profile-card.accordion.open .card-header::after {
-        transform: translateY(-50%) rotate(180deg);
-    }
-    
-    /* Fix Layout Bottoni */
-    .form-actions, .edit-actions {
-        flex-direction: column-reverse; 
-        width: 100%;
-        gap: 15px; 
-    }
-
-    .form-actions .btn-cta, .edit-actions .btn-cta {
-        width: 100% !important; 
-        margin: 0; 
-        justify-content: center; 
-    }
-}
-
-/* --- Toast Notifications --- */
 .toast-notification {
     position: fixed;
     bottom: 30px;
@@ -552,8 +605,75 @@ fieldset.custom-input input[type="password"]::-ms-clear { display: none; }
     color: var(--verde-ottanio); 
 }
 
-/* Adattamento Toast per Mobile */
+/* RESPONSIVE DESIGN: TABLET E SMARTPHONE */
+
+@media (max-width: 1024px) {
+    
+    .profile-page-container {
+        flex-direction: column; 
+        padding: 10px 15px;
+        gap: 20px;
+    }
+
+    .fixed-column {
+        order: -1; 
+        position: static; 
+        width: 100%;
+    }
+
+    .scrollable-column {
+        order: 2; 
+        width: 100%;
+        max-height: none; 
+        padding-right: 0;
+        overflow-y: visible;
+    }
+    
+    /* Configurazione per trasformare le card profilo in layout a fisarmonica su dispositivi mobili. Il selettore :not(.open) vincola la visibilità dei blocchi child al click sull'header controllato da JS. */
+    .profile-card.accordion:not(.open) .scrollable-content,
+    .profile-card.accordion:not(.open) .history-content,
+    .profile-card.accordion:not(.open) .form-container {
+        display: none !important;
+    }
+
+    .profile-card.accordion .card-header {
+        cursor: pointer;
+        padding-right: 40px; 
+        position: relative;
+    }
+
+    .profile-card.accordion .card-header::after {
+        content: '\f078'; 
+        font-family: "Font Awesome 6 Free";
+        font-weight: 900;
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        transition: transform 0.3s ease;
+        color: var(--verde-ottanio); 
+        font-size: 20px;
+    }
+
+    .profile-card.accordion.open .card-header::after {
+        transform: translateY(-50%) rotate(180deg);
+    }
+    
+    .form-actions, .edit-actions {
+        flex-direction: column-reverse; 
+        width: 100%;
+        gap: 15px; 
+    }
+
+    .form-actions .btn-cta, .edit-actions .btn-cta {
+        width: 100% !important; 
+        margin: 0; 
+        justify-content: center; 
+    }
+}
+
 @media (max-width: 576px) {
+    
     .toast-notification {
         bottom: 20px;
         right: 20px;
@@ -561,8 +681,6 @@ fieldset.custom-input input[type="password"]::-ms-clear { display: none; }
         justify-content: center;
     }
 
-    
-    /* Ottimizzazione Spazi */
     .profile-page-container {
         margin: 20px auto; 
         padding: 0 10px;
@@ -573,7 +691,6 @@ fieldset.custom-input input[type="password"]::-ms-clear { display: none; }
         border-width: 2px; 
     }
 
-    /* Tipografia Ridimensionata */
     .profile-card-header h2 {
         font-size: 24px;
     }
@@ -587,7 +704,6 @@ fieldset.custom-input input[type="password"]::-ms-clear { display: none; }
         font-size: 16px; 
     }
 
-    /* Layout Form Singola Colonna */
     .form-grid {
         grid-template-columns: 1fr; 
         gap: 15px;
@@ -597,23 +713,32 @@ fieldset.custom-input input[type="password"]::-ms-clear { display: none; }
         grid-column: span 1; 
     }
 
-    /* Layout Righe e Bottoni */
     .info-row-item {
         flex-direction: row; 
         gap: 15px;
         text-align: left;
     }
+    
     fieldset.custom-input{
         margin: 0;
     }
-    .card-header.history-header-wrap::after{
-     top: 15%;
-    }
-    .search-history-container{max-width:80vw;}
-    .history-content .btn-edit{display:none;}
-    .history-content .item-details p.sub-text{ margin: 0;}
     
-    /* Allineamento Icone a Destra */
+    .card-header.history-header-wrap::after{
+        top: 15%;
+    }
+    
+    .search-history-container{
+        max-width: 80vw;
+    }
+    
+    .history-content .btn-edit{
+        display: none;
+    }
+    
+    .history-content .item-details p.sub-text{ 
+        margin: 0;
+    }
+    
     .info-row-item > div:last-child {
         width: 100%;
         display: flex;
@@ -625,7 +750,6 @@ fieldset.custom-input input[type="password"]::-ms-clear { display: none; }
         gap: 15px;
     }
 
-    /* Adattamento Input e Bottoni Profilo */
     .link-button {
         font-size: 16px;
         margin-top: 25px;
@@ -636,5 +760,4 @@ fieldset.custom-input input[type="password"]::-ms-clear { display: none; }
         height: 35px;
         font-size: 16px;
     }
-    
 }

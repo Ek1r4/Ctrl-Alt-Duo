@@ -23,13 +23,23 @@ public class AccessControlFilter extends HttpFilter implements Filter {
     private static final List<String> COMMON_ROUTES = Arrays.asList(
         "/ProfiloServlet", 
         "/Carrello", 
-        "/Checkout"
-        // ERIKA aggiungi qui altre servlet "common" in futuro
+        "/Checkout",
+        "/ChatServlet",
+        "/CreaPraticaServlet",
+        "/DettaglioPraticaServlet",
+        "/Fattura",
+        "/ListaPraticheServlet",
+        "/RecensioneServlet"
     );
 
     private static final List<String> ADMIN_ROUTES = Arrays.asList(
-    	"/PannelloAdminServlet"
-        // ERIKA aggiungi qui altre servlet "admin" in futuro aaaa
+    	"/PannelloAdminServlet",
+    	"/AggiornaPraticaServlet",
+        "/ChatServlet",
+        "/DettaglioPraticaServlet",
+        "/InviaNotaServlet",
+        "/ListaPraticheServlet",
+        "/RecensioneServlet"
     );
 
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException
@@ -61,14 +71,21 @@ public class AccessControlFilter extends HttpFilter implements Filter {
             return;
         } 
         // Se un utente BASE (livello 0) prova ad accedere all'area o servlet Admin
-        else if (isAdminRoute && adminLevel == 0) {
+        else if (isAdminRoute && !isCommonRoute && adminLevel == 0) {
             httpServletResponse.sendRedirect(httpServletRequest.getContextPath() + "/accessoNegato.jsp");
             return; 
         }
+        
         // Se un ADMIN prova ad accedere esplicitamente alla pagina profilo dell'utente base
         else if (path.equals("/common/profilo.jsp") && adminLevel > 0) {
             httpServletResponse.sendRedirect(httpServletRequest.getContextPath() + "/admin/profiloAdmin.jsp");
             return;
+        }
+        
+        //  Se un ADMIN prova ad accedere a una rotta Utente ESCLUSIVA 
+        else if (isCommonRoute && !isAdminRoute && adminLevel > 0) {
+            httpServletResponse.sendRedirect(httpServletRequest.getContextPath() + "/PannelloAdminServlet");
+            return; 
         }
 
         chain.doFilter(request, response);

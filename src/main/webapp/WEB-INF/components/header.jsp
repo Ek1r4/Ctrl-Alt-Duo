@@ -2,7 +2,6 @@
 <%@ page import="reframe.model.beans.Carrello" %>
 <%@ page import="reframe.model.beans.CarrelloItem" %>
 <% 
-   // Capiamo se siamo nella pagina carrello o checkout per nascondere la preview
    String currentURI = request.getRequestURI();
    boolean isCartOrCheckout = currentURI.endsWith("carrello.jsp") || currentURI.endsWith("checkout.jsp"); 
    
@@ -147,4 +146,5 @@
     </div>
 </header>
 
+<script>const contestoReFrame = '<%= request.getContextPath() %>';</script>
 <script src="${pageContext.request.contextPath}/js/header.js"></script>

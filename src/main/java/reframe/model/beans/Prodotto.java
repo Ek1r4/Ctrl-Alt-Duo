@@ -6,6 +6,7 @@ public class Prodotto implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    /* ATTRIBUTI */
     private String id;
     private String marchio;
     private String nome;
@@ -15,15 +16,16 @@ public class Prodotto implements Serializable {
     private String condizioneCollezionistica;
     private String seriale;
     private double prezzo; 
-    private int iva = 22; // Default inizializzato a 22 in linea con il DB
+    private int iva = 22; 
     private String modelUrl;
     private String imageUrl;
     private String descrizione;
     private int inStock;
     
-    // NUOVO CAMPO PER IL SOFT DELETE
+    // Implementazione del pattern Soft Delete: disabilita il prodotto nella UI senza eliminarlo fisicamente dal database
     private boolean isAttivo = true;
 
+    /* COSTRUTTORI */
     public Prodotto() {
     }
 
@@ -45,11 +47,9 @@ public class Prodotto implements Serializable {
         this.imageUrl = imageUrl;
         this.descrizione = descrizione;
         this.inStock = inStock;
-        // isAttivo rimane true di default alla creazione
     }
 
-    // --- GETTER E SETTER ---
-
+    /* GETTER E SETTER */
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
@@ -92,12 +92,10 @@ public class Prodotto implements Serializable {
     public int getInStock() { return inStock; }
     public void setInStock(int inStock) { this.inStock = inStock; }
 
-    // --- NUOVI METODI PER SOFT DELETE ---
-    
     public boolean isAttivo() { return isAttivo; }
     public void setAttivo(boolean isAttivo) { this.isAttivo = isAttivo; }
 
-    // --- OVERRIDE toString ---
+    /* OVERRIDE TOSTRING */
     @Override
     public String toString() {
         return "Prodotto{" +
@@ -115,7 +113,7 @@ public class Prodotto implements Serializable {
                 ", imageUrl='" + imageUrl + '\'' +
                 ", descrizione='" + descrizione + '\'' +
                 ", inStock=" + inStock +
-                ", isAttivo=" + isAttivo + // AGGIUNTO QUI
+                ", isAttivo=" + isAttivo + 
                 '}';
     }
 }

@@ -1,6 +1,6 @@
 package reframe.controller;
-import reframe.utils.GeneratoreID;
 
+import reframe.utils.GeneratoreID;
 import reframe.model.beans.PraticaAssistenza;
 import reframe.model.beans.Ticket;
 import reframe.model.beans.Utente;
@@ -22,6 +22,8 @@ import java.util.UUID;
 public class AggiornaPraticaServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        
+        // SETUP E CONTROLLO PERMESSI GLOBALI
         HttpSession session = request.getSession();
         Utente utenteLoggato = (Utente) session.getAttribute("utente");
 
@@ -44,26 +46,25 @@ public class AggiornaPraticaServlet extends HttpServlet {
                 return;
             }
 
+            // GESTIONE ACTION: AGGIORNA STATO
             if ("aggiornaStato".equals(action)) {
                 String nuovoStato = request.getParameter("stato");
 
-                // Permessi: Solo l'admin assegnato o il superadmin possono chiudere/riaprire la pratica
+                // Sicurezza: Un admin di livello 1 può modificare lo stato solo delle pratiche a lui direttamente assegnate
                 if (utenteLoggato.getIsAdmin() == 1 && !utenteLoggato.getUsername().equals(praticaCorrente.getAdminAssegnato())) {
                     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                     return;
                 }
                 
                 if (praticaDAO.updateStato(rma, nuovoStato)) {
-                    // Genera messaggio di sistema corretto
                     Ticket sysMsg = new Ticket();
                     sysMsg.setIdTicket(GeneratoreID.generaIdTicket()); 
                     sysMsg.setRmaPratica(rma);
-                    sysMsg.setAutore(utenteLoggato.getUsername()); // Registra chi ha fatto l'azione
+                    sysMsg.setAutore(utenteLoggato.getUsername()); 
                     sysMsg.setTipo("Admin");
                     sysMsg.setMessaggio("[NOTIFICA DI SISTEMA] - Stato modificato in: " + nuovoStato);
                     ticketDAO.doSave(sysMsg);
 
-                 // Invia Email al Cliente con Copy Differenziato
                     Utente cliente = utenteDAO.doRetrieveByKey(praticaCorrente.getIdUtente());
                     
                     if (cliente != null && cliente.getEmail() != null) {
@@ -71,7 +72,6 @@ public class AggiornaPraticaServlet extends HttpServlet {
                         String testo = "";
 
                         if ("Chiusa".equalsIgnoreCase(nuovoStato)) {
-                            // Copy per chiusura pratica
                             oggetto = "REFRAME - Il tuo ticket " + rma + " è stato risolto";
                             testo = "Ciao " + cliente.getNome() + ",\n\n"
                                   + "Abbiamo un aggiornamento per te: la tua pratica " + rma + " è stata contrassegnata come RISOLTA ed è ora ufficialmente chiusa.\n\n"
@@ -80,7 +80,6 @@ public class AggiornaPraticaServlet extends HttpServlet {
                                   + "A presto,\n"
                                   + "Il Team REFRAME";
                         } else {
-                            // Copy per riapertura / presa in carico
                             oggetto = "REFRAME - Abbiamo riaperto il tuo ticket " + rma;
                             testo = "Ciao " + cliente.getNome() + ",\n\n"
                                   + "Ti contattiamo per informarti che la tua pratica " + rma + " è stata riaperta ed è nuovamente IN CARICO al nostro team.\n\n"
@@ -96,8 +95,9 @@ public class AggiornaPraticaServlet extends HttpServlet {
                     response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 }
 
+            // GESTIONE ACTION: ASSEGNA ADMIN
             } else if ("assegnaAdmin".equals(action)) {
-                // Permessi: Solo il Superadmin (Livello 2) può riassegnare
+                // Sicurezza: Solo il Superadmin (Livello 2) ha i privilegi per riassegnare i ticket tra gli operatori
                 if (utenteLoggato.getIsAdmin() != 2) {
                     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                     return;
@@ -108,14 +108,13 @@ public class AggiornaPraticaServlet extends HttpServlet {
 
                 if (praticaDAO.updateAdminAssegnato(rma, nuovoAdminUsername)) {
                         
-                        // Genera messaggio di sistema corretto
-                        Ticket sysMsg = new Ticket();
-                        sysMsg.setIdTicket(GeneratoreID.generaIdTicket());
-                        sysMsg.setRmaPratica(rma);
-                        sysMsg.setAutore(utenteLoggato.getUsername()); // Registra chi ha fatto l'azione
-                        sysMsg.setTipo("Admin");
-                        sysMsg.setMessaggio("[NOTIFICA DI SISTEMA] - Pratica assegnata a: " + nuovoAdminUsername);
-                        ticketDAO.doSave(sysMsg);
+                    Ticket sysMsg = new Ticket();
+                    sysMsg.setIdTicket(GeneratoreID.generaIdTicket());
+                    sysMsg.setRmaPratica(rma);
+                    sysMsg.setAutore(utenteLoggato.getUsername()); 
+                    sysMsg.setTipo("Admin");
+                    sysMsg.setMessaggio("[NOTIFICA DI SISTEMA] - Pratica assegnata a: " + nuovoAdminUsername);
+                    ticketDAO.doSave(sysMsg);
 
                     Utente vecchioAdmin = (vecchioAdminUsername != null && !vecchioAdminUsername.equals("Da assegnare")) ? utenteDAO.doRetrieveByKey(vecchioAdminUsername) : null;
                     Utente nuovoAdmin = utenteDAO.doRetrieveByKey(nuovoAdminUsername);

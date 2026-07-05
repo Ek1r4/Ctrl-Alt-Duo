@@ -3,6 +3,7 @@ package reframe.controller;
 import java.io.IOException;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -17,12 +18,10 @@ import reframe.model.beans.DettaglioOrdine;
 import reframe.model.beans.Ordine;
 import reframe.model.beans.Utente;
 import reframe.model.dao.OrdineDAO;
-
 import reframe.model.dao.SpedizioneDAO;
 import reframe.model.dao.PagamentoDAO;
 import reframe.model.beans.Spedizione;
 import reframe.model.beans.Pagamento;
-import java.util.List;
 
 
 @WebServlet("/Checkout")
@@ -32,7 +31,7 @@ public class CheckoutServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
         
-        // 1. VERIFICA AUTENTICAZIONE E CARRELLO
+        /* VERIFICA AUTENTICAZIONE E CARRELLO */
         Utente utente = (Utente) session.getAttribute("utente");
         Carrello carrello = (Carrello) session.getAttribute("carrello");
 
@@ -48,7 +47,7 @@ public class CheckoutServlet extends HttpServlet {
         }
 
         try {
-            // 2. GESTIONE SPEDIZIONE (Esistente o Nuova)
+            /* GESTIONE SPEDIZIONE */
             String paramSpedizione = request.getParameter("idSpedizione");
             int idSpedizione = 0;
             
@@ -64,16 +63,16 @@ public class CheckoutServlet extends HttpServlet {
                 s.setNote(request.getParameter("note"));
                 
                 SpedizioneDAO sDAO = new SpedizioneDAO();
-                sDAO.doSave(s); // Salva nel DB per acquisti futuri
+                sDAO.doSave(s); 
                 
-                // Recupera l'ID appena generato
+                // Recupero dell'ultimo ID generato tramite auto-increment per associarlo alla testata dell'ordine
                 List<Spedizione> listaS = sDAO.doRetrieveByUtente(utente.getUsername());
                 idSpedizione = listaS.get(listaS.size() - 1).getIdSpedizione();
             } else {
                 idSpedizione = Integer.parseInt(paramSpedizione);
             }
 
-            // 3. GESTIONE PAGAMENTO (Esistente o Nuovo)
+            /* GESTIONE PAGAMENTO */
             String paramPagamento = request.getParameter("idPagamento");
             int idPagamento = 0;
             
@@ -87,16 +86,16 @@ public class CheckoutServlet extends HttpServlet {
                 p.setCvv(request.getParameter("cvv"));
                 
                 PagamentoDAO pDAO = new PagamentoDAO();
-                pDAO.doSave(p); // Salva nel DB
+                pDAO.doSave(p);
                 
-                // Recupera l'ID appena generato
+                // Recupero dell'ultimo ID generato tramite auto-increment per associarlo alla testata dell'ordine
                 List<Pagamento> listaP = pDAO.doRetrieveByUtente(utente.getUsername());
                 idPagamento = listaP.get(listaP.size() - 1).getIdPagamento();
             } else {
                 idPagamento = Integer.parseInt(paramPagamento);
             }
             
-            // 4. CREAZIONE TESTATA ORDINE
+            /* CREAZIONE TESTATA ORDINE E DETTAGLI */
             boolean garanzia = true;
             String idOrdine = "ORD" + String.format("%05d", (int)(Math.random() * 100000));
             Date dataOdierna = new Date(System.currentTimeMillis());
@@ -105,14 +104,13 @@ public class CheckoutServlet extends HttpServlet {
             ordine.setIdOrdine(idOrdine);
             ordine.setUrlFattura("/fatture/" + idOrdine + ".pdf"); 
             ordine.setDataOrdine(dataOdierna);
-            ordine.setTotale(carrello.getTotaleComplessivo()); // Usiamo il nuovo metodo comprensivo di spedizione
+            ordine.setTotale(carrello.getTotaleComplessivo());
             ordine.setGaranzia(garanzia);
             ordine.setStato("In lavorazione"); 
             ordine.setIdUtente(utente.getUsername());
             ordine.setIdPagamento(idPagamento);
             ordine.setIdSpedizione(idSpedizione);
 
-            // 5. MAPPATURA DEI DETTAGLI
             for (CarrelloItem item : carrello.getItems()) {
                 DettaglioOrdine dettaglio = new DettaglioOrdine();
                 dettaglio.setIdOrdine(idOrdine);
@@ -124,27 +122,27 @@ public class CheckoutServlet extends HttpServlet {
                 ordine.addDettaglio(dettaglio);
             }
 
-            // 6. SALVATAGGIO A DATABASE E REDIRECT DIRETTO
+            /* SALVATAGGIO A DATABASE E REDIRECT */
             OrdineDAO ordineDAO = new OrdineDAO();
             ordineDAO.insertOrdineCompleto(ordine);
 
             carrello.svuota();
             request.setAttribute("ordineEffettuato", ordine);
             
-            // Reindirizziamo direttamente alla pagina di ringraziamento
             request.getRequestDispatcher("/common/grazie.jsp").forward(request, response);
             
         } catch (SQLException e) {
             e.printStackTrace(); 
             
-            // SE IL DATABASE BLOCCA L'ORDINE PERCHÉ LA GIACENZA È FINITA MENTRE L'UTENTE PAGAVA
+            /* GESTIONE ECCEZIONI E CONTROLLO CONCORRENZA STOCK */
+            // Intercetta l'errore del trigger DB (chk_stock) per prevenire l'acquisto se un prodotto
+            // è andato out-of-stock tra l'apertura del checkout e l'effettiva conferma a database.
             if (e.getMessage() != null && e.getMessage().toLowerCase().contains("chk_stock")) {
                 request.setAttribute("errorMessage", "Siamo spiacenti, ma uno o più prodotti nel tuo carrello sono appena andati esauriti e non sono più disponibili nelle quantità richieste.");
                 request.getRequestDispatcher("/common/carrello.jsp").forward(request, response);
                 return;
             }
             
-            // ALTRI ERRORI SQL GENERICI
             request.setAttribute("errorMessage", "Errore critico durante l'elaborazione del pagamento: " + e.getMessage());
             request.getRequestDispatcher("/500.jsp").forward(request, response); 
             
@@ -154,9 +152,9 @@ public class CheckoutServlet extends HttpServlet {
             request.getRequestDispatcher("/500.jsp").forward(request, response);
         }
     }
+    
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Se un utente prova ad accedere al checkout via URL direttamente, lo si rimanda al carrello o lo si elabora se consentito.
-        // Di prassi, il submit del checkout dovrebbe essere sempre POST.
+        // Impedisce l'accesso diretto via URL al processo di elaborazione bloccandolo e rimandando al carrello
         response.sendRedirect(request.getContextPath() + "/common/carrello.jsp");
     }
 }

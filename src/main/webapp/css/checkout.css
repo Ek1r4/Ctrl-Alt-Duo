@@ -19,9 +19,7 @@
 .new-entry-form { border: 2px dashed var(--grigio-taupe); padding: 20px; margin-bottom: 25px; background: rgba(0,0,0,0.02); }
 .hidden { display: none !important; }
 
-/* =========================================
-   PAGINA DI RINGRAZIAMENTO (grazie.jsp)
-   ========================================= */
+/* Pagina di Ringraziamento (grazie.jsp) */
 
 /* Impaginazione */
 .grazie-wrapper { margin: 5vh auto; }

@@ -1,16 +1,21 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="reframe.model.beans.Utente" %>
+
+<%-- CONTROLLO AUTORIZZAZIONI (RBAC) --%>
 <%
-    // Sicurezza: Controllo Login
+    // Verifica di sicurezza: l'accesso alla rotta di creazione ticket è subordinato all'esistenza di una sessione utente attiva. 
+    // In assenza di token di sessione, il blocco esegue un redirect preventivo alla pagina di login.
     Utente utente = (Utente) session.getAttribute("utente");
     if (utente == null) {
         response.sendRedirect(request.getContextPath() + "/login.jsp");
         return;
     }
 %>
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
+    <!-- STRUTTURA PAGINA E HEAD -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nuovo Ticket - Step 2 - ReFrame</title>
@@ -22,9 +27,10 @@
     <link rel="stylesheet" href="../css/assistenza.css">
 </head>
 <body>
+    
     <jsp:include page="../WEB-INF/components/header.jsp" />
 
-    <main class="auth-wrapper" >
+    <main class="auth-wrapper">
         
         <div>
             <a href="nuovoTicketStep1.jsp" class="btn-step-nav">
@@ -43,6 +49,7 @@
             <form id="formTicketFinale" action="CreaPraticaServlet" method="POST">
                 
                 <%
+                    // Recupero asincrono delle selezioni effettuate nello Step 1 (Ordini e Prodotti) tramite parametri della query string. 
                     String[] ordiniSelezionati = request.getParameterValues("ordineSelezionato");
                     String[] prodottiSelezionati = request.getParameterValues("prodottiSelezionati");
                     boolean ciSonoSelezioni = (ordiniSelezionati != null && ordiniSelezionati.length > 0) ||
@@ -60,6 +67,7 @@
                         <%  } } %>
 
                         <% if(prodottiSelezionati != null) { 
+                            // Escaping HTML per preservare l'integrità dei nomi prodotto contenenti virgolette durante l'inject nel campo hidden del form.
                             for(String prodotto : prodottiSelezionati) { %>
                                 <span class="sel-tag-analog">Prodotto: <%= prodotto %></span>
                                 <input type="hidden" name="prodottiSelezionati" class="hidden-selezione-prodotto" value="<%= prodotto.replace("\"", "&quot;") %>">
@@ -67,6 +75,7 @@
                     </div>
                 <% } %>
 
+                <!-- FORM INPUT E VALIDAZIONE -->
                 <fieldset class="custom-input">
                     <legend>Titolo del problema *</legend>
                     <input type="text" name="titolo" id="titoloTicket" placeholder="Es. Prodotto danneggiato..." maxlength="50" required>
@@ -77,7 +86,6 @@
                     <legend>Categoria *</legend>
                     <div class="select-wrapper-analog">
                         <select name="categoria" id="categoriaTicket" required>
-                            <%-- Se ci sono selezioni, il default è vuoto. Altrimenti è "account" --%>
                             <option value="" disabled <%= ciSonoSelezioni ? "selected" : "" %> hidden>Seleziona l'argomento...</option>
                             <option value="ordine">Ordine</option>
                             <option value="prodotto">Prodotto</option>
@@ -101,7 +109,7 @@
         </div>
     </main>
 
-    <!-- Popup di Conferma (Nascosto di default) -->
+    <!-- COMPONENTI UI E SCRIPT -->
     <div class="ticket-popup-overlay" id="popupConferma">
         <div class="ticket-popup-content film-container">
             <i class="ri-checkbox-circle-line popup-icon-success"></i>

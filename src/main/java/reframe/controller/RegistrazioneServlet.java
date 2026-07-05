@@ -24,13 +24,13 @@ public class RegistrazioneServlet extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	request.getRequestDispatcher("/registrazione.jsp").forward(request, response);
+        request.getRequestDispatcher("/registrazione.jsp").forward(request, response);
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         
-        // Recupero dati
-    	String username = request.getParameter("username");
+        /* VALIDAZIONE INPUT E SANIFICAZIONE */
+        String username = request.getParameter("username");
         String email = request.getParameter("email");
         String password = request.getParameter("password");
         String confermaPassword = request.getParameter("confermaPassword");
@@ -40,7 +40,6 @@ public class RegistrazioneServlet extends HttpServlet {
         
         List<String> errors = new ArrayList<>();
         
-        // Controlli e trim
         if (username == null || username.trim().isEmpty()) {
             errors.add("Tutti i campi sono obbligatori.");
         } else {
@@ -53,6 +52,7 @@ public class RegistrazioneServlet extends HttpServlet {
             email = email.trim();
         }
         
+        // Validazione requisiti minimi di sicurezza per la password e verifica della corrispondenza per prevenire typo
         if (password == null || password.trim().isEmpty()) {
             errors.add("Tutti i campi sono obbligatori.");
         } else if (password.length() < 8) {
@@ -76,22 +76,23 @@ public class RegistrazioneServlet extends HttpServlet {
         }
 
         if (telefono == null && telefono.trim().isEmpty()) {
-        	errors.add("Tutti i campi sono obbligatori.");
+            errors.add("Tutti i campi sono obbligatori.");
         } else {
             telefono = telefono.trim(); 
         }
         
+        // Interrompe l'elaborazione e ricarica la view iniettando i messaggi d'errore accumulati
         if (!errors.isEmpty()) {
             request.setAttribute("errors", errors);
             request.getRequestDispatcher("/registrazione.jsp").forward(request, response);
             return; 
         }
 
-        // 4. INTERAZIONE CON IL DATABASE E LOGICA DI BUSINESS
+        /* ELABORAZIONE DATI E SALVATAGGIO A DATABASE */
         UtenteDAO dao = new UtenteDAO();
         
         try {
-        	// Controllo email
+            // Controllo di unicità dell'indirizzo email a livello applicativo per prevenire collisioni sul DB
             if (dao.VerificaEmail(email)) {
                 errors.add("Questa email è già registrata nel sistema.");
                 request.setAttribute("errors", errors);
@@ -99,6 +100,7 @@ public class RegistrazioneServlet extends HttpServlet {
                 return;
             }
             
+            // Generazione del digest crittografico della password per l'archiviazione sicura a database
             String passwordCriptata = HashingPassword.hashPassword(password);
             
             Utente nuovoUtente = new Utente();
@@ -108,7 +110,6 @@ public class RegistrazioneServlet extends HttpServlet {
             nuovoUtente.setNome(nome);
             nuovoUtente.setCognome(cognome);
             nuovoUtente.setTelefono(telefono);
-            // La bio sarà vuota al momento della registrazione
 
             dao.doSave(nuovoUtente); 
 

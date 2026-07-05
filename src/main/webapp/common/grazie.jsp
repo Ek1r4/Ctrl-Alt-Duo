@@ -1,26 +1,33 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="reframe.model.beans.Ordine" %>
+
+<%-- CONTROLLO VALIDITÀ DATI E REDIRECT --%>
 <%
-    // Recuperiamo l'ordine appena salvato dalla Servlet
+    // Previene NullPointerException e blocca l'accesso diretto alla view: verifica la presenza dell'oggetto Ordine instradato dalla Servlet post-checkout. In assenza, forza il redirect alla home.
     Ordine ordine = (Ordine) request.getAttribute("ordineEffettuato");
     if (ordine == null) {
         response.sendRedirect(request.getContextPath() + "/index.jsp");
         return;
     }
 %>
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
+    <!-- STRUTTURA PAGINA E HEAD -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grazie per l'acquisto | ReFrame</title>
+    
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/global.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/form.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/checkout.css">
 </head>
 <body>
+    
     <jsp:include page="../WEB-INF/components/header.jsp" />
 
+    <!-- LAYOUT CONFERMA ORDINE -->
     <div class="auth-wrapper grazie-wrapper">
         <div class="film-container grazie-container">
             
@@ -45,6 +52,7 @@
                 Grazie per aver scelto ReFrame. Abbiamo inviato una mail di conferma con tutti i dettagli.
             </p>
 
+            <%-- Inclusione dinamica del componente fattura con passaggio del parametro identificativo dell'ordine appena evaso --%>
             <jsp:include page="../WEB-INF/components/btn-fattura.jsp">
                 <jsp:param name="idOrdine" value="<%= ordine.getIdOrdine() %>" />
             </jsp:include>

@@ -1,8 +1,8 @@
 @import url("variables.css");
 @import url("global.css");
 
+/* CENTRATURA E CONTENITORI PRINCIPALI */
 
-/* Centratura */
 .auth-wrapper {
     display: flex;
     justify-content: center;
@@ -12,7 +12,6 @@
     flex-direction: column;
 }
 
-/* Box con stile a pellicola */
 .film-container {
     background-color: var(--panna-carta);
     border: 6px solid var(--antracite-scuro);
@@ -20,16 +19,14 @@
     position: relative;
     width: 100%;
     max-width: 450px;
-    padding: 60px 40px 40px 40px; /* Spazio in alto per l'icona */
+    padding: 60px 40px 40px 40px; 
     box-sizing: border-box;
     text-align: center;
-    
-    /* I bordi laterali larghi per ospitare i fori */
     border-left-width: 45px;
     border-right-width: 45px;
 }
 
-/* Fori della pellicola */
+/* Sfrutta repeating-linear-gradient per generare proceduralmente i fori di trascinamento della pellicola fotografica sui bordi laterali del contenitore. */
 .film-container::before, .film-container::after {
     content: '';
     position: absolute;
@@ -49,7 +46,8 @@
 .film-container::before { left: -33px; }
 .film-container::after { right: -33px; }
 
-/* Icona logo  e Titolo*/
+/* ELEMENTI UI: ICONE E TITOLI */
+
 .camera-icon {
     position: absolute;
     top: -25px;
@@ -64,7 +62,8 @@ h1.form-title {
     margin-bottom: 40px;
 }
 
-/* Campi di input */
+/* CAMPI DI INPUT (FIELDSET) */
+
 fieldset.custom-input {
     border: 1px dashed var(--grigio-taupe);
     border-radius: 15px;
@@ -89,7 +88,8 @@ fieldset.custom-input input {
     padding: 5px 0;
 }
 
-/* Solo per Registrazione INIZIO*/
+/* LAYOUT RESPONSIVO E GRIGLIE FORM */
+
 .form-row {
     display: flex;
     gap: 15px;
@@ -112,15 +112,12 @@ fieldset.custom-input input {
     font-size: 15px;
 }
 
-/* Per cellulari */
 @media screen and (max-width: 768px) {
     .form-row {
         flex-direction: column;
         gap: 0;
     }
 }
-/* Solo per Registrazione FINE*/
-
 
 .form-link {
     display: inline-block;
@@ -130,52 +127,45 @@ fieldset.custom-input input {
     font-size: 14px;
 }
 
-/* =========================================
-   CLASSI DI UTILITÀ PER LE PAGINE DI ERRORE
-   ========================================= */
+/* CLASSI DI UTILITA E PAGINE ERRORE */
 
-/* Colore del testo per i titoli di errore (403, 404, 500) */
 .text-rust {
     color: var(--rosso-ruggine);
 }
 
-/* icone SVG di errore */
 .icon-rust {
     width: 3rem; 
     height: 3rem;
     stroke: var(--rosso-ruggine);
     stroke-width: 2px; 
 }
-/* cambiare il nome e i riferimenti in error-text!!!!!!! */
+
 .denied-text {
-	font-size: 16px;
-	color: var(--antracite-scuro);
-	line-height: 1.6;
-	margin-bottom: 40px;
-	padding: 0 20px;
+    font-size: 16px;
+    color: var(--antracite-scuro);
+    line-height: 1.6;
+    margin-bottom: 40px;
+    padding: 0 20px;
 }
 
-/* =========================================
-   MODALE CONFERMA ELIMINAZIONE (PROFILO)
-   ========================================= */
-/* Sfondo scuro che copre tutto */
+/* MODALE CONFERMA ELIMINAZIONE */
+
 .admin-modal-overlay {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
     background-color: rgba(0, 0, 0, 0.6);
-    display: none; /* Nascosto di default */
+    display: none; 
     justify-content: center;
     align-items: center;
     z-index: 9999;
     backdrop-filter: blur(3px);
 }
 
-/* Quando JS aggiunge la classe .active, compare! */
+/* Gestione dello stato di visibilità della modale demandata al DOM tramite l'aggiunta dinamica della classe .active via JavaScript. */
 .admin-modal-overlay.active {
     display: flex;
 }
 
-/* Stile del box centrale */
 .confirm-modal-box {
     background: #f8f5f0;
     max-width: 400px !important;
@@ -192,7 +182,6 @@ fieldset.custom-input input {
     font-size: 1.05rem;
 }
 
-/* Bottoni in riga */
 .confirm-actions {
     display: flex;
     gap: 10px;
@@ -209,20 +198,25 @@ fieldset.custom-input input {
     height: auto !important; 
 }
 
-/* Colori Bottoni Modale */
 .danger-btn {
     background-color: var(--rosso-ruggine, #c84b31) !important;
     color: #ffffff !important;
     border: none !important;
 }
-.danger-btn:hover { background-color: #9c2e2a !important; }
+
+.danger-btn:hover { 
+    background-color: #9c2e2a !important; 
+}
 
 .cancel-btn {
     background-color: #eaeaea !important;
     color: #222 !important;
     border: none !important;
 }
-.cancel-btn:hover { background-color: #d4d4d4 !important; }
+
+.cancel-btn:hover { 
+    background-color: #d4d4d4 !important; 
+}
 
 @media screen and (max-width: 768px) {
     .denied-text {
@@ -235,9 +229,9 @@ fieldset.custom-input input {
         font-size: 22px;
     }
 }
-/* Solo per Accesso Negato FINE */
 
-/* VALIDAZIONE JS */
+/* STATI DI VALIDAZIONE JS E NOTIFICHE */
+
 .error-text { 
     color: var(--rosso-ruggine); 
     font-size: 14px; 
@@ -255,7 +249,6 @@ fieldset.custom-input input {
     cursor: not-allowed;
 }
 
-/* Notifiche di conferma per utente */
 .notification-banner {
     width: 100%;               
     max-width: 350px;          
@@ -280,7 +273,6 @@ fieldset.custom-input input {
     border: 1px solid #f5c6cb;
 }
 
-/* Box errore */
 .error-box {
     background-color: #fce8e6;
     border: 1px solid var(--rosso-ruggine);
@@ -291,9 +283,14 @@ fieldset.custom-input input {
     text-align: left;
     font-size: 14px;
 }
-.error-box ul { margin: 0; padding-left: 20px; }
 
-/* Footer per form*/
+.error-box ul { 
+    margin: 0; 
+    padding-left: 20px; 
+}
+
+/* FOOTER MINIMALE */
+
 .site-footer-minimal {
     text-align: center;
     font-style: italic;
@@ -304,11 +301,8 @@ fieldset.custom-input input {
     letter-spacing: 0.5px;
 }
 
-/* =========================================
-   ESTENSIONI FORM.CSS PER IL TICKET
-   ========================================= */
+/* ESTENSIONI COMPONENTI TICKET */
 
-/* 1. Applica le regole dell'input anche a textarea e select */
 fieldset.custom-input textarea,
 fieldset.custom-input select {
     width: 100%;
@@ -319,37 +313,35 @@ fieldset.custom-input select {
     color: var(--antracite-scuro);
     padding: 5px 0;
     font-family: inherit;
-    resize: vertical; /* Permette di espandere la textarea */
+    resize: vertical; 
 }
 
-/* Eredita i font ingranditi per la pellicola '.large' */
 .film-container.large fieldset.custom-input textarea,
 .film-container.large fieldset.custom-input select {
     font-size: 18px;
     padding: 8px 0;
-	align-items:center;
+    align-items: center;
 }
 
-
-/* 2. Modifiche per la Select (Menu a tendina) */
+/* Override della UI nativa del menu a tendina per garantire uniformità cross-browser stilizzando l'elemento select. */
 fieldset.custom-input select {
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
     cursor: pointer;
-    
 }
 
-/* Colore opzioni su sfondo panna-carta */
 fieldset.custom-input select option {
     background-color: var(--panna-carta);
     color: var(--antracite-scuro);
 }
+
 .select-wrapper-analog {
     position: relative;
     width: 100%;
 }
 
+/* Blocca gli eventi pointer sull'icona SVG custom affinché il click si propaghi direttamente al tag select sottostante. */
 .select-arrow-analog {
     position: absolute;
     right: 5px;
@@ -359,7 +351,6 @@ fieldset.custom-input select option {
     pointer-events: none;
 }
 
-/* 3. Stile per il riepilogo dati adattato al tema chiaro */
 .ticket-selections-analog {
     background-color: rgba(0, 0, 0, 0.02);
     border: 1px dashed var(--grigio-taupe);
@@ -387,5 +378,3 @@ fieldset.custom-input select option {
     margin-right: 8px;
     margin-bottom: 8px;
 }
-
-/* da cambiare nomi delle classi per renderle più generali e commenti più esplicativi  !!!!!!!!!!!!!!*/

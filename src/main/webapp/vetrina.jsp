@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
 <%@ page import="reframe.model.beans.Prodotto" %>
+
+<!-- CONFIGURAZIONE E IMPORTS -->
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -18,14 +20,17 @@
 
 <body class="catalog-page">
 
+    <!-- HEADER E CONTROLLO ACCESSI -->
     <%@ include file="/WEB-INF/components/header.jsp" %>
     
     <%@ page import="reframe.model.beans.Utente" %>
-	<%
-    Utente utenteLoggato = (Utente) session.getAttribute("utente");
-    boolean isAdmin = (utenteLoggato != null && utenteLoggato.getIsAdmin() > 0);
-	%>
+    <%
+        /* Implementazione di controllo degli accessi Role-Based Access Control (RBAC) basato su attributi di sessione. */
+        Utente utenteLoggato = (Utente) session.getAttribute("utente");
+        boolean isAdmin = (utenteLoggato != null && utenteLoggato.getIsAdmin() > 0);
+    %>
 
+    <!-- CONTENITORE PRINCIPALE CATALOGO -->
     <main class="catalog-container">
         
         <div class="catalog-header">
@@ -41,17 +46,17 @@
 
         <div class="catalog-body">
         
-        <div class="mobile-filter-bar">
-            <button class="btn-toggle-filters" id="btn-toggle-filters">
-                <i class="fas fa-sliders-h"></i> Filtri
-            </button>
-        </div>
+            <!-- SIDEBAR FILTRI -->
+            <div class="mobile-filter-bar">
+                <button class="btn-toggle-filters" id="btn-toggle-filters">
+                    <i class="fas fa-sliders-h"></i> Filtri
+                </button>
+            </div>
 
-        <aside class="catalog-sidebar">
-            <button class="btn-close-filters" id="btn-close-filters" title="Chiudi">&times;</button>
+            <aside class="catalog-sidebar">
+                <button class="btn-close-filters" id="btn-close-filters" title="Chiudi">&times;</button>
 
-            
-            	<div class="sidebar-search">
+                <div class="sidebar-search">
                     <input type="text" class="catalog-search-input" placeholder="Cerca..." 
                            value="<%= request.getParameter("search") != null ? request.getParameter("search") : "" %>">
                     <button type="button" class="catalog-search-btn" title="Cerca">
@@ -69,7 +74,7 @@
                 <div class="filter-group">
                     <h4>Marca</h4>
                     <%
-                        // Recuperiamo la lista di stringhe passata dalla Servlet
+                        /* Generazione procedurale dell'albero DOM dei filtri iterando sulla collezione pre-caricata dal controller backend (Servlet), garantendo la congruenza dinamica dei brand disponibili rispetto allo stato corrente del database. */
                         List<String> marcheDisponibili = (List<String>) request.getAttribute("marcheDisponibili");
                         
                         if (marcheDisponibili != null && !marcheDisponibili.isEmpty()) {
@@ -82,7 +87,7 @@
                             }
                         } else {
                     %>
-                            <p class="empty-catalog-msg" >Nessuna marca disponibile</p>
+                            <p class="empty-catalog-msg">Nessuna marca disponibile</p>
                     <%  } %>
                 </div>
 
@@ -95,35 +100,38 @@
                 </div>
             </aside>
 
+            <!-- GRIGLIA PRODOTTI -->
             <div class="catalog-main">
                 <div class="products-grid" id="grid-container">
                     <jsp:include page="/WEB-INF/components/griglia-prodotti.jsp" />
                 </div>
             </div>
+            
         </div>
         
     </main>
 
+    <!-- FOOTER E SCRIPT -->
     <%@ include file="/WEB-INF/components/footer.jsp" %>
-	
-	<script>
-        // Rendiamo il contextPath globale per farlo leggere al file .js
+    
+    <script>
         const contextPath = '<%= request.getContextPath() %>';
     </script>
     <script src="<%= request.getContextPath() %>/js/filtri-catalogo.js"></script>
     
-            <div id="delete-confirm-modal" class="admin-modal-overlay">
-            <div class="film-container modal-film-override confirm-modal-box">
-                
-                <h3 class="form-title">Conferma Azione</h3>
-                <p id="delete-confirm-message" class="confirm-message"></p>
-                
-                <div class="confirm-actions">
-                    <button type="button" id="btn-cancel-delete" class="btn-cta cancel-btn">Annulla</button>
-                    <button type="button" id="btn-confirm-delete" class="btn-cta danger-btn">Procedi</button>
-                </div>
+    <!-- MODALE CONFERMA ELIMINAZIONE -->
+    <div id="delete-confirm-modal" class="admin-modal-overlay">
+        <div class="film-container modal-film-override confirm-modal-box">
+            
+            <h3 class="form-title">Conferma Azione</h3>
+            <p id="delete-confirm-message" class="confirm-message"></p>
+            
+            <div class="confirm-actions">
+                <button type="button" id="btn-cancel-delete" class="btn-cta cancel-btn">Annulla</button>
+                <button type="button" id="btn-confirm-delete" class="btn-cta danger-btn">Procedi</button>
             </div>
         </div>
+    </div>
     
 </body>
 </html>

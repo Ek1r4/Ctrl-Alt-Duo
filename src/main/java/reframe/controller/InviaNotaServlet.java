@@ -1,6 +1,7 @@
 package reframe.controller;
 
 import reframe.model.beans.Utente;
+import reframe.model.dao.PraticaAssistenzaDAO;
 import reframe.model.dao.UtenteDAO;
 import reframe.utils.EmailManager;
 
@@ -16,25 +17,32 @@ import java.io.IOException;
 public class InviaNotaServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        
+        /* CONTROLLO ACCESSI E PERMESSI */
         HttpSession session = request.getSession();
         Utente superadmin = (Utente) session.getAttribute("utente");
 
-        // Controllo di sicurezza: solo il Superadmin (isAdmin = 2) può inviare note
+        // RBAC (Role-Based Access Control): Restringe l'esecuzione esclusivamente agli utenti con privilegi di Livello 2 (Superadmin)
         if (superadmin == null || superadmin.getIsAdmin() != 2) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
 
+        /* ELABORAZIONE NOTA E INVIO EMAIL */
         String rma = request.getParameter("rma");
         String nota = request.getParameter("nota");
         
         try {
-            // TODO: Recupera l'username dell'admin in carico tramite PraticaDAO
-            // String usernameAdmin = praticaDAO.getAdminInCarico(rma);
-            String usernameAdmin = "admin_Erika"; // Mockup
+            PraticaAssistenzaDAO praticaDAO = new PraticaAssistenzaDAO();
+            String usernameAdmin = praticaDAO.getAdminInCarico(rma);
+
+            if (usernameAdmin == null || usernameAdmin.isEmpty()) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                return;
+            }
 
             UtenteDAO utenteDAO = new UtenteDAO();
-            Utente adminTarget = utenteDAO.doRetrieveByKey(usernameAdmin); // Devi avere questo metodo nel DAO
+            Utente adminTarget = utenteDAO.doRetrieveByKey(usernameAdmin); 
 
             if (adminTarget != null && adminTarget.getEmail() != null) {
                 String oggetto = "Reframe - Nota Superadmin per Pratica " + rma;

@@ -20,10 +20,10 @@ public class RecensioneServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         
+        /* CONFIGURAZIONE E CONTROLLO ACCESSI */
         HttpSession session = request.getSession();
         Utente utenteLoggato = (Utente) session.getAttribute("utente");
         
-        // 1. SICUREZZA: Se non sei loggato, la Servlet blocca tutto e ti manda al login
         if (utenteLoggato == null) {
             response.sendRedirect(request.getContextPath() + "/login.jsp");
             return;
@@ -32,21 +32,20 @@ public class RecensioneServlet extends HttpServlet {
         String action = request.getParameter("action");
         RecensioniDAO dao = new RecensioniDAO();
 
-        // ==========================================
-        // AZIONE: AGGIUNGI RECENSIONE
-        // ==========================================
+        /* AZIONE: AGGIUNGI RECENSIONE */
         if ("aggiungi".equals(action)) {
-        	
-        	if (utenteLoggato.getIsAdmin() > 0) {
+            
+            // RBAC: Previene la sottomissione di recensioni ai prodotti da parte degli amministratori
+            if (utenteLoggato.getIsAdmin() > 0) {
                 response.sendRedirect(request.getContextPath() + "/accessoNegato.jsp");
                 return;
             }
-        	
+            
             String idProdotto = request.getParameter("idProdotto");
             String ratingStr = request.getParameter("rating");
             String descrizione = request.getParameter("descrizione");
             
-            // Generazione di un ID casuale di 8 caratteri (Alfanumerico e Maiuscolo)
+            // Generazione di un identificatore univoco per la recensione
             String idRecensione = UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase();
             
             try {
@@ -59,11 +58,10 @@ public class RecensioneServlet extends HttpServlet {
                 r.setIdProdotto(idProdotto);
                 r.setIdUtente(utenteLoggato.getUsername());
                 
-                // Salvataggio nel Database
                 boolean successo = dao.doSave(r);
                 
-                // TRUCCHETTO: Leggiamo l'header "referer" per sapere esattamente da quale pagina 
-                // l'utente ha inviato la recensione, così lo rimandiamo lì direttamente!
+                // Sfrutta l'header HTTP "referer" per implementare un redirect contestuale,
+                // riportando l'utente esattamente alla view da cui ha inviato la richiesta (es. dettaglio prodotto)
                 String referer = request.getHeader("referer");
                 
                 if (successo) {
@@ -73,18 +71,16 @@ public class RecensioneServlet extends HttpServlet {
                 }
                 
             } catch (NumberFormatException | SQLException e) {
-                e.printStackTrace(); // Stampa l'errore in console come da tua abitudine
+                e.printStackTrace(); 
                 String referer = request.getHeader("referer");
                 response.sendRedirect(referer != null ? referer : request.getContextPath() + "/500.jsp");
             }
             return;
         }
         
-        // ==========================================
-        // AZIONE: ELIMINA RECENSIONE (Admin)
-        // ==========================================
+        /* AZIONE: ELIMINA RECENSIONE */
         if ("elimina".equals(action)) {
-            // Controllo di sicurezza aggiuntivo: solo gli admin possono eliminare i commenti
+            // Controllo accessi per la moderazione: restringe l'azione di delete ai soli admin
             if (utenteLoggato.getIsAdmin() == 0) {
                 response.sendRedirect(request.getContextPath() + "/accessoNegato.jsp");
                 return;

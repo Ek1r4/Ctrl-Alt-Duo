@@ -4,17 +4,17 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <%
-    // ==========================================
-    // DETERMINAZIONE DINAMICA DEL RUOLO
-    // ==========================================
+    /* GESTIONE DINAMICA DEL RUOLO UTENTE E OTTIMIZZAZIONE QUERY */
+    
+    // Inizializzazione della sessione utente.
     reframe.model.beans.Utente utenteLoggatoOverlay = (reframe.model.beans.Utente) session.getAttribute("utente");
-    String ruoloReale = "utente"; // Fallback di default
+    String ruoloReale = "utente"; 
     
     if (utenteLoggatoOverlay != null) {
         if (utenteLoggatoOverlay.getIsAdmin() == 2) {
             ruoloReale = "superadmin";
             
-            // OTTIMIZZAZIONE: Recuperiamo gli admin dal DB SOLO se l'utente è un Superadmin
+            // Limitazione dell'overhead computazionale: l'interrogazione al Data Access Object (DAO) per il recupero della lista amministratori viene eseguita esclusivamente se il ruolo di sessione è di tipo Superadmin.
             UtenteDAO uDao = new UtenteDAO();
             try {
                 List<reframe.model.beans.Utente> listaAdmins = uDao.doRetrieveAllAdmins();
@@ -27,10 +27,13 @@
             ruoloReale = "admin";
         }
     }
-    
+
     request.setAttribute("ruolo", ruoloReale);
 %>
+
 <link rel="stylesheet" href="../css/form.css">
+
+<!-- STRUTTURA DEL MODALE (OVERLAY TICKET) -->
 <dialog id="ticketOverlay" class="ticket-dialog">
     <div class="ticket-dialog-wrapper">
         
@@ -39,22 +42,21 @@
         </button>
         
         <div class="mobile-ticket-tabs">
-        <button type="button" class="tab-btn active" onclick="switchMobileTab('chat')">CHAT</button>
-        <button type="button" class="tab-btn" onclick="switchMobileTab('dettagli')">DETTAGLI</button>
-    </div>
+            <button type="button" class="tab-btn active" onclick="switchMobileTab('chat')">CHAT</button>
+            <button type="button" class="tab-btn" onclick="switchMobileTab('dettagli')">DETTAGLI</button>
+        </div>
 
         <div class="ticket-dialog-content">
 
-            <!-- LATO SINISTRO: CHAT -->
+            <!-- LATO SINISTRO: SEZIONE CHAT -->
             <div class="ticket-panel film-container panel-chat">
                 <h2 class="form-title">CHAT <span>TICKET</span></h2>
                 
-                <!-- Area messaggi con scroll invisibile -->
                 <div class="chat-history" id="chatHistory">
                     <div class="testo-tecnico loading-text">CARICAMENTO MESSAGGI...</div>
                 </div>
 
-                <!-- Input Chat dimezzato (Nascosto per superadmin) -->
+                <%-- Rendering condizionale del form di invio messaggi basato sul ruolo: abilitato per Utente/Admin, inibito per Superadmin per applicare la policy di sola lettura --%>
                 <c:if test="${ruolo != 'superadmin'}">
                     <form id="formChat" onsubmit="inviaMessaggio(event)" class="chat-form">
                         <input type="hidden" id="chatRma" name="rma">
@@ -74,14 +76,13 @@
                 </c:if>
             </div>
 
-            <!-- LATO DESTRO: DETTAGLI & AZIONI -->
+            <!-- LATO DESTRO: SEZIONE DETTAGLI E AZIONI -->
             <div class="ticket-panel film-container panel-details">
                 <h2 class="form-title">DETTAGLI <span>PRATICA</span></h2>
                 
-                <!-- Area dettagli con scroll invisibile -->
                 <div class="panel-details-scroll">
                     
-                    <!-- Info base -->
+                    <!-- Informazioni base del ticket -->
                     <div class="ticket-info">
                         <fieldset class="custom-input read-only-box">
                             <legend>Ticket ID</legend>
@@ -100,13 +101,14 @@
                         </fieldset>
                     </div>
 
-                    <!-- BOX ORDINI E PRODOTTI (Popolato via JS) -->
+                    <!-- Container target per iniezione DOM via JS -->
                     <div id="dettaglioSelezioni"></div>
 
-                    <!-- Azioni in base al ruolo -->
+                    <!-- AZIONI CONTESTUALI PER RUOLO -->
                     <div class="ticket-actions">
-                        <%-- UTENTE --%>
+                        
                         <c:choose>
+                            <%-- VISTA UTENTE NORMALE --%>
                             <c:when test="${ruolo == 'utente'}">
                                 <fieldset class="custom-input read-only-box">
                                     <legend>Stato Attuale</legend>
@@ -120,13 +122,13 @@
                                 </div>
                             </c:when>
 
-                            <%-- ADMIN --%>
+                            <%-- VISTA AMMINISTRATORE (ADMIN) --%>
                             <c:when test="${ruolo == 'admin'}">
                                 <form id="formStato" onsubmit="aggiornaStato(event)">
                                     <fieldset class="custom-input">
                                         <legend>Gestisci Stato</legend>
                                         
-                                        <!-- Container del Toggle Stile "Segmented Control" -->
+                                        <!-- Interfaccia Segemented Control per transizione di stato -->
                                         <div class="status-toggle-wrapper">
                                             <input type="checkbox" id="toggleStatoAdmin" name="stato_chiusa" value="true">
                                             <label class="status-toggle-pill" for="toggleStatoAdmin">
@@ -136,14 +138,14 @@
                                             </label>
                                         </div>
 
-                                        <!-- Container per il messaggio di avviso -->
                                         <p id="adminStatusWarning" class="status-warning-msg"></p>
 
                                     </fieldset>
                                     <button type="submit" class="btn-cta btn-chat-compact">AGGIORNA STATO</button>
                                 </form>
                             </c:when>
-                            <%-- SUPERADMIN --%>
+                            
+                            <%-- VISTA AMMINISTRATORE GLOBALE (SUPERADMIN) --%>
                             <c:when test="${ruolo == 'superadmin'}">
                                 <fieldset class="custom-input read-only-box">
                                     <legend>Stato Attuale</legend>
@@ -155,10 +157,10 @@
                                         <legend>Assegna ad Admin</legend>
                                         <input type="text" id="adminInCarico" list="adminList" placeholder="Es. admin_mario">
                                         
-                                        <!-- LISTA DINAMICA DEGLI ADMIN DAL DATABASE -->
+                                        <!-- Popolamento datalist dinamico -->
                                         <datalist id="adminList">
                                             <c:forEach var="admin" items="${listaAdmins}">
-                                                <%-- FILTRO: Mostra come opzione SOLO gli admin di livello 1 (Esclude i Superadmin) --%>
+                                                <%-- Filtro iterativo per limitare le opzioni di delega esclusivamente ad utenti con qualifica Admin (level 1), escludendo i colleghi Superadmin. --%>
                                                 <c:if test="${admin.isAdmin == 1}">
                                                     <option value="${admin.username}">${admin.nome} ${admin.cognome}</option>
                                                 </c:if>
@@ -175,7 +177,6 @@
                                         <textarea id="notaSuperadmin" placeholder="Verrà spedita via email all'admin in carico..." required rows="2"></textarea>
                                     </fieldset>
                                     
-                                    <!-- Avviso mostrato solo quando la pratica è Aperta -->
                                     <p id="notaSuperadminWarning" class="status-warning-msg" style="text-align: left; margin-bottom: 10px;"></p>
                                     
                                     <button type="submit" id="btnInviaNota" class="btn-cta btn-chat-compact">INVIA NOTA</button>
@@ -184,7 +185,7 @@
                         </c:choose>
                     </div>
                     
-                </div> <!-- /panel-details-scroll -->
+                </div>
             </div>
 
         </div>
